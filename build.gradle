@@ -1,0 +1,32 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
+buildscript {
+  repositories {
+    jcenter()
+    maven {
+      name = 'fabricmc.net'
+      url = 'https://maven.fabricmc.net'
+    }
+  }
+  dependencies {
+    classpath 'net.fabricmc:fabric-loom:0.2.0-SNAPSHOT'
+  }
+}
+
+apply plugin: 'fabric-loom'
+
+archivesBaseName = 'Couplings'
+group = 'io.github.insomniakitten'
+version = '0.1.0'
+sourceCompatibility = 1.8
+
+dependencies {
+  minecraft 'com.mojang:minecraft:19w02a'
+  mappings 'net.fabricmc:yarn:19w02a.13'
+  modCompile 'net.fabricmc:fabric-loader:0.3.2.93'
+  implementation 'com.google.code.findbugs:jsr305:3.0.2'
+}
+
+processResources {
+  filter ReplaceTokens, tokens: [version: project.version]
+}

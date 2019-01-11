@@ -1,0 +1,23 @@
+{
+  "required": true,
+  "minVersion": "0.7.11",
+  "compatibilityLevel": "JAVA_8",
+  "target": "@environment(DEFAULT)",
+  "refmap": "mixins.coupled.refmap.json",
+  "package": "io.github.insomniakitten.couplings.mixin",
+  "mixins": [
+    "DoorInvoker",
+    "DoorMixin",
+    "FenceGateMixin",
+    "TrapdoorMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1,
+    "defaultGroup": "default",
+    "maxShiftBy": 0
+  },
+  "overwrites": {
+    "conformVisibility": true,
+    "requireAnnotations": true
+  }
+}

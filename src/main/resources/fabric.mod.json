@@ -1,0 +1,16 @@
+{
+  "id": "couplings",
+  "name": "Couplings",
+  "version": "@version@",
+  "side": "universal",
+  "license": "Apache 2.0",
+  "authors": [
+    {
+      "name": "InsomniaKitten",
+      "website": "https://github.com/InsomniaKitten"
+    }
+  ],
+  "mixins": {
+    "common": "mixins.couplings.json"
+  }
+}
