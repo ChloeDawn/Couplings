@@ -3,7 +3,7 @@
   "minVersion": "0.7.11",
   "compatibilityLevel": "JAVA_8",
   "target": "@environment(DEFAULT)",
-  "refmap": "mixins.coupled.refmap.json",
+  "refmap": "mixins.couplings.refmap.json",
   "package": "io.github.insomniakitten.couplings.mixin",
   "mixins": [
     "DoorInvoker",

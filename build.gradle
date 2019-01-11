@@ -22,7 +22,7 @@ sourceCompatibility = 1.8
 
 minecraft {
   // todo Determine why this can't be inferred by Loom
-  refmapName = 'mixins.coupled.refmap.json'
+  refmapName = 'mixins.couplings.refmap.json'
 }
 
 dependencies {
