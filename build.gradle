@@ -20,6 +20,11 @@ group = 'io.github.insomniakitten'
 version = '0.1.0'
 sourceCompatibility = 1.8
 
+minecraft {
+  // todo Determine why this can't be inferred by Loom
+  refmapName = 'mixins.coupled.refmap.json'
+}
+
 dependencies {
   minecraft 'com.mojang:minecraft:19w02a'
   mappings 'net.fabricmc:yarn:19w02a.13'
