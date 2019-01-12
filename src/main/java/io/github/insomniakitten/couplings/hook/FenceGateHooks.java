@@ -28,10 +28,7 @@ import net.minecraft.util.math.Direction.Axis;
 import net.minecraft.world.World;
 
 public final class FenceGateHooks {
-  private static final ThreadLocal<Boolean> CHECK_BELOW =
-    ThreadLocal.withInitial(() -> true);
-
-  private static final ThreadLocal<Boolean> CHECK_ABOVE =
+  private static final ThreadLocal<Boolean> USE_NEIGHBORS =
     ThreadLocal.withInitial(() -> true);
 
   private FenceGateHooks() {}
@@ -48,22 +45,33 @@ public final class FenceGateHooks {
     final float z,
     final boolean usageResult
   ) {
-    if (player.isSneaking()) return; // todo config
-    if (FenceGateHooks.CHECK_BELOW.get()) {
-      FenceGateHooks.CHECK_ABOVE.set(false);
-      Couplings.useNeighbor(state, world, pos, pos.down(), player, hand, side, x, y, z, usageResult, FenceGateHooks::areEquivalent);
-      FenceGateHooks.CHECK_ABOVE.set(true);
-    }
-    if (FenceGateHooks.CHECK_ABOVE.get()) {
-      FenceGateHooks.CHECK_BELOW.set(false);
-      Couplings.useNeighbor(state, world, pos, pos.up(), player, hand, side, x, y, z, usageResult, FenceGateHooks::areEquivalent);
-      FenceGateHooks.CHECK_BELOW.set(true);
+    if (FenceGateHooks.USE_NEIGHBORS.get()) {
+      if (player.isSneaking()) return; // todo config
+
+      FenceGateHooks.USE_NEIGHBORS.set(false);
+
+      final boolean open = FenceGateHooks.isOpen(state);
+      final Axis axis = FenceGateHooks.getAxis(state);
+
+      for (final BlockPos.Mutable offset : BlockPos.iterateBoxPositionsMutable(
+        pos.down(Couplings.COUPLING_RANGE),
+        pos.up(Couplings.COUPLING_RANGE)
+      )) {
+        Couplings.useNeighbor(state, world, pos, offset, player, hand, side, x, y, z, usageResult,
+          (self, other) -> FenceGateHooks.includesStates(open, axis, other)
+        );
+      }
+
+      FenceGateHooks.USE_NEIGHBORS.set(true);
     }
   }
 
-  private static boolean areEquivalent(final BlockState self, final BlockState neighbor) {
-    return FenceGateHooks.isOpen(self) != FenceGateHooks.isOpen(neighbor)
-      && FenceGateHooks.getAxis(self) == FenceGateHooks.getAxis(neighbor);
+  private static boolean includesStates(
+    final boolean open,
+    final Axis axis,
+    final BlockState state
+  ) {
+    return open != FenceGateHooks.isOpen(state) && axis == FenceGateHooks.getAxis(state);
   }
 
   private static boolean isOpen(final BlockState state) {

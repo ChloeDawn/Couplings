@@ -14,6 +14,8 @@ import org.apache.logging.log4j.Logger;
 import java.util.function.BiPredicate;
 
 public final class Couplings {
+  public static final int COUPLING_RANGE = 128;
+
   private static final Logger LOGGER = LogManager.getLogger("coupled");
 
   private Couplings() {}

@@ -30,7 +30,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 public final class DoorHooks {
-  private static final ThreadLocal<Boolean> CHECK_NEIGHBOR =
+  private static final ThreadLocal<Boolean> USE_NEIGHBOR =
     ThreadLocal.withInitial(() -> true);
 
   private DoorHooks() {}
@@ -48,10 +48,11 @@ public final class DoorHooks {
     final boolean usageResult
   ) {
     if (player.isSneaking()) return; // todo config
-    if (DoorHooks.CHECK_NEIGHBOR.get()) {
-      DoorHooks.CHECK_NEIGHBOR.set(false);
-      Couplings.useNeighbor(state, world, pos, DoorHooks.getOtherDoor(state, pos), player, hand, side, x, y, z, usageResult, DoorHooks::areValidPair);
-      DoorHooks.CHECK_NEIGHBOR.set(true);
+    if (DoorHooks.USE_NEIGHBOR.get()) {
+      DoorHooks.USE_NEIGHBOR.set(false);
+      final BlockPos offset = DoorHooks.getOtherDoor(state, pos);
+      Couplings.useNeighbor(state, world, pos, offset, player, hand, side, x, y, z, usageResult, DoorHooks::areEquivalent);
+      DoorHooks.USE_NEIGHBOR.set(true);
     }
   }
 
@@ -68,7 +69,7 @@ public final class DoorHooks {
       final BlockPos offset = DoorHooks.getOtherDoor(state, pos);
       final BlockState other = world.getBlockState(offset);
       if (state.getBlock() == other.getBlock()) {
-        if (DoorHooks.areValidPair(state, other.with(DoorBlock.field_10945, isPowered))) {
+        if (DoorHooks.areEquivalent(state, other.with(DoorBlock.field_10945, isPowered))) {
           world.setBlockState(offset, other.with(DoorBlock.field_10945, isPowered), 2);
           DoorHooks.fireWorldEvent(other, world, offset, isPowered);
         }
@@ -76,7 +77,7 @@ public final class DoorHooks {
     }
   }
 
-  private static boolean areValidPair(final BlockState self, final BlockState other) {
+  private static boolean areEquivalent(final BlockState self, final BlockState other) {
     return DoorHooks.getFacing(self) == DoorHooks.getFacing(other)
       && DoorHooks.getHalf(self) == DoorHooks.getHalf(other)
       && DoorHooks.isOpen(self) != DoorHooks.isOpen(other)

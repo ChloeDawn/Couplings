@@ -28,13 +28,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 public final class TrapdoorHooks {
-  private static final ThreadLocal<Boolean> CHECK_OPPOSITE =
-    ThreadLocal.withInitial(() -> true);
-
-  private static final ThreadLocal<Boolean> CHECK_CCW =
-    ThreadLocal.withInitial(() -> true);
-
-  private static final ThreadLocal<Boolean> CHECK_CW =
+  private static final ThreadLocal<Boolean> USE_NEIGHBORS =
     ThreadLocal.withInitial(() -> true);
 
   private TrapdoorHooks() {}
@@ -51,41 +45,46 @@ public final class TrapdoorHooks {
     final float z,
     final boolean usageResult
   ) {
-    if (player.isSneaking()) return; // todo config
-    final Direction facing = TrapdoorHooks.getFacing(state);
-    if (TrapdoorHooks.CHECK_CW.get()) {
-      TrapdoorHooks.CHECK_CCW.set(false);
-      final BlockPos offset = pos.offset(facing.rotateYClockwise());
-      Couplings.useNeighbor(state, world, pos, offset, player, hand, side, x, y, z, usageResult, TrapdoorHooks::areEqual);
-      TrapdoorHooks.CHECK_CCW.set(true);
-    }
-    if (TrapdoorHooks.CHECK_CCW.get()) {
-      TrapdoorHooks.CHECK_CW.set(false);
-      final BlockPos offset = pos.offset(facing.rotateYCounterclockwise());
-      Couplings.useNeighbor(state, world, pos, offset, player, hand, side, x, y, z, usageResult, TrapdoorHooks::areEqual);
-      TrapdoorHooks.CHECK_CW.set(true);
-    }
-    if (TrapdoorHooks.CHECK_OPPOSITE.get()) {
-      TrapdoorHooks.CHECK_OPPOSITE.set(false);
-      final BlockPos mirror = pos.offset(facing);
-      Couplings.useNeighbor(state, world, pos, mirror, player, hand, side, x, y, z, usageResult, TrapdoorHooks::areEqualMirrored);
-      TrapdoorHooks.CHECK_OPPOSITE.set(true);
+    if (TrapdoorHooks.USE_NEIGHBORS.get()) {
+      if (player.isSneaking()) return; // todo config
+
+      TrapdoorHooks.USE_NEIGHBORS.set(false);
+
+      final boolean open = TrapdoorHooks.isOpen(state);
+      final BlockHalf half = TrapdoorHooks.getHalf(state);
+      final Direction facing = TrapdoorHooks.getFacing(state);
+      final Direction opposite = facing.getOpposite();
+
+      for (final BlockPos.Mutable offset : BlockPos.iterateBoxPositionsMutable(
+        pos.offset(facing.rotateYCounterclockwise(), Couplings.COUPLING_RANGE),
+        pos.offset(facing.rotateYClockwise(), Couplings.COUPLING_RANGE)
+      )) {
+        Couplings.useNeighbor(state, world, pos, offset, player, hand, side, x, y, z, usageResult,
+          (self, other) -> TrapdoorHooks.includesStates(open, half, facing, other)
+        );
+
+        offset.setOffset(facing);
+
+        Couplings.useNeighbor(state, world, pos, offset, player, hand, side, x, y, z, usageResult,
+          (self, other) -> TrapdoorHooks.includesStates(open, half, opposite, other)
+        );
+
+        offset.setOffset(opposite);
+      }
+
+      TrapdoorHooks.USE_NEIGHBORS.set(true);
     }
   }
 
-  private static boolean areEquivalent(final BlockState self, final BlockState other) {
-    return TrapdoorHooks.isOpen(self) != TrapdoorHooks.isOpen(other)
-      && TrapdoorHooks.getHalf(self) == TrapdoorHooks.getHalf(other);
-  }
-
-  private static boolean areEqualMirrored(final BlockState self, final BlockState other) {
-    return TrapdoorHooks.areEquivalent(self, other)
-      && TrapdoorHooks.getFacing(self) == TrapdoorHooks.getFacing(other).getOpposite();
-  }
-
-  private static boolean areEqual(final BlockState self, final BlockState other) {
-    return TrapdoorHooks.areEquivalent(self, other)
-      && TrapdoorHooks.getFacing(self) == TrapdoorHooks.getFacing(other);
+  private static boolean includesStates(
+    final boolean open,
+    final BlockHalf half,
+    final Direction facing,
+    final BlockState state
+  ) {
+    return open != TrapdoorHooks.isOpen(state)
+      && half == TrapdoorHooks.getHalf(state)
+      && facing == TrapdoorHooks.getFacing(state);
   }
 
   private static boolean isOpen(final BlockState state) {
