@@ -61,7 +61,19 @@ public final class TrapdoorHooks {
         pos.offset(facing.rotateYCounterclockwise(), Couplings.COUPLING_RANGE),
         pos.offset(facing.rotateYClockwise(), Couplings.COUPLING_RANGE)
       )) {
-        if (Couplings.isUsable(world, offset, player)) {
+        if (pos.equals(offset)) {
+          offset.setOffset(facing);
+
+          if (Couplings.isUsable(world, offset, player)) {
+            final BlockState mirror = world.getBlockState(offset);
+
+            if (block == mirror.getBlock() && TrapdoorHooks.includesStates(open, half, opposite, mirror)) {
+              Couplings.use(state, mirror, world, pos, offset.toImmutable(), player, hand, side, x, y, z, usageResult);
+            }
+          }
+
+          offset.setOffset(opposite);
+        } else if (Couplings.isUsable(world, offset, player)) {
           final BlockState other = world.getBlockState(offset);
 
           if (block == other.getBlock() && TrapdoorHooks.includesStates(open, half, facing, other)) {
