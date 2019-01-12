@@ -11,8 +11,6 @@ import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.function.BiPredicate;
-
 public final class Couplings {
   public static final int COUPLING_RANGE = 128;
 
@@ -20,8 +18,37 @@ public final class Couplings {
 
   private Couplings() {}
 
-  public static void useNeighbor(
+  public static boolean isUsable(final World world, final BlockPos pos, final PlayerEntity player) {
+    if (!player.canModifyWorld()) {
+      if (Knot.getLauncher().isDevelopment()) {
+        Couplings.LOGGER.warn("Skipping usage as world modification is disallowed for user ", player);
+      }
+
+      return false;
+    }
+
+    if (!world.isBlockLoaded(pos)) {
+      if (Knot.getLauncher().isDevelopment()) {
+        Couplings.LOGGER.warn("Skipping usage as block is unloaded at {}", pos);
+      }
+
+      return false;
+    }
+
+    if (!world.getWorldBorder().contains(pos)) {
+      if (Knot.getLauncher().isDevelopment()) {
+        Couplings.LOGGER.warn("Skipping usage as block is outside of the world border at {}", pos);
+      }
+
+      return false;
+    }
+
+    return true;
+  }
+
+  public static void use(
     final BlockState state,
+    final BlockState other,
     final World world,
     final BlockPos pos,
     final BlockPos offset,
@@ -31,38 +58,19 @@ public final class Couplings {
     final float x,
     final float y,
     final float z,
-    final boolean usageResult,
-    final BiPredicate<BlockState, BlockState> matcher
+    final boolean usageResult
   ) {
-    if (!world.isBlockLoaded(offset)) {
+    final boolean otherUsageResult = other.activate(world, offset, player, hand, side, x, y, z);
+
+    if (usageResult != otherUsageResult) {
+      final String result1 = Couplings.toString(state, world, pos, player, hand, side, x, y, z, usageResult);
+      final String result2 = Couplings.toString(other, world, offset, player, hand, side, x, y, z, otherUsageResult);
+
       if (Knot.getLauncher().isDevelopment()) {
-        Couplings.LOGGER.warn("Skipping usage as block is unloaded at {}", offset);
+        throw new IllegalStateException("Usage result mismatch between " + result1 + " and " + result2);
       }
-      return;
-    }
-    if (!world.getWorldBorder().contains(pos)) {
-      if (Knot.getLauncher().isDevelopment()) {
-        Couplings.LOGGER.warn("Skipping usage as block is outside of the world border at {}", offset);
-      }
-      return;
-    }
-    if (!player.canModifyWorld()) {
-      if (Knot.getLauncher().isDevelopment()) {
-        Couplings.LOGGER.warn("Skipping usage as world modification is disallowed for user ", player);
-      }
-      return;
-    }
-    final BlockState neighbor = world.getBlockState(offset);
-    if (state.getBlock() == neighbor.getBlock() && matcher.test(state, neighbor)) {
-      final boolean neighborUsageResult = neighbor.activate(world, offset, player, hand, side, x, y, z);
-      if (usageResult != neighborUsageResult) {
-        final String result1 = Couplings.toString(state, world, pos, player, hand, side, x, y, z, usageResult);
-        final String result2 = Couplings.toString(neighbor, world, offset, player, hand, side, x, y, z, neighborUsageResult);
-        if (Knot.getLauncher().isDevelopment()) {
-          throw new IllegalStateException("Usage result mismatch between " + result1 + " and " + result2);
-        }
-        Couplings.LOGGER.warn("Usage result mismatch between {} and {}", result1, result2);
-      }
+
+      Couplings.LOGGER.warn("Usage result mismatch between {} and {}", result1, result2);
     }
   }
 

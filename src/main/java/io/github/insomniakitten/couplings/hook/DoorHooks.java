@@ -50,8 +50,17 @@ public final class DoorHooks {
     if (player.isSneaking()) return; // todo config
     if (DoorHooks.USE_NEIGHBOR.get()) {
       DoorHooks.USE_NEIGHBOR.set(false);
+
       final BlockPos offset = DoorHooks.getOtherDoor(state, pos);
-      Couplings.useNeighbor(state, world, pos, offset, player, hand, side, x, y, z, usageResult, DoorHooks::areEquivalent);
+
+      if (Couplings.isUsable(world, offset, player)) {
+        final BlockState other = world.getBlockState(offset);
+
+        if (state.getBlock() == other.getBlock() && DoorHooks.areEquivalent(state, other)) {
+          Couplings.use(state, other, world, pos, offset, player, hand, side, x, y, z, usageResult);
+        }
+      }
+
       DoorHooks.USE_NEIGHBOR.set(true);
     }
   }
@@ -68,6 +77,7 @@ public final class DoorHooks {
     if (!isPowered && DoorHooks.isPowered(state) || DoorHooks.isSufficientlyPowered(state, world, pos)) {
       final BlockPos offset = DoorHooks.getOtherDoor(state, pos);
       final BlockState other = world.getBlockState(offset);
+
       if (state.getBlock() == other.getBlock()) {
         if (DoorHooks.areEquivalent(state, other.with(DoorBlock.field_10945, isPowered))) {
           world.setBlockState(offset, other.with(DoorBlock.field_10945, isPowered), 2);

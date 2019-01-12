@@ -17,6 +17,7 @@
 package io.github.insomniakitten.couplings.hook;
 
 import io.github.insomniakitten.couplings.Couplings;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.block.TrapdoorBlock;
@@ -50,6 +51,7 @@ public final class TrapdoorHooks {
 
       TrapdoorHooks.USE_NEIGHBORS.set(false);
 
+      final Block block = state.getBlock();
       final boolean open = TrapdoorHooks.isOpen(state);
       final BlockHalf half = TrapdoorHooks.getHalf(state);
       final Direction facing = TrapdoorHooks.getFacing(state);
@@ -59,29 +61,32 @@ public final class TrapdoorHooks {
         pos.offset(facing.rotateYCounterclockwise(), Couplings.COUPLING_RANGE),
         pos.offset(facing.rotateYClockwise(), Couplings.COUPLING_RANGE)
       )) {
-        Couplings.useNeighbor(state, world, pos, offset, player, hand, side, x, y, z, usageResult,
-          (self, other) -> TrapdoorHooks.includesStates(open, half, facing, other)
-        );
+        if (Couplings.isUsable(world, offset, player)) {
+          final BlockState other = world.getBlockState(offset);
 
-        offset.setOffset(facing);
+          if (block == other.getBlock() && TrapdoorHooks.includesStates(open, half, facing, other)) {
+            Couplings.use(state, other, world, pos, offset.toImmutable(), player, hand, side, x, y, z, usageResult);
 
-        Couplings.useNeighbor(state, world, pos, offset, player, hand, side, x, y, z, usageResult,
-          (self, other) -> TrapdoorHooks.includesStates(open, half, opposite, other)
-        );
+            offset.setOffset(facing);
 
-        offset.setOffset(opposite);
+            if (Couplings.isUsable(world, offset, player)) {
+              final BlockState mirror = world.getBlockState(offset);
+
+              if (block == mirror.getBlock() && TrapdoorHooks.includesStates(open, half, opposite, mirror)) {
+                Couplings.use(state, mirror, world, pos, offset.toImmutable(), player, hand, side, x, y, z, usageResult);
+              }
+            }
+
+            offset.setOffset(opposite);
+          }
+        }
       }
 
       TrapdoorHooks.USE_NEIGHBORS.set(true);
     }
   }
 
-  private static boolean includesStates(
-    final boolean open,
-    final BlockHalf half,
-    final Direction facing,
-    final BlockState state
-  ) {
+  private static boolean includesStates(final boolean open, final BlockHalf half, final Direction facing, final BlockState state) {
     return open != TrapdoorHooks.isOpen(state)
       && half == TrapdoorHooks.getHalf(state)
       && facing == TrapdoorHooks.getFacing(state);

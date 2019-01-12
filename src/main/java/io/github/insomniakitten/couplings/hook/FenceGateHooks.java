@@ -17,6 +17,7 @@
 package io.github.insomniakitten.couplings.hook;
 
 import io.github.insomniakitten.couplings.Couplings;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FenceGateBlock;
 import net.minecraft.block.HorizontalFacingBlock;
@@ -50,6 +51,7 @@ public final class FenceGateHooks {
 
       FenceGateHooks.USE_NEIGHBORS.set(false);
 
+      final Block block = state.getBlock();
       final boolean open = FenceGateHooks.isOpen(state);
       final Axis axis = FenceGateHooks.getAxis(state);
 
@@ -57,20 +59,20 @@ public final class FenceGateHooks {
         pos.down(Couplings.COUPLING_RANGE),
         pos.up(Couplings.COUPLING_RANGE)
       )) {
-        Couplings.useNeighbor(state, world, pos, offset, player, hand, side, x, y, z, usageResult,
-          (self, other) -> FenceGateHooks.includesStates(open, axis, other)
-        );
+        if (Couplings.isUsable(world, offset, player)) {
+          final BlockState other = world.getBlockState(offset);
+
+          if (block == other.getBlock() && FenceGateHooks.includesStates(open, axis, other)) {
+            Couplings.use(state, other, world, pos, offset, player, hand, side, x, y, z, usageResult);
+          }
+        }
       }
 
       FenceGateHooks.USE_NEIGHBORS.set(true);
     }
   }
 
-  private static boolean includesStates(
-    final boolean open,
-    final Axis axis,
-    final BlockState state
-  ) {
+  private static boolean includesStates(final boolean open, final Axis axis, final BlockState state) {
     return open != FenceGateHooks.isOpen(state) && axis == FenceGateHooks.getAxis(state);
   }
 
