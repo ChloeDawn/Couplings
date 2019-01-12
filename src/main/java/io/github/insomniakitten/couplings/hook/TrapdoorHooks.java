@@ -17,6 +17,7 @@
 package io.github.insomniakitten.couplings.hook;
 
 import io.github.insomniakitten.couplings.Couplings;
+import io.github.insomniakitten.couplings.CouplingsOptions;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.HorizontalFacingBlock;
@@ -46,22 +47,40 @@ public final class TrapdoorHooks {
     final float z,
     final boolean usageResult
   ) {
-    if (TrapdoorHooks.USE_NEIGHBORS.get()) {
-      if (player.isSneaking()) return; // todo config
+    if (!CouplingsOptions.getFeatures().areTrapdoorsEnabled()) return;
+    if (!TrapdoorHooks.USE_NEIGHBORS.get()) return;
+    if (player.isSneaking() && !CouplingsOptions.isSneakingIgnored()) return;
 
-      TrapdoorHooks.USE_NEIGHBORS.set(false);
+    TrapdoorHooks.USE_NEIGHBORS.set(false);
 
-      final Block block = state.getBlock();
-      final boolean open = TrapdoorHooks.isOpen(state);
-      final BlockHalf half = TrapdoorHooks.getHalf(state);
-      final Direction facing = TrapdoorHooks.getFacing(state);
-      final Direction opposite = facing.getOpposite();
+    final Block block = state.getBlock();
+    final boolean open = TrapdoorHooks.isOpen(state);
+    final BlockHalf half = TrapdoorHooks.getHalf(state);
+    final Direction facing = TrapdoorHooks.getFacing(state);
+    final Direction opposite = facing.getOpposite();
 
-      for (final BlockPos.Mutable offset : BlockPos.iterateBoxPositionsMutable(
-        pos.offset(facing.rotateYCounterclockwise(), Couplings.COUPLING_RANGE),
-        pos.offset(facing.rotateYClockwise(), Couplings.COUPLING_RANGE)
-      )) {
-        if (pos.equals(offset)) {
+    for (final BlockPos.Mutable offset : BlockPos.iterateBoxPositionsMutable(
+      pos.offset(facing.rotateYCounterclockwise(), CouplingsOptions.getCouplingRange()),
+      pos.offset(facing.rotateYClockwise(), CouplingsOptions.getCouplingRange())
+    )) {
+      if (pos.equals(offset)) {
+        offset.setOffset(facing);
+
+        if (Couplings.isUsable(world, offset, player)) {
+          final BlockState mirror = world.getBlockState(offset);
+
+          if (block == mirror.getBlock() && TrapdoorHooks.includesStates(open, half, opposite, mirror)) {
+            Couplings.use(state, mirror, world, pos, offset.toImmutable(), player, hand, side, x, y, z, usageResult);
+          }
+        }
+
+        offset.setOffset(opposite);
+      } else if (Couplings.isUsable(world, offset, player)) {
+        final BlockState other = world.getBlockState(offset);
+
+        if (block == other.getBlock() && TrapdoorHooks.includesStates(open, half, facing, other)) {
+          Couplings.use(state, other, world, pos, offset.toImmutable(), player, hand, side, x, y, z, usageResult);
+
           offset.setOffset(facing);
 
           if (Couplings.isUsable(world, offset, player)) {
@@ -73,29 +92,11 @@ public final class TrapdoorHooks {
           }
 
           offset.setOffset(opposite);
-        } else if (Couplings.isUsable(world, offset, player)) {
-          final BlockState other = world.getBlockState(offset);
-
-          if (block == other.getBlock() && TrapdoorHooks.includesStates(open, half, facing, other)) {
-            Couplings.use(state, other, world, pos, offset.toImmutable(), player, hand, side, x, y, z, usageResult);
-
-            offset.setOffset(facing);
-
-            if (Couplings.isUsable(world, offset, player)) {
-              final BlockState mirror = world.getBlockState(offset);
-
-              if (block == mirror.getBlock() && TrapdoorHooks.includesStates(open, half, opposite, mirror)) {
-                Couplings.use(state, mirror, world, pos, offset.toImmutable(), player, hand, side, x, y, z, usageResult);
-              }
-            }
-
-            offset.setOffset(opposite);
-          }
         }
       }
-
-      TrapdoorHooks.USE_NEIGHBORS.set(true);
     }
+
+    TrapdoorHooks.USE_NEIGHBORS.set(true);
   }
 
   private static boolean includesStates(final boolean open, final BlockHalf half, final Direction facing, final BlockState state) {

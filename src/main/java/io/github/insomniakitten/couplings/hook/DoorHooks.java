@@ -17,6 +17,7 @@
 package io.github.insomniakitten.couplings.hook;
 
 import io.github.insomniakitten.couplings.Couplings;
+import io.github.insomniakitten.couplings.CouplingsOptions;
 import io.github.insomniakitten.couplings.mixin.DoorInvoker;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -47,22 +48,23 @@ public final class DoorHooks {
     final float z,
     final boolean usageResult
   ) {
-    if (player.isSneaking()) return; // todo config
-    if (DoorHooks.USE_NEIGHBOR.get()) {
-      DoorHooks.USE_NEIGHBOR.set(false);
+    if (!CouplingsOptions.getFeatures().areDoorsEnabled()) return;
+    if (!DoorHooks.USE_NEIGHBOR.get()) return;
+    if (player.isSneaking() && !CouplingsOptions.isSneakingIgnored()) return;
 
-      final BlockPos offset = DoorHooks.getOtherDoor(state, pos);
+    DoorHooks.USE_NEIGHBOR.set(false);
 
-      if (Couplings.isUsable(world, offset, player)) {
-        final BlockState other = world.getBlockState(offset);
+    final BlockPos offset = DoorHooks.getOtherDoor(state, pos);
 
-        if (state.getBlock() == other.getBlock() && DoorHooks.areEquivalent(state, other)) {
-          Couplings.use(state, other, world, pos, offset, player, hand, side, x, y, z, usageResult);
-        }
+    if (Couplings.isUsable(world, offset, player)) {
+      final BlockState other = world.getBlockState(offset);
+
+      if (state.getBlock() == other.getBlock() && DoorHooks.areEquivalent(state, other)) {
+        Couplings.use(state, other, world, pos, offset, player, hand, side, x, y, z, usageResult);
       }
-
-      DoorHooks.USE_NEIGHBOR.set(true);
     }
+
+    DoorHooks.USE_NEIGHBOR.set(true);
   }
 
   public static void neighborUpdateCallback(

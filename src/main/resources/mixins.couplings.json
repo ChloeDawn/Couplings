@@ -4,13 +4,8 @@
   "compatibilityLevel": "JAVA_8",
   "target": "@environment(DEFAULT)",
   "refmap": "mixins.couplings.refmap.json",
+  "plugin": "io.github.insomniakitten.couplings.CouplingsMixins",
   "package": "io.github.insomniakitten.couplings.mixin",
-  "mixins": [
-    "DoorInvoker",
-    "DoorMixin",
-    "FenceGateMixin",
-    "TrapdoorMixin"
-  ],
   "injectors": {
     "defaultRequire": 1,
     "defaultGroup": "default",

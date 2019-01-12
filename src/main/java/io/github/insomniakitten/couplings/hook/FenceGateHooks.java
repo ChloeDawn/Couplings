@@ -17,6 +17,7 @@
 package io.github.insomniakitten.couplings.hook;
 
 import io.github.insomniakitten.couplings.Couplings;
+import io.github.insomniakitten.couplings.CouplingsOptions;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FenceGateBlock;
@@ -46,30 +47,29 @@ public final class FenceGateHooks {
     final float z,
     final boolean usageResult
   ) {
-    if (FenceGateHooks.USE_NEIGHBORS.get()) {
-      if (player.isSneaking()) return; // todo config
+    if (!CouplingsOptions.getFeatures().areFenceGatesEnabled()) return;
+    if (!FenceGateHooks.USE_NEIGHBORS.get()) return;
+    if (player.isSneaking() && !CouplingsOptions.isSneakingIgnored()) return;
 
-      FenceGateHooks.USE_NEIGHBORS.set(false);
+    FenceGateHooks.USE_NEIGHBORS.set(false);
 
-      final Block block = state.getBlock();
-      final boolean open = FenceGateHooks.isOpen(state);
-      final Axis axis = FenceGateHooks.getAxis(state);
+    final Block block = state.getBlock();
+    final boolean open = FenceGateHooks.isOpen(state);
+    final Axis axis = FenceGateHooks.getAxis(state);
 
-      for (final BlockPos.Mutable offset : BlockPos.iterateBoxPositionsMutable(
-        pos.down(Couplings.COUPLING_RANGE),
-        pos.up(Couplings.COUPLING_RANGE)
-      )) {
-        if (Couplings.isUsable(world, offset, player)) {
-          final BlockState other = world.getBlockState(offset);
+    for (final BlockPos.Mutable offset : BlockPos.iterateBoxPositionsMutable(
+      pos.down(CouplingsOptions.getCouplingRange()),
+      pos.up(CouplingsOptions.getCouplingRange())
+    )) {
+      if (Couplings.isUsable(world, offset, player)) {
+        final BlockState other = world.getBlockState(offset);
 
-          if (block == other.getBlock() && FenceGateHooks.includesStates(open, axis, other)) {
-            Couplings.use(state, other, world, pos, offset, player, hand, side, x, y, z, usageResult);
-          }
+        if (block == other.getBlock() && FenceGateHooks.includesStates(open, axis, other)) {
+          Couplings.use(state, other, world, pos, offset, player, hand, side, x, y, z, usageResult);
         }
       }
-
-      FenceGateHooks.USE_NEIGHBORS.set(true);
     }
+    FenceGateHooks.USE_NEIGHBORS.set(true);
   }
 
   private static boolean includesStates(final boolean open, final Axis axis, final BlockState state) {

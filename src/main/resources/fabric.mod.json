@@ -4,6 +4,7 @@
   "version": "@version@",
   "side": "universal",
   "license": "Apache 2.0",
+  "initializer": "io.github.insomniakitten.couplings.CouplingsOptions$Loader",
   "authors": [
     {
       "name": "InsomniaKitten",
