@@ -21,8 +21,8 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.FenceGateBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -39,10 +39,7 @@ final class FenceGateMixin {
         "Lnet/minecraft/util/math/BlockPos;" +
         "Lnet/minecraft/entity/player/PlayerEntity;" +
         "Lnet/minecraft/util/Hand;" +
-        "Lnet/minecraft/util/math/Direction;" +
-        "F" +
-        "F" +
-        "F" +
+        "Lnet/minecraft/util/hit/BlockHitResult;" +
       ")Z";
 
   private FenceGateMixin() {}
@@ -57,12 +54,9 @@ final class FenceGateMixin {
     final BlockPos pos,
     final PlayerEntity player,
     final Hand hand,
-    final Direction side,
-    final float x,
-    final float y,
-    final float z,
+    final BlockHitResult hit,
     final CallbackInfoReturnable<Boolean> cir
   ) {
-    FenceGateHooks.usageCallback(state, world, pos, player, hand, side, x, y, z, cir.getReturnValueZ());
+    FenceGateHooks.usageCallback(state, world, pos, player, hand, hit, cir.getReturnValueZ());
   }
 }

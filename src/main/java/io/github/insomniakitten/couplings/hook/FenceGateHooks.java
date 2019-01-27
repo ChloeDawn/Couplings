@@ -24,8 +24,8 @@ import net.minecraft.block.FenceGateBlock;
 import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Direction.Axis;
 import net.minecraft.world.World;
 
@@ -41,10 +41,7 @@ public final class FenceGateHooks {
     final BlockPos pos,
     final PlayerEntity player,
     final Hand hand,
-    final Direction side,
-    final float x,
-    final float y,
-    final float z,
+    final BlockHitResult hit,
     final boolean usageResult
   ) {
     if (!CouplingsOptions.getFeatures().areFenceGatesEnabled()) return;
@@ -57,7 +54,7 @@ public final class FenceGateHooks {
     final boolean open = FenceGateHooks.isOpen(state);
     final Axis axis = FenceGateHooks.getAxis(state);
 
-    for (final BlockPos.Mutable offset : BlockPos.iterateBoxPositionsMutable(
+    for (final BlockPos offset : BlockPos.iterateBoxPositions(
       pos.down(CouplingsOptions.getCouplingRange()),
       pos.up(CouplingsOptions.getCouplingRange())
     )) {
@@ -65,7 +62,7 @@ public final class FenceGateHooks {
         final BlockState other = world.getBlockState(offset);
 
         if (block == other.getBlock() && FenceGateHooks.includesStates(open, axis, other)) {
-          Couplings.use(state, other, world, pos, offset, player, hand, side, x, y, z, usageResult);
+          Couplings.use(state, other, world, hand, player, hit, offset, usageResult);
         }
       }
     }
@@ -77,10 +74,10 @@ public final class FenceGateHooks {
   }
 
   private static boolean isOpen(final BlockState state) {
-    return state.get(FenceGateBlock.field_11026);
+    return state.get(FenceGateBlock.OPEN);
   }
 
   private static Axis getAxis(final BlockState state) {
-    return state.get(HorizontalFacingBlock.field_11177).getAxis();
+    return state.get(HorizontalFacingBlock.FACING).getAxis();
   }
 }

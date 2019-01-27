@@ -25,6 +25,7 @@ import net.minecraft.block.TrapdoorBlock;
 import net.minecraft.block.enums.BlockHalf;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
@@ -41,10 +42,7 @@ public final class TrapdoorHooks {
     final BlockPos pos,
     final PlayerEntity player,
     final Hand hand,
-    final Direction side,
-    final float x,
-    final float y,
-    final float z,
+    final BlockHitResult hit,
     final boolean usageResult
   ) {
     if (!CouplingsOptions.getFeatures().areTrapdoorsEnabled()) return;
@@ -59,39 +57,39 @@ public final class TrapdoorHooks {
     final Direction facing = TrapdoorHooks.getFacing(state);
     final Direction opposite = facing.getOpposite();
 
-    for (final BlockPos.Mutable offset : BlockPos.iterateBoxPositionsMutable(
+    for (final BlockPos offset : BlockPos.iterateBoxPositions(
       pos.offset(facing.rotateYCounterclockwise(), CouplingsOptions.getCouplingRange()),
       pos.offset(facing.rotateYClockwise(), CouplingsOptions.getCouplingRange())
     )) {
       if (pos.equals(offset)) {
-        offset.setOffset(facing);
+        ((BlockPos.Mutable) offset).setOffset(facing);
 
         if (Couplings.isUsable(world, offset, player)) {
           final BlockState mirror = world.getBlockState(offset);
 
           if (block == mirror.getBlock() && TrapdoorHooks.includesStates(open, half, opposite, mirror)) {
-            Couplings.use(state, mirror, world, pos, offset.toImmutable(), player, hand, side, x, y, z, usageResult);
+            Couplings.use(state, mirror, world, hand, player, hit, offset.toImmutable(), usageResult);
           }
         }
 
-        offset.setOffset(opposite);
+        ((BlockPos.Mutable) offset).setOffset(opposite);
       } else if (Couplings.isUsable(world, offset, player)) {
         final BlockState other = world.getBlockState(offset);
 
         if (block == other.getBlock() && TrapdoorHooks.includesStates(open, half, facing, other)) {
-          Couplings.use(state, other, world, pos, offset.toImmutable(), player, hand, side, x, y, z, usageResult);
+          Couplings.use(state, other, world, hand, player, hit, offset.toImmutable(), usageResult);
 
-          offset.setOffset(facing);
+          ((BlockPos.Mutable) offset).setOffset(facing);
 
           if (Couplings.isUsable(world, offset, player)) {
             final BlockState mirror = world.getBlockState(offset);
 
             if (block == mirror.getBlock() && TrapdoorHooks.includesStates(open, half, opposite, mirror)) {
-              Couplings.use(state, mirror, world, pos, offset.toImmutable(), player, hand, side, x, y, z, usageResult);
+              Couplings.use(state, mirror, world, hand, player, hit, offset.toImmutable(), usageResult);
             }
           }
 
-          offset.setOffset(opposite);
+          ((BlockPos.Mutable) offset).setOffset(opposite);
         }
       }
     }
@@ -106,14 +104,14 @@ public final class TrapdoorHooks {
   }
 
   private static boolean isOpen(final BlockState state) {
-    return state.get(TrapdoorBlock.field_11631);
+    return state.get(TrapdoorBlock.OPEN);
   }
 
   private static Direction getFacing(final BlockState state) {
-    return state.get(HorizontalFacingBlock.field_11177);
+    return state.get(HorizontalFacingBlock.FACING);
   }
 
   private static BlockHalf getHalf(final BlockState state) {
-    return state.get(TrapdoorBlock.field_11625);
+    return state.get(TrapdoorBlock.BLOCK_HALF);
   }
 }

@@ -5,8 +5,8 @@ import net.fabricmc.loader.launch.knot.Knot;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,7 +21,7 @@ public final class Couplings {
   public static boolean isUsable(final World world, final BlockPos pos, final PlayerEntity player) {
     if (!player.canModifyWorld()) {
       if (Knot.getLauncher().isDevelopment()) {
-        Couplings.LOGGER.warn("Skipping usage as world modification is disallowed for user ", player);
+        Couplings.LOGGER.warn("Skipping usage as world modification is disallowed for user {}", player);
       }
 
       return false;
@@ -50,21 +50,18 @@ public final class Couplings {
     final BlockState state,
     final BlockState other,
     final World world,
-    final BlockPos pos,
-    final BlockPos offset,
-    final PlayerEntity player,
     final Hand hand,
-    final Direction side,
-    final float x,
-    final float y,
-    final float z,
+    final PlayerEntity player,
+    final BlockHitResult origin,
+    final BlockPos offset,
     final boolean usageResult
   ) {
-    final boolean otherUsageResult = other.activate(world, offset, player, hand, side, x, y, z);
+    final UseContext ctx = UseContext.of(state, other, world, player, hand, origin, offset);
+    final boolean otherUsageResult = other.activate(world, player, hand, ctx.targetHit());
 
     if (usageResult != otherUsageResult) {
-      final String result1 = Couplings.toString(state, world, pos, player, hand, side, x, y, z, usageResult);
-      final String result2 = Couplings.toString(other, world, offset, player, hand, side, x, y, z, otherUsageResult);
+      final String result1 = Couplings.toString(world, player, hand, origin, usageResult);
+      final String result2 = Couplings.toString(world, player, hand, ctx.targetHit(), usageResult);
 
       if (Knot.getLauncher().isDevelopment()) {
         throw new IllegalStateException("Usage result mismatch between " + result1 + " and " + result2);
@@ -75,27 +72,17 @@ public final class Couplings {
   }
 
   private static String toString(
-    final BlockState state,
     final World world,
-    final BlockPos pos,
     final PlayerEntity player,
     final Hand hand,
-    final Direction side,
-    final float x,
-    final float y,
-    final float z,
+    final BlockHitResult hit,
     final boolean result
   ) {
     return MoreObjects.toStringHelper(result ? "Success" : "Failure")
-      .add("state", state)
       .add("world", world)
-      .add("pos", pos)
       .add("player", player)
       .add("hand", hand)
-      .add("side", side)
-      .add("x", x)
-      .add("y", y)
-      .add("z", z)
+      .add("hit", hit)
       .toString();
   }
 }

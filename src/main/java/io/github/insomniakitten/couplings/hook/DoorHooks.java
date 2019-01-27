@@ -26,6 +26,7 @@ import net.minecraft.block.enums.DoorHinge;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
@@ -42,10 +43,7 @@ public final class DoorHooks {
     final BlockPos pos,
     final PlayerEntity player,
     final Hand hand,
-    final Direction side,
-    final float x,
-    final float y,
-    final float z,
+    final BlockHitResult hit,
     final boolean usageResult
   ) {
     if (!CouplingsOptions.getFeatures().areDoorsEnabled()) return;
@@ -60,7 +58,7 @@ public final class DoorHooks {
       final BlockState other = world.getBlockState(offset);
 
       if (state.getBlock() == other.getBlock() && DoorHooks.areEquivalent(state, other)) {
-        Couplings.use(state, other, world, pos, offset, player, hand, side, x, y, z, usageResult);
+        Couplings.use(state, other, world, hand, player, hit, offset, usageResult);
       }
     }
 
@@ -81,8 +79,8 @@ public final class DoorHooks {
       final BlockState other = world.getBlockState(offset);
 
       if (state.getBlock() == other.getBlock()) {
-        if (DoorHooks.areEquivalent(state, other.with(DoorBlock.field_10945, isPowered))) {
-          world.setBlockState(offset, other.with(DoorBlock.field_10945, isPowered), 2);
+        if (DoorHooks.areEquivalent(state, other.with(DoorBlock.POWERED, isPowered))) {
+          world.setBlockState(offset, other.with(DoorBlock.POWERED, isPowered), 2);
           DoorHooks.fireWorldEvent(other, world, offset, isPowered);
         }
       }
@@ -101,8 +99,8 @@ public final class DoorHooks {
   }
 
   private static BlockPos getOtherDoor(final BlockState self, final BlockPos origin) {
-    final Direction facing = self.get(DoorBlock.field_10938);
-    final boolean left = DoorHinge.LEFT == self.get(DoorBlock.field_10941);
+    final Direction facing = self.get(DoorBlock.FACING);
+    final boolean left = DoorHinge.LEFT == self.get(DoorBlock.HINGE);
     return origin.offset(left ? facing.rotateYClockwise() : facing.rotateYCounterclockwise());
   }
 
@@ -115,23 +113,23 @@ public final class DoorHooks {
   }
 
   private static Direction getFacing(final BlockState state) {
-    return state.get(DoorBlock.field_10938);
+    return state.get(DoorBlock.FACING);
   }
 
   private static DoubleBlockHalf getHalf(final BlockState state) {
-    return state.get(DoorBlock.field_10946);
+    return state.get(DoorBlock.HALF);
   }
 
   private static boolean isOpen(final BlockState state) {
-    return state.get(DoorBlock.field_10945);
+    return state.get(DoorBlock.OPEN);
   }
 
   private static boolean isPowered(final BlockState state) {
-    return state.get(DoorBlock.field_10940);
+    return state.get(DoorBlock.POWERED);
   }
 
   private static DoorHinge getHinge(final BlockState state) {
-    return state.get(DoorBlock.field_10941);
+    return state.get(DoorBlock.HINGE);
   }
 
   private static void fireWorldEvent(
@@ -142,7 +140,7 @@ public final class DoorHooks {
   ) {
     final Block block = state.getBlock();
     if (block instanceof DoorInvoker) {
-      ((DoorInvoker) block).fireWorldEvent(world, pos, isPowered);
+      ((DoorInvoker) block).playUseSound(world, pos, isPowered);
     } else {
       throw new IllegalArgumentException("Not invokable: " + block);
     }
