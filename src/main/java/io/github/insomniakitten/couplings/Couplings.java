@@ -60,8 +60,8 @@ public final class Couplings {
     final boolean otherUsageResult = other.activate(world, player, hand, ctx.targetHit());
 
     if (usageResult != otherUsageResult) {
-      final String result1 = Couplings.toString(world, player, hand, origin, usageResult);
-      final String result2 = Couplings.toString(world, player, hand, ctx.targetHit(), usageResult);
+      final String result1 = Couplings.toString(world, player, hand, state, origin, usageResult);
+      final String result2 = Couplings.toString(world, player, hand, other, ctx.targetHit(), usageResult);
 
       if (Knot.getLauncher().isDevelopment()) {
         throw new IllegalStateException("Usage result mismatch between " + result1 + " and " + result2);
@@ -75,6 +75,7 @@ public final class Couplings {
     final World world,
     final PlayerEntity player,
     final Hand hand,
+    final BlockState state,
     final BlockHitResult hit,
     final boolean result
   ) {
@@ -82,6 +83,7 @@ public final class Couplings {
       .add("world", world)
       .add("player", player)
       .add("hand", hand)
+      .add("state", state)
       .add("hit", hit)
       .toString();
   }
