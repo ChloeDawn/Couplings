@@ -73,14 +73,15 @@ public final class DoorHooks {
     final BlockPos neighborPos,
     final boolean isPowered
   ) {
-    // todo config
+    // todo redstone-specific config
+    if (!CouplingsOptions.getFeatures().areDoorsEnabled()) return;
     if (!isPowered && DoorHooks.isPowered(state) || DoorHooks.isSufficientlyPowered(state, world, pos)) {
       final BlockPos offset = DoorHooks.getOtherDoor(state, pos);
       final BlockState other = world.getBlockState(offset);
 
       if (state.getBlock() == other.getBlock()) {
-        if (DoorHooks.areEquivalent(state, other.with(DoorBlock.POWERED, isPowered))) {
-          world.setBlockState(offset, other.with(DoorBlock.POWERED, isPowered), 2);
+        if (DoorHooks.areEquivalent(state, other.with(DoorBlock.OPEN, isPowered))) {
+          world.setBlockState(offset, other.with(DoorBlock.OPEN, isPowered), 2);
           DoorHooks.fireWorldEvent(other, world, offset, isPowered);
         }
       }
