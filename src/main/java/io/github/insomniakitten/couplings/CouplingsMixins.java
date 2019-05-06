@@ -29,18 +29,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BooleanSupplier;
 
 public final class CouplingsMixins implements IMixinConfigPlugin {
-  private static final String PACKAGE =
-    "io.github.insomniakitten.couplings.mixin";
-
-  private static final ImmutableList<String> MIXINS = ImmutableList.of(
-    "DoorInvoker", "DoorMixin", "FenceGateMixin", "TrapdoorMixin"
-  );
+  private static final String PACKAGE = "io.github.insomniakitten.couplings.mixin";
 
   private static final ImmutableMap<String, BooleanSupplier> MIXIN_STATES = ImmutableMap.of(
-    CouplingsMixins.PACKAGE + ".DoorInvoker", () -> CouplingsOptions.getFeatures().areDoorsEnabled(),
-    CouplingsMixins.PACKAGE + ".DoorMixin", () -> CouplingsOptions.getFeatures().areDoorsEnabled(),
-    CouplingsMixins.PACKAGE + ".FenceGateMixin", () -> CouplingsOptions.getFeatures().areFenceGatesEnabled(),
-    CouplingsMixins.PACKAGE + ".TrapdoorMixin", () -> CouplingsOptions.getFeatures().areTrapdoorsEnabled()
+    CouplingsMixins.PACKAGE + ".DoorInvoker", Couplings::areDoorsEnabled,
+    CouplingsMixins.PACKAGE + ".DoorMixin", Couplings::areDoorsEnabled,
+    CouplingsMixins.PACKAGE + ".FenceGateMixin", Couplings::areFenceGatesEnabled,
+    CouplingsMixins.PACKAGE + ".TrapdoorMixin", Couplings::areTrapdoorsEnabled
   );
 
   private static final AtomicBoolean CONSTRUCTED = new AtomicBoolean();
@@ -67,7 +62,9 @@ public final class CouplingsMixins implements IMixinConfigPlugin {
   @Override
   public boolean shouldApplyMixin(final String target, final String mixin) {
     @Nullable final BooleanSupplier state = CouplingsMixins.MIXIN_STATES.get(mixin);
-    if (state == null) throw new IllegalArgumentException(mixin);
+    if (state == null) {
+      throw new IllegalArgumentException(mixin);
+    }
     return state.getAsBoolean();
   }
 
@@ -78,7 +75,7 @@ public final class CouplingsMixins implements IMixinConfigPlugin {
 
   @Override
   public List<String> getMixins() {
-    return CouplingsMixins.MIXINS;
+    return ImmutableList.of("DoorInvoker", "DoorMixin", "FenceGateMixin", "TrapdoorMixin");
   }
 
   @Override

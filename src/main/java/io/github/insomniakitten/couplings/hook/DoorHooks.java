@@ -17,7 +17,6 @@
 package io.github.insomniakitten.couplings.hook;
 
 import io.github.insomniakitten.couplings.Couplings;
-import io.github.insomniakitten.couplings.CouplingsOptions;
 import io.github.insomniakitten.couplings.mixin.DoorInvoker;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -32,53 +31,33 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 public final class DoorHooks {
-  private static final ThreadLocal<Boolean> USE_NEIGHBOR =
-    ThreadLocal.withInitial(() -> true);
+  private static final ThreadLocal<Boolean> USE_NEIGHBOR = ThreadLocal.withInitial(() -> true);
 
-  private DoorHooks() {}
+  private DoorHooks() {
+    throw new UnsupportedOperationException();
+  }
 
-  public static void usageCallback(
-    final BlockState state,
-    final World world,
-    final BlockPos pos,
-    final PlayerEntity player,
-    final Hand hand,
-    final BlockHitResult hit,
-    final boolean usageResult
-  ) {
-    if (!CouplingsOptions.getFeatures().areDoorsEnabled()) return;
+  public static void usageCallback(final BlockState state, final World world, final BlockPos pos, final PlayerEntity player, final Hand hand, final BlockHitResult hit, final boolean usageResult) {
+    if (!Couplings.areDoorsEnabled()) return;
     if (!DoorHooks.USE_NEIGHBOR.get()) return;
-    if (player.isSneaking() && !CouplingsOptions.isSneakingIgnored()) return;
-
+    if (player.isSneaking() && Couplings.requiresNoSneaking()) return;
     DoorHooks.USE_NEIGHBOR.set(false);
-
     final BlockPos offset = DoorHooks.getOtherDoor(state, pos);
-
     if (Couplings.isUsable(world, offset, player)) {
       final BlockState other = world.getBlockState(offset);
-
       if (state.getBlock() == other.getBlock() && DoorHooks.areEquivalent(state, other)) {
         Couplings.use(state, other, world, hand, player, hit, offset, usageResult);
       }
     }
-
     DoorHooks.USE_NEIGHBOR.set(true);
   }
 
-  public static void neighborUpdateCallback(
-    final BlockState state,
-    final World world,
-    final BlockPos pos,
-    final Block block,
-    final BlockPos neighborPos,
-    final boolean isPowered
-  ) {
+  public static void neighborUpdateCallback(final BlockState state, final World world, final BlockPos pos, final Block block, final BlockPos neighborPos, final boolean isPowered) {
     // todo redstone-specific config
-    if (!CouplingsOptions.getFeatures().areDoorsEnabled()) return;
-    if (!isPowered && DoorHooks.isPowered(state) || DoorHooks.isSufficientlyPowered(state, world, pos)) {
+    if (!Couplings.areDoorsEnabled()) return;
+    if (!isPowered && state.get(DoorBlock.POWERED) || DoorHooks.isSufficientlyPowered(state, world, pos)) {
       final BlockPos offset = DoorHooks.getOtherDoor(state, pos);
       final BlockState other = world.getBlockState(offset);
-
       if (state.getBlock() == other.getBlock()) {
         if (DoorHooks.areEquivalent(state, other.with(DoorBlock.OPEN, isPowered))) {
           world.setBlockState(offset, other.with(DoorBlock.OPEN, isPowered), 2);
@@ -89,14 +68,14 @@ public final class DoorHooks {
   }
 
   private static boolean areEquivalent(final BlockState self, final BlockState other) {
-    return DoorHooks.getFacing(self) == DoorHooks.getFacing(other)
-      && DoorHooks.getHalf(self) == DoorHooks.getHalf(other)
-      && DoorHooks.isOpen(self) != DoorHooks.isOpen(other)
-      && DoorHooks.getHinge(self) != DoorHooks.getHinge(other);
+    return self.get(DoorBlock.FACING) == other.get(DoorBlock.FACING)
+      && self.get(DoorBlock.HALF) == other.get(DoorBlock.HALF)
+      && (boolean) self.get(DoorBlock.OPEN) != other.get(DoorBlock.OPEN)
+      && self.get(DoorBlock.HINGE) != other.get(DoorBlock.HINGE);
   }
 
   private static BlockPos getOtherHalf(final BlockState state, final BlockPos pos) {
-    return pos.offset(DoorHooks.getHalf(state) == DoubleBlockHalf.LOWER ? Direction.UP : Direction.DOWN);
+    return pos.offset(state.get(DoorBlock.HALF) == DoubleBlockHalf.LOWER ? Direction.UP : Direction.DOWN);
   }
 
   private static BlockPos getOtherDoor(final BlockState self, final BlockPos origin) {
@@ -113,37 +92,11 @@ public final class DoorHooks {
     return power > 7;
   }
 
-  private static Direction getFacing(final BlockState state) {
-    return state.get(DoorBlock.FACING);
-  }
-
-  private static DoubleBlockHalf getHalf(final BlockState state) {
-    return state.get(DoorBlock.HALF);
-  }
-
-  private static boolean isOpen(final BlockState state) {
-    return state.get(DoorBlock.OPEN);
-  }
-
-  private static boolean isPowered(final BlockState state) {
-    return state.get(DoorBlock.POWERED);
-  }
-
-  private static DoorHinge getHinge(final BlockState state) {
-    return state.get(DoorBlock.HINGE);
-  }
-
-  private static void fireWorldEvent(
-    final BlockState state,
-    final World world,
-    final BlockPos pos,
-    final boolean isPowered
-  ) {
+  private static void fireWorldEvent(final BlockState state, final World world, final BlockPos pos, final boolean isPowered) {
     final Block block = state.getBlock();
-    if (block instanceof DoorInvoker) {
-      ((DoorInvoker) block).playUseSound(world, pos, isPowered);
-    } else {
+    if (!(block instanceof DoorInvoker)) {
       throw new IllegalArgumentException("Not invokable: " + block);
     }
+    ((DoorInvoker) block).playUseSound(world, pos, isPowered);
   }
 }

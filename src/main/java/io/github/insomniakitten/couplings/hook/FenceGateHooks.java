@@ -17,11 +17,9 @@
 package io.github.insomniakitten.couplings.hook;
 
 import io.github.insomniakitten.couplings.Couplings;
-import io.github.insomniakitten.couplings.CouplingsOptions;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FenceGateBlock;
-import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -30,33 +28,23 @@ import net.minecraft.util.math.Direction.Axis;
 import net.minecraft.world.World;
 
 public final class FenceGateHooks {
-  private static final ThreadLocal<Boolean> USE_NEIGHBORS =
-    ThreadLocal.withInitial(() -> true);
+  private static final ThreadLocal<Boolean> USE_NEIGHBORS = ThreadLocal.withInitial(() -> true);
 
-  private FenceGateHooks() {}
+  private FenceGateHooks() {
+    throw new UnsupportedOperationException();
+  }
 
-  public static void usageCallback(
-    final BlockState state,
-    final World world,
-    final BlockPos pos,
-    final PlayerEntity player,
-    final Hand hand,
-    final BlockHitResult hit,
-    final boolean usageResult
-  ) {
-    if (!CouplingsOptions.getFeatures().areFenceGatesEnabled()) return;
+  public static void usageCallback(final BlockState state, final World world, final BlockPos pos, final PlayerEntity player, final Hand hand, final BlockHitResult hit, final boolean usageResult) {
+    if (!Couplings.areFenceGatesEnabled()) return;
     if (!FenceGateHooks.USE_NEIGHBORS.get()) return;
-    if (player.isSneaking() && !CouplingsOptions.isSneakingIgnored()) return;
-
+    if (player.isSneaking() && Couplings.requiresNoSneaking()) return;
     FenceGateHooks.USE_NEIGHBORS.set(false);
-
     final Block block = state.getBlock();
-    final boolean open = FenceGateHooks.isOpen(state);
-    final Axis axis = FenceGateHooks.getAxis(state);
-
-    for (final BlockPos offset : BlockPos.iterateBoxPositions(
-      pos.down(CouplingsOptions.getCouplingRange()),
-      pos.up(CouplingsOptions.getCouplingRange())
+    final boolean open = state.get(FenceGateBlock.OPEN);
+    final Axis axis = state.get(FenceGateBlock.FACING).getAxis();
+    for (final BlockPos offset : BlockPos.iterate(
+      pos.down(Couplings.getCouplingRange()),
+      pos.up(Couplings.getCouplingRange())
     )) {
       if (Couplings.isUsable(world, offset, player)) {
         final BlockState other = world.getBlockState(offset);
@@ -70,14 +58,6 @@ public final class FenceGateHooks {
   }
 
   private static boolean includesStates(final boolean open, final Axis axis, final BlockState state) {
-    return open != FenceGateHooks.isOpen(state) && axis == FenceGateHooks.getAxis(state);
-  }
-
-  private static boolean isOpen(final BlockState state) {
-    return state.get(FenceGateBlock.OPEN);
-  }
-
-  private static Axis getAxis(final BlockState state) {
-    return state.get(HorizontalFacingBlock.FACING).getAxis();
+    return open != state.get(FenceGateBlock.OPEN) && axis == state.get(FenceGateBlock.FACING).getAxis();
   }
 }

@@ -30,37 +30,13 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(TrapdoorBlock.class)
-final class TrapdoorMixin {
-  private static final String ACTIVATE =
-    "Lnet/minecraft/block/TrapdoorBlock;" +
-      "activate(" +
-        "Lnet/minecraft/block/BlockState;" +
-        "Lnet/minecraft/world/World;" +
-        "Lnet/minecraft/util/math/BlockPos;" +
-        "Lnet/minecraft/entity/player/PlayerEntity;" +
-        "Lnet/minecraft/util/Hand;" +
-        "Lnet/minecraft/util/hit/BlockHitResult;" +
-      ")Z";
+abstract class TrapdoorMixin {
+  private TrapdoorMixin() {
+    throw new AssertionError();
+  }
 
-  private TrapdoorMixin() {}
-
-  @Inject(
-    method = TrapdoorMixin.ACTIVATE,
-    at = @At(
-      value = "RETURN",
-      ordinal = 1
-    ),
-    allow = 1
-  )
-  private void coupled$use(
-    final BlockState state,
-    final World world,
-    final BlockPos pos,
-    final PlayerEntity player,
-    final Hand hand,
-    final BlockHitResult hit,
-    final CallbackInfoReturnable<Boolean> cir
-  ) {
+  @Inject(method = "activate", at = @At(value = "RETURN", ordinal = 1), allow = 1)
+  private void couplings$use(final BlockState state, final World world, final BlockPos pos, final PlayerEntity player, final Hand hand, final BlockHitResult hit, final CallbackInfoReturnable<Boolean> cir) {
     TrapdoorHooks.usageCallback(state, world, pos, player, hand, hit, cir.getReturnValueZ());
   }
 }

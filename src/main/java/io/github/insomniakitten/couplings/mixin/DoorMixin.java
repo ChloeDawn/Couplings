@@ -34,76 +34,18 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(DoorBlock.class)
-final class DoorMixin {
-  private static final String ACTIVATE =
-    "Lnet/minecraft/block/DoorBlock;" +
-      "activate(" +
-        "Lnet/minecraft/block/BlockState;" +
-        "Lnet/minecraft/world/World;" +
-        "Lnet/minecraft/util/math/BlockPos;" +
-        "Lnet/minecraft/entity/player/PlayerEntity;" +
-        "Lnet/minecraft/util/Hand;" +
-        "Lnet/minecraft/util/hit/BlockHitResult;" +
-      ")Z";
+abstract class DoorMixin {
+  private DoorMixin() {
+    throw new AssertionError();
+  }
 
-  private static final String NEIGHBOR_UPDATE =
-    "Lnet/minecraft/block/DoorBlock;" +
-      "neighborUpdate(" +
-        "Lnet/minecraft/block/BlockState;" +
-        "Lnet/minecraft/world/World;" +
-        "Lnet/minecraft/util/math/BlockPos;" +
-        "Lnet/minecraft/block/Block;" +
-        "Lnet/minecraft/util/math/BlockPos;" +
-      ")V";
-
-  private static final String SET_BLOCK_STATE =
-    "Lnet/minecraft/world/World;" +
-      "setBlockState(" +
-        "Lnet/minecraft/util/math/BlockPos;" +
-        "Lnet/minecraft/block/BlockState;" +
-        "I" +
-      ")Z";
-
-  private DoorMixin() {}
-
-  @Inject(
-    method = DoorMixin.ACTIVATE,
-    at = @At(
-      value = "RETURN",
-      ordinal = 1
-    ),
-    allow = 1
-  )
-  private void coupled$use(
-    final BlockState state,
-    final World world,
-    final BlockPos pos,
-    final PlayerEntity player,
-    final Hand hand,
-    final BlockHitResult hit,
-    final CallbackInfoReturnable<Boolean> cir
-  ) {
+  @Inject(method = "activate", at = @At(value = "RETURN", ordinal = 1), allow = 1)
+  private void couplings$use(final BlockState state, final World world, final BlockPos pos, final PlayerEntity player, final Hand hand, final BlockHitResult hit, final CallbackInfoReturnable<Boolean> cir) {
     DoorHooks.usageCallback(state, world, pos, player, hand, hit, cir.getReturnValueZ());
   }
 
-  @Inject(
-    method = DoorMixin.NEIGHBOR_UPDATE,
-    at = @At(
-      value = "INVOKE",
-      target = DoorMixin.SET_BLOCK_STATE,
-      shift = Shift.AFTER
-    ),
-    locals = LocalCapture.CAPTURE_FAILHARD
-  )
-  private void coupled$neighborUpdated(
-    final BlockState state,
-    final World world,
-    final BlockPos pos,
-    final Block block,
-    final BlockPos neighborPos,
-    final CallbackInfo ci,
-    final boolean isPowered
-  ) {
+  @Inject(method = "neighborUpdate", at = @At(value = "INVOKE", target = "setBlockState", shift = Shift.AFTER), locals = LocalCapture.CAPTURE_FAILHARD)
+  private void couplings$neighborUpdated(final BlockState state, final World world, final BlockPos pos, final Block block, final BlockPos neighborPos, final boolean z, final CallbackInfo ci, final boolean isPowered) {
     DoorHooks.neighborUpdateCallback(state, world, pos, block, neighborPos, isPowered);
   }
 }

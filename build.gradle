@@ -1,37 +1,90 @@
-import org.apache.tools.ant.filters.ReplaceTokens
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
 
 buildscript {
   repositories {
-    jcenter()
+    mavenCentral()
     maven {
       name = 'fabricmc.net'
       url = 'https://maven.fabricmc.net'
     }
+    maven {
+      name = 'files.minecraftforge.net'
+      url = 'https://files.minecraftforge.net/maven'
+    }
+    maven {
+      name = 'jitpack.io'
+      url = 'https://jitpack.io'
+    }
   }
   dependencies {
-    classpath 'net.fabricmc:fabric-loom:0.2.0-SNAPSHOT'
+    classpath "io.github.Chocohead:fabric-loom:$loom"
   }
 }
 
+apply plugin: 'java'
 apply plugin: 'fabric-loom'
 
-archivesBaseName = 'Couplings'
-group = 'io.github.insomniakitten'
-version = '0.3.1'
+archivesBaseName = rootProject.name
+group = 'io.github.sleeplessdevelopment'
+version = mod
 sourceCompatibility = 1.8
 
 minecraft {
-  // todo Determine why this can't be inferred by Loom
-  refmapName = 'mixins.couplings.refmap.json'
+  refmapName = 'mixins/couplings/refmap.json'
+}
+
+repositories {
+  maven {
+    name = 'tehnut.info'
+    url = 'https://tehnut.info/maven'
+  }
+  maven {
+    name = 'projectlombok.org/edge-releases'
+    url = 'https://projectlombok.org/edge-releases'
+  }
 }
 
 dependencies {
-  minecraft 'com.mojang:minecraft:19w04b'
-  mappings 'net.fabricmc:yarn:19w04b.2'
-  modCompile 'net.fabricmc:fabric-loader:0.3.4.104'
-  implementation 'com.google.code.findbugs:jsr305:3.0.2'
+  minecraft "com.mojang:minecraft:$game"
+  mappings "net.fabricmc:yarn:$game+$mappings:enigma@zip"
+  modCompile "net.fabricmc:fabric-loader:$loader"
+  implementation "net.fabricmc:yarn:$game+$mappings"
+  implementation "com.google.code.findbugs:jsr305:$findbugs"
+  implementation "org.projectlombok:lombok:$lombok"
+  annotationProcessor "org.projectlombok:lombok:$lombok"
 }
 
 processResources {
-  filter ReplaceTokens, tokens: [version: project.version]
+  def metadata = [
+    'fabric.mod.json', 'pack.mcmeta',
+    'mixins/couplings/mixins.server.json'
+  ]
+  sourceSets.main.resources.srcDirs.with {
+    from(it) {
+      include metadata
+      expand version: version, refmap: minecraft.refmapName
+    }
+    from(it) {
+      exclude metadata
+    }
+  }
+  doLast {
+    fileTree(dir: outputs.files.asPath, include: [
+      '**/*.json', '**/*.mcmeta'
+    ]).each {
+      it.text = JsonOutput.toJson(new JsonSlurper().parse(it))
+    }
+  }
+}
+
+tasks.withType(JavaCompile) {
+  options.compilerArgs += [
+    '-Xlint:all',
+    '-XprintRounds',
+    '-XprintProcessorInfo',
+    '-encoding', 'UTF-8',
+    '-Xmaxerrs', Integer.MAX_VALUE,
+    '-Xmaxwarns', Integer.MAX_VALUE
+  ]
 }

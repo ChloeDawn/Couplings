@@ -25,9 +25,5 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 @Mixin(DoorBlock.class)
 public interface DoorInvoker {
   @Invoker("playOpenCloseSound")
-  void playUseSound(
-    final World world,
-    final BlockPos pos,
-    final boolean isPowered
-  );
+  void playUseSound(final World world, final BlockPos pos, final boolean isPowered);
 }

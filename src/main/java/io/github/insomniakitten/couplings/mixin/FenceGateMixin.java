@@ -30,33 +30,13 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(FenceGateBlock.class)
-final class FenceGateMixin {
-  private static final String ACTIVATE =
-    "Lnet/minecraft/block/FenceGateBlock;" +
-      "activate(" +
-        "Lnet/minecraft/block/BlockState;" +
-        "Lnet/minecraft/world/World;" +
-        "Lnet/minecraft/util/math/BlockPos;" +
-        "Lnet/minecraft/entity/player/PlayerEntity;" +
-        "Lnet/minecraft/util/Hand;" +
-        "Lnet/minecraft/util/hit/BlockHitResult;" +
-      ")Z";
+abstract class FenceGateMixin {
+  private FenceGateMixin() {
+    throw new AssertionError();
+  }
 
-  private FenceGateMixin() {}
-
-  @Inject(
-    method = FenceGateMixin.ACTIVATE,
-    at = @At("RETURN")
-  )
-  private void coupled$use(
-    final BlockState state,
-    final World world,
-    final BlockPos pos,
-    final PlayerEntity player,
-    final Hand hand,
-    final BlockHitResult hit,
-    final CallbackInfoReturnable<Boolean> cir
-  ) {
+  @Inject(method = "activate", at = @At("RETURN"))
+  private void couplings$use(final BlockState state, final World world, final BlockPos pos, final PlayerEntity player, final Hand hand, final BlockHitResult hit, final CallbackInfoReturnable<Boolean> cir) {
     FenceGateHooks.usageCallback(state, world, pos, player, hand, hit, cir.getReturnValueZ());
   }
 }

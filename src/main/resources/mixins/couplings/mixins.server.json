@@ -3,7 +3,7 @@
   "minVersion": "0.7.11",
   "compatibilityLevel": "JAVA_8",
   "target": "@environment(DEFAULT)",
-  "refmap": "mixins.couplings.refmap.json",
+  "refmap": "$refmap",
   "plugin": "io.github.insomniakitten.couplings.CouplingsMixins",
   "package": "io.github.insomniakitten.couplings.mixin",
   "injectors": {
