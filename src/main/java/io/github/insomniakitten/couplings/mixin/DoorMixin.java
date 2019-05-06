@@ -44,7 +44,7 @@ abstract class DoorMixin {
     DoorHooks.usageCallback(state, world, pos, player, hand, hit, cir.getReturnValueZ());
   }
 
-  @Inject(method = "neighborUpdate", at = @At(value = "INVOKE", target = "setBlockState", shift = Shift.AFTER), locals = LocalCapture.CAPTURE_FAILHARD)
+  @Inject(method = "neighborUpdate", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;setBlockState(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;I)Z", shift = Shift.AFTER), locals = LocalCapture.CAPTURE_FAILHARD)
   private void couplings$neighborUpdated(final BlockState state, final World world, final BlockPos pos, final Block block, final BlockPos neighborPos, final boolean z, final CallbackInfo ci, final boolean isPowered) {
     DoorHooks.neighborUpdateCallback(state, world, pos, block, neighborPos, isPowered);
   }
