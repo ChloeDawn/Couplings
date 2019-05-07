@@ -3,6 +3,7 @@ package io.github.insomniakitten.couplings;
 import com.google.common.base.MoreObjects;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.annotations.SerializedName;
 import lombok.SneakyThrows;
 import lombok.Value;
@@ -18,9 +19,11 @@ import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.file.Path;
 
 public final class Couplings {
@@ -32,7 +35,7 @@ public final class Couplings {
   }
 
   @Deprecated
-  @SneakyThrows
+  @SneakyThrows(IOException.class)
   public static void loadOptions() {
     final Path configs = FabricLoader.getInstance().getConfigDirectory().toPath();
     final File config = configs.resolve("couplings.json").toFile();
@@ -115,8 +118,13 @@ public final class Couplings {
     @SerializedName("enabled_features")
     private final Features enabledFeatures;
 
+    @Nullable
     private static Options fromJson(final FileReader reader) {
-      return Options.GSON.fromJson(reader, Options.class);
+      try {
+        return Options.GSON.fromJson(reader, Options.class);
+      } catch (final JsonSyntaxException e) {
+        return null;
+      }
     }
 
     private static String toJson() {
