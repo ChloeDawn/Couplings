@@ -25,7 +25,6 @@ import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BooleanSupplier;
 
 public final class CouplingsMixins implements IMixinConfigPlugin {
@@ -38,13 +37,14 @@ public final class CouplingsMixins implements IMixinConfigPlugin {
     CouplingsMixins.PACKAGE + ".TrapdoorMixin", Couplings::areTrapdoorsEnabled
   );
 
-  private static final AtomicBoolean CONSTRUCTED = new AtomicBoolean();
+  private static boolean constructed = false;
 
   @Deprecated
   public CouplingsMixins() {
-    if (!CouplingsMixins.CONSTRUCTED.compareAndSet(false, true)) {
+    if (constructed) {
       throw new UnsupportedOperationException("Already constructed");
     }
+    constructed = true;
   }
 
   @Override
