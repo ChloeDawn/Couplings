@@ -32,9 +32,7 @@ import net.minecraft.world.World;
 public final class TrapdoorHooks {
   private static final ThreadLocal<Boolean> USE_NEIGHBORS = ThreadLocal.withInitial(() -> true);
 
-  private TrapdoorHooks() {
-    throw new UnsupportedOperationException();
-  }
+  private TrapdoorHooks() {}
 
   public static void usageCallback(final BlockState state, final World world, final BlockPos pos, final PlayerEntity player, final Hand hand, final BlockHitResult hit, final boolean usageResult) {
     if (!Couplings.areTrapdoorsEnabled()) return;

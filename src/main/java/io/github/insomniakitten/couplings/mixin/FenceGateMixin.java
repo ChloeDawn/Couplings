@@ -31,9 +31,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(FenceGateBlock.class)
 abstract class FenceGateMixin {
-  private FenceGateMixin() {
-    throw new AssertionError();
-  }
+  private FenceGateMixin() {}
 
   @Inject(method = "activate", at = @At("RETURN"))
   private void couplings$use(final BlockState state, final World world, final BlockPos pos, final PlayerEntity player, final Hand hand, final BlockHitResult hit, final CallbackInfoReturnable<Boolean> cir) {

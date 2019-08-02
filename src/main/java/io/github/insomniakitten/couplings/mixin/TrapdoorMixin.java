@@ -31,9 +31,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(TrapdoorBlock.class)
 abstract class TrapdoorMixin {
-  private TrapdoorMixin() {
-    throw new AssertionError();
-  }
+  private TrapdoorMixin() {}
 
   @Inject(method = "activate", at = @At(value = "RETURN", ordinal = 1), allow = 1)
   private void couplings$use(final BlockState state, final World world, final BlockPos pos, final PlayerEntity player, final Hand hand, final BlockHitResult hit, final CallbackInfoReturnable<Boolean> cir) {

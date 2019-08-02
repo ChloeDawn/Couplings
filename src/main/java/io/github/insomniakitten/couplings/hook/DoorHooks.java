@@ -33,9 +33,7 @@ import net.minecraft.world.World;
 public final class DoorHooks {
   private static final ThreadLocal<Boolean> USE_NEIGHBOR = ThreadLocal.withInitial(() -> true);
 
-  private DoorHooks() {
-    throw new UnsupportedOperationException();
-  }
+  private DoorHooks() {}
 
   public static void usageCallback(final BlockState state, final World world, final BlockPos pos, final PlayerEntity player, final Hand hand, final BlockHitResult hit, final boolean usageResult) {
     if (!Couplings.areDoorsEnabled()) return;

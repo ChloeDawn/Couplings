@@ -30,9 +30,7 @@ public final class Couplings {
   private static final boolean DEVELOPMENT = Knot.getLauncher().isDevelopment();
   private static final Logger LOGGER = LogManager.getLogger("coupled");
 
-  private Couplings() {
-    throw new UnsupportedOperationException();
-  }
+  private Couplings() {}
 
   @Deprecated
   @SneakyThrows(IOException.class)

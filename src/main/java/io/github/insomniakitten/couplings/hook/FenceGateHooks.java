@@ -30,9 +30,7 @@ import net.minecraft.world.World;
 public final class FenceGateHooks {
   private static final ThreadLocal<Boolean> USE_NEIGHBORS = ThreadLocal.withInitial(() -> true);
 
-  private FenceGateHooks() {
-    throw new UnsupportedOperationException();
-  }
+  private FenceGateHooks() {}
 
   public static void usageCallback(final BlockState state, final World world, final BlockPos pos, final PlayerEntity player, final Hand hand, final BlockHitResult hit, final boolean usageResult) {
     if (!Couplings.areFenceGatesEnabled()) return;
