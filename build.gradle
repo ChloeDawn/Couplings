@@ -47,10 +47,7 @@ dependencies {
 }
 
 processResources {
-  def metadata = [
-    'fabric.mod.json', 'pack.mcmeta',
-    'mixins/couplings/mixins.json'
-  ]
+  def metadata = ['fabric.mod.json', 'mixins/couplings/mixins.json']
   sourceSets.main.resources.srcDirs.with {
     from(it) {
       include metadata
@@ -61,9 +58,7 @@ processResources {
     }
   }
   doLast {
-    fileTree(dir: outputs.files.asPath, include: [
-      '**/*.json', '**/*.mcmeta'
-    ]).each {
+    fileTree(dir: outputs.files.asPath, include: metadata).each {
       it.text = JsonOutput.toJson(new JsonSlurper().parse(it))
     }
   }
