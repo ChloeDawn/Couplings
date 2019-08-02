@@ -52,6 +52,18 @@ public final class DoorHooks {
     DoorHooks.USE_NEIGHBOR.set(true);
   }
 
+  public static void openCallback(final BlockState state, final World world, final BlockPos pos, final boolean open) {
+    if (!Couplings.areDoorsEnabled()) return;
+    final BlockPos offset = DoorHooks.getOtherDoor(state, pos);
+    final BlockState other = world.getBlockState(offset);
+    if (state.getBlock() == other.getBlock()) {
+      if (DoorHooks.areEquivalent(state, other.with(DoorBlock.OPEN, open))) {
+        world.setBlockState(offset, other.with(DoorBlock.OPEN, open), 10);
+        DoorHooks.fireWorldEvent(other, world, offset, open);
+      }
+    }
+  }
+
   public static void neighborUpdateCallback(final BlockState state, final World world, final BlockPos pos, final Block block, final BlockPos neighborPos, final boolean isPowered) {
     // todo redstone-specific config
     if (!Couplings.areDoorsEnabled()) return;
