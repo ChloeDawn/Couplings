@@ -5,7 +5,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.annotations.SerializedName;
-import lombok.SneakyThrows;
 import lombok.Value;
 import lombok.experimental.Accessors;
 import net.fabricmc.loader.api.FabricLoader;
@@ -33,23 +32,26 @@ public final class Couplings {
   private Couplings() {}
 
   @Deprecated
-  @SneakyThrows(IOException.class)
   public static void loadOptions() {
-    final Path configs = FabricLoader.getInstance().getConfigDirectory().toPath();
-    final File config = configs.resolve("couplings.json").toFile();
-    if (config.exists()) {
-      try (final FileReader reader = new FileReader(config)) {
-        final Options options = Options.fromJson(reader);
-        if (options == null) {
-          Couplings.LOGGER.error("Invalid config: {}", config);
-        } else {
-          Options.instance = options;
-          return;
+    try {
+      final Path configs = FabricLoader.getInstance().getConfigDirectory().toPath();
+      final File config = configs.resolve("couplings.json").toFile();
+      if (config.exists()) {
+        try (final FileReader reader = new FileReader(config)) {
+          final Options options = Options.fromJson(reader);
+          if (options == null) {
+            Couplings.LOGGER.error("Invalid config: {}", config);
+          } else {
+            Options.instance = options;
+            return;
+          }
         }
       }
-    }
-    try (final FileWriter writer = new FileWriter(config)) {
-      writer.append(Options.toJson());
+      try (final FileWriter writer = new FileWriter(config)) {
+        writer.append(Options.toJson());
+      }
+    } catch (final IOException e) {
+      throw new RuntimeException("Loading options", e);
     }
   }
 
