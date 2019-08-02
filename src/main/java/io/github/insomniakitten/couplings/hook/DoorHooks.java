@@ -63,7 +63,6 @@ public final class DoorHooks {
   }
 
   public static void neighborUpdateCallback(final BlockState state, final World world, final BlockPos pos, final Block block, final BlockPos neighborPos, final boolean isPowered) {
-    // todo redstone-specific config
     if (!Couplings.areDoorsEnabled()) return;
     if (!isPowered && state.get(DoorBlock.POWERED) || DoorHooks.isSufficientlyPowered(state, world, pos)) {
       final BlockPos offset = DoorHooks.getOtherDoor(state, pos);
