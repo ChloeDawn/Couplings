@@ -3,7 +3,7 @@
   "id": "couplings",
   "name": "Couplings",
   "version": "$version",
-  "description": "",
+  "description": "Coupled usage of doors, fence gates, and trapdoors",
   "environment": "*",
   "license": "Apache 2.0",
   "icon": "pack.png",
