@@ -49,7 +49,7 @@ dependencies {
 processResources {
   def metadata = [
     'fabric.mod.json', 'pack.mcmeta',
-    'mixins/couplings/mixins.server.json'
+    'mixins/couplings/mixins.json'
   ]
   sourceSets.main.resources.srcDirs.with {
     from(it) {

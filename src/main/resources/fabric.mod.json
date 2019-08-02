@@ -16,7 +16,7 @@
     ]
   },
   "mixins": [
-    "mixins/couplings/mixins.server.json"
+    "mixins/couplings/mixins.json"
   ],
   "authors": [
     {
