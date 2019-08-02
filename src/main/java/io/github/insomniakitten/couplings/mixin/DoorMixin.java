@@ -44,7 +44,7 @@ abstract class DoorMixin {
     DoorHooks.usageCallback(state, world, pos, player, hand, hit, cir.getReturnValueZ());
   }
 
-  @Inject(method = "setOpen", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/DoorBlock;playOpenCloseSound(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Z)V"), locals = LocalCapture.CAPTURE_FAILHARD)
+  @Inject(method = "setOpen", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/DoorBlock;playOpenCloseSound(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Z)V", shift = Shift.AFTER), locals = LocalCapture.CAPTURE_FAILHARD)
   private void couplings$setOpen(final World world, final BlockPos pos, final boolean open, final CallbackInfo ci, final BlockState state) {
     DoorHooks.openCallback(state, world, pos, open);
   }
