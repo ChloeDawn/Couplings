@@ -37,40 +37,40 @@ public final class DoorHooks {
 
   public static void usageCallback(final BlockState state, final World world, final BlockPos pos, final PlayerEntity player, final Hand hand, final BlockHitResult hit, final boolean usageResult) {
     if (!Couplings.areDoorsEnabled()) return;
-    if (!DoorHooks.USE_NEIGHBOR.get()) return;
+    if (!USE_NEIGHBOR.get()) return;
     if (player.isSneaking() && Couplings.requiresNoSneaking()) return;
-    DoorHooks.USE_NEIGHBOR.set(false);
-    final BlockPos offset = DoorHooks.getOtherDoor(state, pos);
+    USE_NEIGHBOR.set(false);
+    final BlockPos offset = getOtherDoor(state, pos);
     if (Couplings.isUsable(world, offset, player)) {
       final BlockState other = world.getBlockState(offset);
-      if (state.getBlock() == other.getBlock() && DoorHooks.areEquivalent(state, other)) {
+      if (state.getBlock() == other.getBlock() && areEquivalent(state, other)) {
         Couplings.use(state, other, world, hand, player, hit, offset, usageResult);
       }
     }
-    DoorHooks.USE_NEIGHBOR.set(true);
+    USE_NEIGHBOR.set(true);
   }
 
   public static void openCallback(final BlockState state, final World world, final BlockPos pos, final boolean open) {
     if (!Couplings.areDoorsEnabled()) return;
-    final BlockPos offset = DoorHooks.getOtherDoor(state, pos);
+    final BlockPos offset = getOtherDoor(state, pos);
     final BlockState other = world.getBlockState(offset);
     if (state.getBlock() == other.getBlock()) {
-      if (DoorHooks.areEquivalent(state, other.with(DoorBlock.OPEN, open))) {
+      if (areEquivalent(state, other.with(DoorBlock.OPEN, open))) {
         world.setBlockState(offset, other.with(DoorBlock.OPEN, open), 10);
-        DoorHooks.fireWorldEvent(other, world, offset, open);
+        fireWorldEvent(other, world, offset, open);
       }
     }
   }
 
   public static void neighborUpdateCallback(final BlockState state, final World world, final BlockPos pos, final Block block, final BlockPos neighborPos, final boolean isPowered) {
     if (!Couplings.areDoorsEnabled()) return;
-    if (!isPowered && state.get(DoorBlock.POWERED) || DoorHooks.isSufficientlyPowered(state, world, pos)) {
-      final BlockPos offset = DoorHooks.getOtherDoor(state, pos);
+    if (!isPowered && state.get(DoorBlock.POWERED) || isSufficientlyPowered(state, world, pos)) {
+      final BlockPos offset = getOtherDoor(state, pos);
       final BlockState other = world.getBlockState(offset);
       if (state.getBlock() == other.getBlock()) {
-        if (DoorHooks.areEquivalent(state, other.with(DoorBlock.OPEN, isPowered))) {
+        if (areEquivalent(state, other.with(DoorBlock.OPEN, isPowered))) {
           world.setBlockState(offset, other.with(DoorBlock.OPEN, isPowered), 2);
-          DoorHooks.fireWorldEvent(other, world, offset, isPowered);
+          fireWorldEvent(other, world, offset, isPowered);
         }
       }
     }
@@ -96,10 +96,10 @@ public final class DoorHooks {
   private static boolean isSufficientlyPowered(final BlockState state, final World world, final BlockPos pos) {
     final int power = Math.max(
       world.getReceivedRedstonePower(pos),
-      world.getReceivedRedstonePower(DoorHooks.getOtherHalf(state, pos))
+      world.getReceivedRedstonePower(getOtherHalf(state, pos))
     );
     return power > 7;
-  }
+  } 
 
   private static void fireWorldEvent(final BlockState state, final World world, final BlockPos pos, final boolean isPowered) {
     final Block block = state.getBlock();

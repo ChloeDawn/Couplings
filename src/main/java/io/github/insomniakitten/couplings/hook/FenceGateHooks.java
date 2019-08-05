@@ -34,9 +34,9 @@ public final class FenceGateHooks {
 
   public static void usageCallback(final BlockState state, final World world, final BlockPos pos, final PlayerEntity player, final Hand hand, final BlockHitResult hit, final boolean usageResult) {
     if (!Couplings.areFenceGatesEnabled()) return;
-    if (!FenceGateHooks.USE_NEIGHBORS.get()) return;
+    if (!USE_NEIGHBORS.get()) return;
     if (player.isSneaking() && Couplings.requiresNoSneaking()) return;
-    FenceGateHooks.USE_NEIGHBORS.set(false);
+    USE_NEIGHBORS.set(false);
     final Block block = state.getBlock();
     final boolean open = state.get(FenceGateBlock.OPEN);
     final Axis axis = state.get(FenceGateBlock.FACING).getAxis();
@@ -47,12 +47,12 @@ public final class FenceGateHooks {
       if (Couplings.isUsable(world, offset, player)) {
         final BlockState other = world.getBlockState(offset);
 
-        if (block == other.getBlock() && FenceGateHooks.includesStates(open, axis, other)) {
+        if (block == other.getBlock() && includesStates(open, axis, other)) {
           Couplings.use(state, other, world, hand, player, hit, offset, usageResult);
         }
       }
     }
-    FenceGateHooks.USE_NEIGHBORS.set(true);
+    USE_NEIGHBORS.set(true);
   }
 
   private static boolean includesStates(final boolean open, final Axis axis, final BlockState state) {

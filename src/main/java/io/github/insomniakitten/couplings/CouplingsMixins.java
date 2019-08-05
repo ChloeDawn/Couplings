@@ -31,10 +31,10 @@ public final class CouplingsMixins implements IMixinConfigPlugin {
   private static final String PACKAGE = "io.github.insomniakitten.couplings.mixin";
 
   private static final ImmutableMap<String, BooleanSupplier> MIXIN_STATES = ImmutableMap.of(
-    CouplingsMixins.PACKAGE + ".DoorInvoker", Couplings::areDoorsEnabled,
-    CouplingsMixins.PACKAGE + ".DoorMixin", Couplings::areDoorsEnabled,
-    CouplingsMixins.PACKAGE + ".FenceGateMixin", Couplings::areFenceGatesEnabled,
-    CouplingsMixins.PACKAGE + ".TrapdoorMixin", Couplings::areTrapdoorsEnabled
+    PACKAGE + ".DoorInvoker", Couplings::areDoorsEnabled,
+    PACKAGE + ".DoorMixin", Couplings::areDoorsEnabled,
+    PACKAGE + ".FenceGateMixin", Couplings::areFenceGatesEnabled,
+    PACKAGE + ".TrapdoorMixin", Couplings::areTrapdoorsEnabled
   );
 
   private static boolean constructed = false;
@@ -49,7 +49,7 @@ public final class CouplingsMixins implements IMixinConfigPlugin {
 
   @Override
   public void onLoad(final String mixinPackage) {
-    if (!CouplingsMixins.PACKAGE.equals(mixinPackage)) {
+    if (!PACKAGE.equals(mixinPackage)) {
       throw new IllegalArgumentException(mixinPackage);
     }
   }
@@ -61,7 +61,7 @@ public final class CouplingsMixins implements IMixinConfigPlugin {
 
   @Override
   public boolean shouldApplyMixin(final String target, final String mixin) {
-    @Nullable final BooleanSupplier state = CouplingsMixins.MIXIN_STATES.get(mixin);
+    @Nullable final BooleanSupplier state = MIXIN_STATES.get(mixin);
     if (state == null) {
       throw new IllegalArgumentException(mixin);
     }

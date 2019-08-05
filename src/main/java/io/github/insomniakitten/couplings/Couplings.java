@@ -43,7 +43,7 @@ import java.nio.file.Path;
 
 public final class Couplings {
   private static final boolean DEVELOPMENT = Knot.getLauncher().isDevelopment();
-  private static final Logger LOGGER = LogManager.getLogger("coupled");
+  private static final Logger LOGGER = LogManager.getLogger("couplings");
 
   private Couplings() {}
 
@@ -54,9 +54,9 @@ public final class Couplings {
       final File config = configs.resolve("couplings.json").toFile();
       if (config.exists()) {
         try (final FileReader reader = new FileReader(config)) {
-          final Options options = Options.fromJson(reader);
+          @Nullable final Options options = Options.fromJson(reader);
           if (options == null) {
-            Couplings.LOGGER.error("Invalid config: {}", config);
+            LOGGER.error("Invalid config: {}", config);
           } else {
             Options.instance = options;
             return;
@@ -67,7 +67,10 @@ public final class Couplings {
         writer.append(Options.toJson());
       }
     } catch (final IOException e) {
-      throw new RuntimeException("Loading options", e);
+      if (DEVELOPMENT) {
+        throw new RuntimeException("Loading options from file", e);
+      }
+      LOGGER.error("Failed to load options from file");
     }
   }
 
@@ -98,23 +101,17 @@ public final class Couplings {
   public static void use(final BlockState state, final BlockState other, final World world, final Hand hand, final PlayerEntity player, final BlockHitResult origin, final BlockPos offset, final boolean usageResult) {
     final BlockHitResult target = new BlockHitResult(origin.getPos(), origin.getSide(), offset, false);
     if (usageResult != other.activate(world, player, hand, target)) {
-      final String result1 = Couplings.toString(world, player, hand, state, origin, usageResult);
-      final String result2 = Couplings.toString(world, player, hand, other, target, usageResult);
-      if (Couplings.DEVELOPMENT) {
+      final String result1 = toString(world, player, hand, state, origin, usageResult);
+      final String result2 = toString(world, player, hand, other, target, usageResult);
+      if (DEVELOPMENT) {
         throw new IllegalStateException("Usage result mismatch between " + result1 + " and " + result2);
       }
-      Couplings.LOGGER.warn("Usage result mismatch between {} and {}", result1, result2);
+      LOGGER.warn("Usage result mismatch between {} and {}", result1, result2);
     }
   }
 
   private static String toString(final World world, final PlayerEntity player, final Hand hand, final BlockState state, final BlockHitResult hit, final boolean result) {
-    return MoreObjects.toStringHelper(result ? "Success" : "Failure")
-      .add("world", world)
-      .add("player", player)
-      .add("hand", hand)
-      .add("state", state)
-      .add("hit", hit)
-      .toString();
+    return MoreObjects.toStringHelper(result ? "Success" : "Failure").add("world", world).add("player", player).add("hand", hand).add("state", state).add("hit", hit).toString();
   }
 
   @Value
@@ -123,7 +120,7 @@ public final class Couplings {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final Options DEFAULT = new Options(true, 128, Features.DEFAULT);
 
-    private static Options instance = Options.DEFAULT;
+    private static Options instance = DEFAULT;
 
     @SerializedName("ignore_sneaking")
     private final boolean ignoreSneaking;
@@ -137,14 +134,17 @@ public final class Couplings {
     @Nullable
     private static Options fromJson(final FileReader reader) {
       try {
-        return Options.GSON.fromJson(reader, Options.class);
+        return GSON.fromJson(reader, Options.class);
       } catch (final JsonSyntaxException e) {
+        if (DEVELOPMENT) {
+          throw e;
+        }
         return null;
       }
     }
 
     private static String toJson() {
-      return Options.GSON.toJson(Options.instance);
+      return GSON.toJson(Options.instance);
     }
 
     @Value
