@@ -102,10 +102,6 @@ public final class DoorHooks {
   } 
 
   private static void fireWorldEvent(final BlockState state, final World world, final BlockPos pos, final boolean isPowered) {
-    final Block block = state.getBlock();
-    if (!(block instanceof DoorInvoker)) {
-      throw new IllegalArgumentException("Not invokable: " + block);
-    }
-    ((DoorInvoker) block).playUseSound(world, pos, isPowered);
+    ((DoorInvoker) state.getBlock()).playUseSound(world, pos, isPowered);
   }
 }
