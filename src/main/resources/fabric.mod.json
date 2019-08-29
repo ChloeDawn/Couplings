@@ -7,8 +7,8 @@
   "environment": "*",
   "license": "Apache 2.0",
   "icon": "pack.png",
-  "depends": {
-    "fabricloader": ">=0.4.1 <0.5.0"
+  "depends":{
+    "fabricloader":">=0.6.0 <0.7.0"
   },
   "entrypoints": {
     "main": [
