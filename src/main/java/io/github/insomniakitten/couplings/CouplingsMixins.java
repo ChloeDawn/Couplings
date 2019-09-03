@@ -28,13 +28,17 @@ import java.util.Set;
 import java.util.function.BooleanSupplier;
 
 public final class CouplingsMixins implements IMixinConfigPlugin {
-  private static final String PACKAGE = "io.github.insomniakitten.couplings.mixin";
+  public static final String PACKAGE = "io.github.insomniakitten.couplings.mixin";
+  public static final String DOOR_INVOKER = "DoorInvoker";
+  public static final String DOOR_MIXIN = "DoorMixin";
+  public static final String FENCE_GATE_MIXIN = "FenceGateMixin";
+  public static final String TRAPDOOR_MIXIN = "TrapdoorMixin";
 
   private static final ImmutableMap<String, BooleanSupplier> MIXIN_STATES = ImmutableMap.of(
-    PACKAGE + ".DoorInvoker", Couplings::areDoorsEnabled,
-    PACKAGE + ".DoorMixin", Couplings::areDoorsEnabled,
-    PACKAGE + ".FenceGateMixin", Couplings::areFenceGatesEnabled,
-    PACKAGE + ".TrapdoorMixin", Couplings::areTrapdoorsEnabled
+    PACKAGE + '.' + DOOR_INVOKER,     Couplings::areDoorsEnabled,
+    PACKAGE + '.' + DOOR_MIXIN,       Couplings::areDoorsEnabled,
+    PACKAGE + '.' + FENCE_GATE_MIXIN, Couplings::areFenceGatesEnabled,
+    PACKAGE + '.' + TRAPDOOR_MIXIN,   Couplings::areTrapdoorsEnabled
   );
 
   private static boolean constructed = false;
@@ -42,7 +46,7 @@ public final class CouplingsMixins implements IMixinConfigPlugin {
   @Deprecated
   public CouplingsMixins() {
     if (constructed) {
-      throw new UnsupportedOperationException("Already constructed");
+      throw new UnsupportedOperationException();
     }
     constructed = true;
   }
@@ -63,7 +67,7 @@ public final class CouplingsMixins implements IMixinConfigPlugin {
   public boolean shouldApplyMixin(final String target, final String mixin) {
     @Nullable final BooleanSupplier state = MIXIN_STATES.get(mixin);
     if (state == null) {
-      throw new IllegalArgumentException(mixin);
+      throw new IllegalArgumentException(mixin + " -> " + target);
     }
     return state.getAsBoolean();
   }
@@ -75,7 +79,7 @@ public final class CouplingsMixins implements IMixinConfigPlugin {
 
   @Override
   public List<String> getMixins() {
-    return ImmutableList.of("DoorInvoker", "DoorMixin", "FenceGateMixin", "TrapdoorMixin");
+    return ImmutableList.of(DOOR_INVOKER, DOOR_MIXIN, FENCE_GATE_MIXIN, TRAPDOOR_MIXIN);
   }
 
   @Override
