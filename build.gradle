@@ -31,7 +31,11 @@ dependencies {
 
 processResources {
   from(sourceSets.main.resources.srcDirs) {
+    include 'fabric.mod.json', 'mixins.json'
     expand version: version, refmap: minecraft.refmapName
+  }
+  from(sourceSets.main.resources.srcDirs) {
+    exclude 'fabric.mod.json', 'mixins.json'
   }
 }
 
