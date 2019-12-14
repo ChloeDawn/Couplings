@@ -48,7 +48,7 @@ public final class FenceGates {
 
           if (block == other.getBlock() && equals(open, axis, other)) {
             if (Couplings.use(other, world, hand, player, hit, offset, usageResult)) {
-              USE_NEIGHBORS.set(false);
+              USE_NEIGHBORS.set(true);
               return;
             }
           }

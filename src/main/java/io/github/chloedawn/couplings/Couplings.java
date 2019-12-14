@@ -86,7 +86,7 @@ public final class Couplings {
   }
 
   public static boolean use(final BlockState other, final World world, final Hand hand, final PlayerEntity player, final BlockHitResult origin, final BlockPos offset, final ActionResult originResult) {
-    return other.onUse(world, player, hand, new BlockHitResult(origin.getPos(), origin.getSide(), offset, false)).isAccepted();
+    return !other.onUse(world, player, hand, new BlockHitResult(origin.getPos(), origin.getSide(), offset, false)).isAccepted();
   }
 
   private static void readOptions() {

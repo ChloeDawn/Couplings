@@ -53,7 +53,7 @@ public final class Trapdoors {
             final BlockState mirror = world.getBlockState(offset);
             if (block == mirror.getBlock() && equals(open, half, opposite, mirror)) {
               if (Couplings.use(mirror, world, hand, player, hit, offset.toImmutable(), usageResult)) {
-                USE_NEIGHBORS.set(false);
+                USE_NEIGHBORS.set(true);
                 return;
               }
             }
@@ -63,7 +63,7 @@ public final class Trapdoors {
           final BlockState other = world.getBlockState(offset);
           if (block == other.getBlock() && equals(open, half, facing, other)) {
             if (Couplings.use(other, world, hand, player, hit, offset.toImmutable(), usageResult)) {
-              USE_NEIGHBORS.set(false);
+              USE_NEIGHBORS.set(true);
               return;
             }
             ((BlockPos.Mutable) offset).setOffset(facing);
@@ -71,7 +71,7 @@ public final class Trapdoors {
               final BlockState mirror = world.getBlockState(offset);
               if (block == mirror.getBlock() && equals(open, half, opposite, mirror)) {
                 if (Couplings.use(mirror, world, hand, player, hit, offset.toImmutable(), usageResult)) {
-                  USE_NEIGHBORS.set(false);
+                  USE_NEIGHBORS.set(true);
                   return;
                 }
               }

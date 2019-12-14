@@ -44,7 +44,7 @@ public final class Doors {
         final BlockState other = world.getBlockState(offset);
         if (state.getBlock() == other.getBlock() && areEquivalent(state, other)) {
           if (Couplings.use(other, world, hand, player, hit, offset, usageResult)) {
-            USE_NEIGHBOR.set(false);
+            USE_NEIGHBOR.set(true);
             return;
           }
         }
