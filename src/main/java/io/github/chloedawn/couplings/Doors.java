@@ -54,26 +54,26 @@ public final class Doors {
   }
 
   public static void toggled(final BlockState state, final World world, final BlockPos pos, final boolean open) {
-    if (!Couplings.areDoorsEnabled()) return;
-    final BlockPos offset = getOtherDoor(state, pos);
-    final BlockState other = world.getBlockState(offset);
-    if (state.getBlock() == other.getBlock()) {
-      if (areEquivalent(state, other.with(DoorBlock.OPEN, open))) {
-        world.setBlockState(offset, other.with(DoorBlock.OPEN, open), 10);
-        fireLevelEvent(other, world, offset, open);
+    if (Couplings.areDoorsEnabled()) {
+      final BlockPos offset = getOtherDoor(state, pos);
+      final BlockState other = world.getBlockState(offset);
+      if (state.getBlock() == other.getBlock()) {
+        if (areEquivalent(state, other.with(DoorBlock.OPEN, open))) {
+          world.setBlockState(offset, other.with(DoorBlock.OPEN, open), 10);
+          playSound(other, world, offset, open);
+        }
       }
     }
   }
 
   public static void neighborUpdated(final BlockState state, final World world, final BlockPos pos, final boolean isPowered) {
-    if (!Couplings.areDoorsEnabled()) return;
-    if (!isPowered && state.get(DoorBlock.POWERED) || isSufficientlyPowered(state, world, pos)) {
+    if (Couplings.areDoorsEnabled() && (!isPowered && state.get(DoorBlock.POWERED) || isSufficientlyPowered(state, world, pos))) {
       final BlockPos offset = getOtherDoor(state, pos);
       final BlockState other = world.getBlockState(offset);
       if (state.getBlock() == other.getBlock()) {
         if (areEquivalent(state, other.with(DoorBlock.OPEN, isPowered))) {
           world.setBlockState(offset, other.with(DoorBlock.OPEN, isPowered), 2);
-          fireLevelEvent(other, world, offset, isPowered);
+          playSound(other, world, offset, isPowered);
         }
       }
     }
@@ -100,7 +100,7 @@ public final class Doors {
     return Math.max(world.getReceivedRedstonePower(pos), world.getReceivedRedstonePower(getOtherHalf(state, pos))) > 7;
   }
 
-  private static void fireLevelEvent(final BlockState state, final World world, final BlockPos pos, final boolean isPowered) {
+  private static void playSound(final BlockState state, final World world, final BlockPos pos, final boolean isPowered) {
     ((DoorAccessor) state.getBlock()).invokePlaySound(world, pos, isPowered);
   }
 }
