@@ -5,14 +5,14 @@
   "version": "$version",
   "description": "Coupled usage of doors, fence gates, and trapdoors",
   "environment": "*",
-  "license": "Apache 2.0",
+  "license": "Apache-2.0",
   "icon": "pack.png",
   "depends": {
-    "fabricloader": ">=0.6.1"
+    "fabricloader": ">=0.7.2"
   },
   "entrypoints": {
     "main": [
-      "io.github.insomniakitten.couplings.Couplings::loadOptions"
+      "io.github.chloedawn.couplings.Couplings::load"
     ]
   },
   "mixins": [
@@ -20,9 +20,9 @@
   ],
   "authors": [
     {
-      "name": "InsomniaKitten",
+      "name": "Chloe Dawn",
       "contact": {
-        "homepage": "https://git.io/vXoUn"
+        "homepage": "https://git.io/Jen3g"
       }
     }
   ],

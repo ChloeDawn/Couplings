@@ -14,55 +14,58 @@
  * limitations under the License.
  */
 
-package io.github.insomniakitten.couplings.hook;
+package io.github.chloedawn.couplings;
 
-import io.github.insomniakitten.couplings.Couplings;
-import io.github.insomniakitten.couplings.mixin.DoorInvoker;
-import net.minecraft.block.Block;
+import io.github.chloedawn.couplings.mixin.DoorAccessor;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.DoorBlock;
 import net.minecraft.block.enums.DoorHinge;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.state.State;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
-public final class DoorHooks {
+public final class Doors {
   private static final ThreadLocal<Boolean> USE_NEIGHBOR = ThreadLocal.withInitial(() -> true);
 
-  private DoorHooks() {}
-
-  public static void usageCallback(final BlockState state, final World world, final BlockPos pos, final PlayerEntity player, final Hand hand, final BlockHitResult hit, final boolean usageResult) {
-    if (!Couplings.areDoorsEnabled()) return;
-    if (!USE_NEIGHBOR.get()) return;
-    if (player.isSneaking() && Couplings.requiresNoSneaking()) return;
-    USE_NEIGHBOR.set(false);
-    final BlockPos offset = getOtherDoor(state, pos);
-    if (Couplings.isUsable(world, offset, player)) {
-      final BlockState other = world.getBlockState(offset);
-      if (state.getBlock() == other.getBlock() && areEquivalent(state, other)) {
-        Couplings.use(state, other, world, hand, player, hit, offset, usageResult);
-      }
-    }
-    USE_NEIGHBOR.set(true);
+  private Doors() {
   }
 
-  public static void openCallback(final BlockState state, final World world, final BlockPos pos, final boolean open) {
+  public static void used(final BlockState state, final World world, final BlockPos pos, final PlayerEntity player, final Hand hand, final BlockHitResult hit, final ActionResult usageResult) {
+    if (usageResult.isAccepted() && Couplings.areDoorsEnabled() && USE_NEIGHBOR.get() && (!player.isSneaking() || Couplings.isSneakingIgnored())) {
+      USE_NEIGHBOR.set(false);
+      final BlockPos offset = getOtherDoor(state, pos);
+      if (Couplings.isUsable(world, offset, player)) {
+        final BlockState other = world.getBlockState(offset);
+        if (state.getBlock() == other.getBlock() && areEquivalent(state, other)) {
+          if (Couplings.use(other, world, hand, player, hit, offset, usageResult)) {
+            USE_NEIGHBOR.set(false);
+            return;
+          }
+        }
+      }
+      USE_NEIGHBOR.set(true);
+    }
+  }
+
+  public static void toggled(final BlockState state, final World world, final BlockPos pos, final boolean open) {
     if (!Couplings.areDoorsEnabled()) return;
     final BlockPos offset = getOtherDoor(state, pos);
     final BlockState other = world.getBlockState(offset);
     if (state.getBlock() == other.getBlock()) {
       if (areEquivalent(state, other.with(DoorBlock.OPEN, open))) {
         world.setBlockState(offset, other.with(DoorBlock.OPEN, open), 10);
-        fireWorldEvent(other, world, offset, open);
+        fireLevelEvent(other, world, offset, open);
       }
     }
   }
 
-  public static void neighborUpdateCallback(final BlockState state, final World world, final BlockPos pos, final Block block, final BlockPos neighborPos, final boolean isPowered) {
+  public static void neighborUpdated(final BlockState state, final World world, final BlockPos pos, final boolean isPowered) {
     if (!Couplings.areDoorsEnabled()) return;
     if (!isPowered && state.get(DoorBlock.POWERED) || isSufficientlyPowered(state, world, pos)) {
       final BlockPos offset = getOtherDoor(state, pos);
@@ -70,20 +73,20 @@ public final class DoorHooks {
       if (state.getBlock() == other.getBlock()) {
         if (areEquivalent(state, other.with(DoorBlock.OPEN, isPowered))) {
           world.setBlockState(offset, other.with(DoorBlock.OPEN, isPowered), 2);
-          fireWorldEvent(other, world, offset, isPowered);
+          fireLevelEvent(other, world, offset, isPowered);
         }
       }
     }
   }
 
-  private static boolean areEquivalent(final BlockState self, final BlockState other) {
+  private static boolean areEquivalent(final State<?> self, final State<?> other) {
     return self.get(DoorBlock.FACING) == other.get(DoorBlock.FACING)
       && self.get(DoorBlock.HALF) == other.get(DoorBlock.HALF)
-      && (boolean) self.get(DoorBlock.OPEN) != other.get(DoorBlock.OPEN)
+      && self.get(DoorBlock.OPEN) != other.get(DoorBlock.OPEN)
       && self.get(DoorBlock.HINGE) != other.get(DoorBlock.HINGE);
   }
 
-  private static BlockPos getOtherHalf(final BlockState state, final BlockPos pos) {
+  private static BlockPos getOtherHalf(final State<?> state, final BlockPos pos) {
     return pos.offset(state.get(DoorBlock.HALF) == DoubleBlockHalf.LOWER ? Direction.UP : Direction.DOWN);
   }
 
@@ -93,15 +96,11 @@ public final class DoorHooks {
     return origin.offset(left ? facing.rotateYClockwise() : facing.rotateYCounterclockwise());
   }
 
-  private static boolean isSufficientlyPowered(final BlockState state, final World world, final BlockPos pos) {
-    final int power = Math.max(
-      world.getReceivedRedstonePower(pos),
-      world.getReceivedRedstonePower(getOtherHalf(state, pos))
-    );
-    return power > 7;
-  } 
+  private static boolean isSufficientlyPowered(final State<?> state, final World world, final BlockPos pos) {
+    return Math.max(world.getReceivedRedstonePower(pos), world.getReceivedRedstonePower(getOtherHalf(state, pos))) > 7;
+  }
 
-  private static void fireWorldEvent(final BlockState state, final World world, final BlockPos pos, final boolean isPowered) {
-    ((DoorInvoker) state.getBlock()).playUseSound(world, pos, isPowered);
+  private static void fireLevelEvent(final BlockState state, final World world, final BlockPos pos, final boolean isPowered) {
+    ((DoorAccessor) state.getBlock()).invokePlaySound(world, pos, isPowered);
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 InsomniaKitten
+ * Copyright (C) 2019 Chloe Dawn
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package io.github.insomniakitten.couplings.mixin;
+package io.github.chloedawn.couplings.mixin;
 
-import io.github.insomniakitten.couplings.hook.TrapdoorHooks;
+import io.github.chloedawn.couplings.FenceGates;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.TrapdoorBlock;
+import net.minecraft.block.FenceGateBlock;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -29,12 +30,10 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(TrapdoorBlock.class)
-abstract class TrapdoorMixin {
-  private TrapdoorMixin() {}
-
-  @Inject(method = "activate", at = @At(value = "RETURN", ordinal = 1), allow = 1)
-  private void couplings$use(final BlockState state, final World world, final BlockPos pos, final PlayerEntity player, final Hand hand, final BlockHitResult hit, final CallbackInfoReturnable<Boolean> cir) {
-    TrapdoorHooks.usageCallback(state, world, pos, player, hand, hit, cir.getReturnValueZ());
+@Mixin(FenceGateBlock.class)
+abstract class FenceGateMixin {
+  @Inject(method = "onUse", at = @At("RETURN"), allow = 1)
+  private void used(final BlockState state, final World world, final BlockPos pos, final PlayerEntity player, final Hand hand, final BlockHitResult hit, final CallbackInfoReturnable<ActionResult> cir) {
+    FenceGates.used(state, world, pos, player, hand, hit, cir.getReturnValue());
   }
 }

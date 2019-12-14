@@ -3,14 +3,10 @@
   "minVersion": "0.7.11",
   "compatibilityLevel": "JAVA_8",
   "required": true,
-  "package": "io.github.insomniakitten.couplings.mixin",
+  "package": "io.github.chloedawn.couplings.mixin",
   "refmap": "$refmap",
-  "plugin": "io.github.insomniakitten.couplings.CouplingsMixins",
+  "plugin": "io.github.chloedawn.couplings.CouplingsMixins",
   "injectors": {
     "defaultRequire": 1
-  },
-  "overwrites": {
-    "conformVisibility": true,
-    "requireAnnotations": true
   }
 }

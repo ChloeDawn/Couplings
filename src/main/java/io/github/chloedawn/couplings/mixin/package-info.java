@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 InsomniaKitten
+ * Copyright (C) 2019 Chloe Dawn
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-@NonNullByDefault
-package io.github.insomniakitten.couplings.mixin;
+@DefaultQualifier(NonNull.class)
+package io.github.chloedawn.couplings.mixin;
 
-import io.github.insomniakitten.couplings.NonNullByDefault;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.framework.qual.DefaultQualifier;
