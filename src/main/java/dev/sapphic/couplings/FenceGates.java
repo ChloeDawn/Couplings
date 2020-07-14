@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 InsomniaKitten
+ * Copyright (C) 2020 Chloe Dawn
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package io.github.chloedawn.couplings;
+package dev.sapphic.couplings;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FenceGateBlock;
+import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -38,7 +39,7 @@ public final class FenceGates {
       USE_NEIGHBORS.set(false);
       final Block block = state.getBlock();
       final boolean open = state.get(FenceGateBlock.OPEN);
-      final Axis axis = state.get(FenceGateBlock.FACING).getAxis();
+      final Axis axis = state.get(HorizontalFacingBlock.FACING).getAxis();
       for (final BlockPos offset : BlockPos.iterate(
         pos.down(Couplings.getCouplingRange()),
         pos.up(Couplings.getCouplingRange())
@@ -46,7 +47,7 @@ public final class FenceGates {
         if (Couplings.isUsable(world, offset, player)) {
           final BlockState other = world.getBlockState(offset);
 
-          if (block == other.getBlock() && equals(open, axis, other)) {
+          if ((block == other.getBlock()) && equals(open, axis, other)) {
             if (Couplings.use(other, world, hand, player, hit, offset, usageResult)) {
               USE_NEIGHBORS.set(true);
               return;
@@ -59,6 +60,6 @@ public final class FenceGates {
   }
 
   private static boolean equals(final boolean open, final Axis axis, final BlockState state) {
-    return open != state.get(FenceGateBlock.OPEN) && axis == state.get(FenceGateBlock.FACING).getAxis();
+    return (open != state.get(FenceGateBlock.OPEN)) && (axis == state.get(HorizontalFacingBlock.FACING).getAxis());
   }
 }

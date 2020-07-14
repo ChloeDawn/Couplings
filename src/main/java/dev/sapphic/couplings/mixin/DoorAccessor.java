@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 InsomniaKitten
+ * Copyright (C) 2020 Chloe Dawn
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,16 @@
  * limitations under the License.
  */
 
-@DefaultQualifier(NonNull.class)
-package io.github.chloedawn.couplings;
+package dev.sapphic.couplings.mixin;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import net.minecraft.block.DoorBlock;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Invoker;
+
+@Mixin(DoorBlock.class)
+public interface DoorAccessor {
+  @Invoker("playOpenCloseSound")
+  void invokePlaySound(final World world, final BlockPos pos, final boolean powered);
+}

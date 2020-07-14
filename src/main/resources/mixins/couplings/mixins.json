@@ -1,12 +1,8 @@
 {
-  "target": "@environment(DEFAULT)",
-  "minVersion": "0.7.11",
+  "minVersion": "0.8",
   "compatibilityLevel": "JAVA_8",
   "required": true,
-  "package": "io.github.chloedawn.couplings.mixin",
-  "refmap": "$refmap",
-  "plugin": "io.github.chloedawn.couplings.CouplingsMixins",
-  "injectors": {
-    "defaultRequire": 1
-  }
+  "package": "dev.sapphic.couplings.mixin",
+  "refmap": "mixins/frameless/refmap.json",
+  "plugin": "dev.sapphic.couplings.CouplingsMixins"
 }

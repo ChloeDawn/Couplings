@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 InsomniaKitten
+ * Copyright (C) 2020 Chloe Dawn
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.github.chloedawn.couplings;
+package dev.sapphic.couplings;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -29,8 +29,6 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.CollisionView;
 import net.minecraft.world.World;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.io.IOException;
@@ -45,10 +43,9 @@ public final class Couplings {
   public static final String JSON = "couplings.json";
 
   private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-  private static final Logger LOGGER = LogManager.getLogger();
 
   private static Options options = new Options();
-  private static boolean loaded = false;
+  private static boolean loaded;
 
   private Couplings() {
   }
@@ -82,7 +79,7 @@ public final class Couplings {
   }
 
   public static boolean isUsable(final CollisionView world, final BlockPos pos, final PlayerEntity player) {
-    return player.canModifyWorld() && world.getWorldBorder().contains(pos);
+    return player.canModifyBlocks() && world.getWorldBorder().contains(pos);
   }
 
   public static boolean use(final BlockState other, final World world, final Hand hand, final PlayerEntity player, final BlockHitResult origin, final BlockPos offset, final ActionResult originResult) {
@@ -95,7 +92,7 @@ public final class Couplings {
       if (o == null) {
         writeOptions();
       } else {
-        Couplings.options = o;
+        options = o;
       }
     } catch (final JsonSyntaxException e) {
       if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
@@ -105,7 +102,7 @@ public final class Couplings {
     } catch (final NoSuchFileException e) {
       writeOptions();
     } catch (final IOException e) {
-      throw new RuntimeException("Reading options", e);
+      throw new IllegalStateException("Reading options", e);
     }
   }
 
@@ -113,12 +110,12 @@ public final class Couplings {
     try (final Writer writer = Files.newBufferedWriter(getPathToJson())) {
       writer.write(GSON.toJson(options));
     } catch (final IOException e) {
-      throw new RuntimeException("Writing options", e);
+      throw new IllegalStateException("Writing options", e);
     }
   }
 
   private static Path getPathToJson() {
-    return FabricLoader.getInstance().getConfigDirectory().toPath().resolve(JSON);
+    return FabricLoader.getInstance().getConfigDir().resolve(JSON);
   }
 
   private static final class Options {

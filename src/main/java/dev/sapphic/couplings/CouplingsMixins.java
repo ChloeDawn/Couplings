@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 InsomniaKitten
+ * Copyright (C) 2020 Chloe Dawn
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.github.chloedawn.couplings;
+package dev.sapphic.couplings;
 
 import com.google.common.collect.ImmutableList;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Set;
 
 public final class CouplingsMixins implements IMixinConfigPlugin {
-  private static final String MIXIN_PACKAGE = "io.github.chloedawn.couplings.mixin";
+  private static final String MIXIN_PACKAGE = "dev.sapphic.couplings.mixin";
 
   private static final String DOOR_ACCESSOR = "DoorAccessor";
   private static final String DOOR_MIXIN = "DoorMixin";

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 InsomniaKitten
+ * Copyright (C) 2020 Chloe Dawn
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.github.chloedawn.couplings;
+package dev.sapphic.couplings;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -35,6 +35,7 @@ public final class Trapdoors {
   private Trapdoors() {
   }
 
+  // FIXME Polling optimization (stashed)
   public static void used(final BlockState state, final World world, final BlockPos pos, final PlayerEntity player, final Hand hand, final BlockHitResult hit, final ActionResult usageResult) {
     if (usageResult.isAccepted() && Couplings.areTrapdoorsEnabled() && USE_NEIGHBORS.get() && (!player.isSneaking() || Couplings.isSneakingIgnored())) {
       USE_NEIGHBORS.set(false);
@@ -48,35 +49,35 @@ public final class Trapdoors {
         pos.offset(facing.rotateYClockwise(), Couplings.getCouplingRange())
       )) {
         if (pos.equals(offset)) {
-          ((BlockPos.Mutable) offset).setOffset(facing);
+          ((BlockPos.Mutable) offset).move(facing);
           if (Couplings.isUsable(world, offset, player)) {
             final BlockState mirror = world.getBlockState(offset);
-            if (block == mirror.getBlock() && equals(open, half, opposite, mirror)) {
+            if ((block == mirror.getBlock()) && equals(open, half, opposite, mirror)) {
               if (Couplings.use(mirror, world, hand, player, hit, offset.toImmutable(), usageResult)) {
                 USE_NEIGHBORS.set(true);
                 return;
               }
             }
           }
-          ((BlockPos.Mutable) offset).setOffset(opposite);
+          ((BlockPos.Mutable) offset).move(opposite);
         } else if (Couplings.isUsable(world, offset, player)) {
           final BlockState other = world.getBlockState(offset);
-          if (block == other.getBlock() && equals(open, half, facing, other)) {
+          if ((block == other.getBlock()) && equals(open, half, facing, other)) {
             if (Couplings.use(other, world, hand, player, hit, offset.toImmutable(), usageResult)) {
               USE_NEIGHBORS.set(true);
               return;
             }
-            ((BlockPos.Mutable) offset).setOffset(facing);
+            ((BlockPos.Mutable) offset).move(facing);
             if (Couplings.isUsable(world, offset, player)) {
               final BlockState mirror = world.getBlockState(offset);
-              if (block == mirror.getBlock() && equals(open, half, opposite, mirror)) {
+              if ((block == mirror.getBlock()) && equals(open, half, opposite, mirror)) {
                 if (Couplings.use(mirror, world, hand, player, hit, offset.toImmutable(), usageResult)) {
                   USE_NEIGHBORS.set(true);
                   return;
                 }
               }
             }
-            ((BlockPos.Mutable) offset).setOffset(opposite);
+            ((BlockPos.Mutable) offset).move(opposite);
           }
         }
       }
@@ -85,6 +86,6 @@ public final class Trapdoors {
   }
 
   private static boolean equals(final boolean open, final BlockHalf half, final Direction facing, final BlockState state) {
-    return open != state.get(TrapdoorBlock.OPEN) && half == state.get(TrapdoorBlock.HALF) && facing == state.get(HorizontalFacingBlock.FACING);
+    return (open != state.get(TrapdoorBlock.OPEN)) && (half == state.get(TrapdoorBlock.HALF)) && (facing == state.get(HorizontalFacingBlock.FACING));
   }
 }

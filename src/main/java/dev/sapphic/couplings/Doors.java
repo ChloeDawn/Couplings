@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 InsomniaKitten
+ * Copyright (C) 2020 Chloe Dawn
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package io.github.chloedawn.couplings;
+package dev.sapphic.couplings;
 
-import io.github.chloedawn.couplings.mixin.DoorAccessor;
+import dev.sapphic.couplings.mixin.DoorAccessor;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.DoorBlock;
 import net.minecraft.block.enums.DoorHinge;
@@ -42,7 +43,7 @@ public final class Doors {
       final BlockPos offset = getOtherDoor(state, pos);
       if (Couplings.isUsable(world, offset, player)) {
         final BlockState other = world.getBlockState(offset);
-        if (state.getBlock() == other.getBlock() && areEquivalent(state, other)) {
+        if ((state.getBlock() == other.getBlock()) && areEquivalent(state, other)) {
           if (Couplings.use(other, world, hand, player, hit, offset, usageResult)) {
             USE_NEIGHBOR.set(true);
             return;
@@ -67,7 +68,7 @@ public final class Doors {
   }
 
   public static void neighborUpdated(final BlockState state, final World world, final BlockPos pos, final boolean isPowered) {
-    if (Couplings.areDoorsEnabled() && (!isPowered && state.get(DoorBlock.POWERED) || isSufficientlyPowered(state, world, pos))) {
+    if (Couplings.areDoorsEnabled() && ((!isPowered && state.get(DoorBlock.POWERED)) || isSufficientlyPowered(state, world, pos))) {
       final BlockPos offset = getOtherDoor(state, pos);
       final BlockState other = world.getBlockState(offset);
       if (state.getBlock() == other.getBlock()) {
@@ -79,24 +80,24 @@ public final class Doors {
     }
   }
 
-  private static boolean areEquivalent(final State<?> self, final State<?> other) {
-    return self.get(DoorBlock.FACING) == other.get(DoorBlock.FACING)
-      && self.get(DoorBlock.HALF) == other.get(DoorBlock.HALF)
-      && self.get(DoorBlock.OPEN) != other.get(DoorBlock.OPEN)
-      && self.get(DoorBlock.HINGE) != other.get(DoorBlock.HINGE);
+  private static boolean areEquivalent(final State<Block, BlockState> self, final State<Block, BlockState> other) {
+    return (self.get(DoorBlock.FACING) == other.get(DoorBlock.FACING))
+      && (self.get(DoorBlock.HALF) == other.get(DoorBlock.HALF))
+      && (self.get(DoorBlock.OPEN) != other.get(DoorBlock.OPEN))
+      && (self.get(DoorBlock.HINGE) != other.get(DoorBlock.HINGE));
   }
 
-  private static BlockPos getOtherHalf(final State<?> state, final BlockPos pos) {
-    return pos.offset(state.get(DoorBlock.HALF) == DoubleBlockHalf.LOWER ? Direction.UP : Direction.DOWN);
+  private static BlockPos getOtherHalf(final State<Block, BlockState> state, final BlockPos pos) {
+    return pos.offset((state.get(DoorBlock.HALF) == DoubleBlockHalf.LOWER) ? Direction.UP : Direction.DOWN);
   }
 
   private static BlockPos getOtherDoor(final BlockState self, final BlockPos origin) {
     final Direction facing = self.get(DoorBlock.FACING);
-    final boolean left = DoorHinge.LEFT == self.get(DoorBlock.HINGE);
+    final boolean left = self.get(DoorBlock.HINGE) == DoorHinge.LEFT;
     return origin.offset(left ? facing.rotateYClockwise() : facing.rotateYCounterclockwise());
   }
 
-  private static boolean isSufficientlyPowered(final State<?> state, final World world, final BlockPos pos) {
+  private static boolean isSufficientlyPowered(final State<Block, BlockState> state, final World world, final BlockPos pos) {
     return Math.max(world.getReceivedRedstonePower(pos), world.getReceivedRedstonePower(getOtherHalf(state, pos))) > 7;
   }
 

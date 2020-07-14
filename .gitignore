@@ -1,20 +1,29 @@
-# eclipse
-.classpath/
-.metadata/
-.project/
-.settings/
-*.launch
-bin/
-eclipse/
-
-# idea
-.idea/
+*.bak
+*.code-workspace
 *.iml
 *.ipr
 *.iws
-out/
-
-# gradle
+*.launch
+*.swp
+*.tmp
+*~
+*~.nib
+.DS_Store
+._*
+.classpath/
+.directory
+.fuse_hidden*
 .gradle/
+.idea/
+.metadata/
+.project/
+.settings/
+.vscode/*
+Thumbs.db
+Thumbs.db:encryptable
+bin/
 build/
+eclipse/
+out/
 run/
+tmp/

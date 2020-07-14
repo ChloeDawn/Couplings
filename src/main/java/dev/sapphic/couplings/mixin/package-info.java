@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Chloe Dawn
+ * Copyright (C) 2020 Chloe Dawn
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 
 @DefaultQualifier(NonNull.class)
-package io.github.chloedawn.couplings.mixin;
+package dev.sapphic.couplings.mixin;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;

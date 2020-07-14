@@ -4,15 +4,14 @@
   "name": "Couplings",
   "version": "$version",
   "description": "Coupled usage of doors, fence gates, and trapdoors",
-  "environment": "*",
   "license": "Apache-2.0",
   "icon": "pack.png",
   "depends": {
-    "fabricloader": ">=0.7.2"
+    "fabricloader": ">=0.9.0"
   },
   "entrypoints": {
     "main": [
-      "io.github.chloedawn.couplings.Couplings::load"
+      "dev.sapphic.couplings.Couplings::load"
     ]
   },
   "mixins": [
@@ -22,13 +21,14 @@
     {
       "name": "Chloe Dawn",
       "contact": {
-        "homepage": "https://git.io/Jen3g"
+        "email": "chloe@sapphic.dev",
+        "homepage": "https://sapphic.dev"
       }
     }
   ],
   "contact": {
-    "homepage": "http://bit.ly/2YNlsfx",
-    "sources": "https://git.io/fjcfM",
-    "issues": "https://git.io/fjcfy"
+    "homepage": "https://git.io/JJsni",
+    "sources": "https://git.io/JJsni",
+    "issues": "https://git.io/JJsnP"
   }
 }

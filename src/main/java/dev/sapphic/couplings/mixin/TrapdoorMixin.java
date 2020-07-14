@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Chloe Dawn
+ * Copyright (C) 2020 Chloe Dawn
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package io.github.chloedawn.couplings.mixin;
+package dev.sapphic.couplings.mixin;
 
-import io.github.chloedawn.couplings.Trapdoors;
+import dev.sapphic.couplings.Trapdoors;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.TrapdoorBlock;
 import net.minecraft.entity.player.PlayerEntity;
