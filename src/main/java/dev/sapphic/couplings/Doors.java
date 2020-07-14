@@ -80,14 +80,14 @@ public final class Doors {
     }
   }
 
-  private static boolean areEquivalent(final State<Block, BlockState> self, final State<Block, BlockState> other) {
+  private static boolean areEquivalent(final State<?, ?> self, final State<?, ?> other) {
     return (self.get(DoorBlock.FACING) == other.get(DoorBlock.FACING))
       && (self.get(DoorBlock.HALF) == other.get(DoorBlock.HALF))
       && (self.get(DoorBlock.OPEN) != other.get(DoorBlock.OPEN))
       && (self.get(DoorBlock.HINGE) != other.get(DoorBlock.HINGE));
   }
 
-  private static BlockPos getOtherHalf(final State<Block, BlockState> state, final BlockPos pos) {
+  private static BlockPos getOtherHalf(final State<?, ?> state, final BlockPos pos) {
     return pos.offset((state.get(DoorBlock.HALF) == DoubleBlockHalf.LOWER) ? Direction.UP : Direction.DOWN);
   }
 
@@ -97,7 +97,7 @@ public final class Doors {
     return origin.offset(left ? facing.rotateYClockwise() : facing.rotateYCounterclockwise());
   }
 
-  private static boolean isSufficientlyPowered(final State<Block, BlockState> state, final World world, final BlockPos pos) {
+  private static boolean isSufficientlyPowered(final State<?, ?> state, final World world, final BlockPos pos) {
     return Math.max(world.getReceivedRedstonePower(pos), world.getReceivedRedstonePower(getOtherHalf(state, pos))) > 7;
   }
 
