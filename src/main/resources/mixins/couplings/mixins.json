@@ -3,6 +3,12 @@
   "compatibilityLevel": "JAVA_8",
   "required": true,
   "package": "dev.sapphic.couplings.mixin",
-  "refmap": "mixins/frameless/refmap.json",
+  "mixins": [
+    "DoorAccessor",
+    "DoorMixin",
+    "FenceGateMixin",
+    "TrapdoorMixin"
+  ],
+  "refmap": "mixins/couplings/refmap.json",
   "plugin": "dev.sapphic.couplings.CouplingsMixins"
 }
