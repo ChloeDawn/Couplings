@@ -33,6 +33,9 @@ public final class FenceGates {
   private static final ThreadLocal<Boolean> USE_NEIGHBORS = ThreadLocal.withInitial(() -> true);
   private static final Direction[] HORIZONTALS = Direction.Type.HORIZONTAL.stream().toArray(Direction[]::new);
 
+  private static final int FENCE_GATE_OPENED = 1008;
+  private static final int FENCE_GATE_CLOSED = 1014;
+
   private FenceGates() {
   }
 
@@ -69,7 +72,7 @@ public final class FenceGates {
           final BlockState other = world.getBlockState(offset);
           if ((state.getBlock() == other.getBlock()) && equals(isPowered, axis, other)) {
             world.setBlockState(offset, other.with(FenceGateBlock.OPEN, isPowered), 2);
-            world.syncWorldEvent(null, isPowered ? 1008 : 1014, pos, 0);
+            world.syncWorldEvent(null, isPowered ? FENCE_GATE_OPENED : FENCE_GATE_CLOSED, pos, 0);
           }
         }
       } else if (!isPowered && isSufficientlyPowered(world, pos)) {
