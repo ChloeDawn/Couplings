@@ -91,14 +91,15 @@ public final class FenceGates {
       if (y == 0) { // Origin already queried
         continue;
       }
+      final BlockPos offset = pos.up(y);
       if ((y == -range) || (y == range)) { // Above or below adjacent
         final Direction dir = (y == -range) ? Direction.DOWN : Direction.UP;
-        if (world.getEmittedRedstonePower(pos.up(y), dir) >= Couplings.MIN_SIGNAL) {
+        if (world.getEmittedRedstonePower(offset, dir) >= Couplings.MIN_SIGNAL) {
           return true;
         }
       } else {
         for (final Direction dir : HORIZONTALS) {
-          if (world.getEmittedRedstonePower(pos.up(y).offset(dir), dir) >= Couplings.MIN_SIGNAL) {
+          if (world.getEmittedRedstonePower(offset.offset(dir), dir) >= Couplings.MIN_SIGNAL) {
             return true;
           }
         }
