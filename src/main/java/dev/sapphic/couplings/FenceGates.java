@@ -18,9 +18,11 @@ package dev.sapphic.couplings;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.DoorBlock;
 import net.minecraft.block.FenceGateBlock;
 import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.state.State;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -59,7 +61,31 @@ public final class FenceGates {
     }
   }
 
+  public static void neighborUpdated(final BlockState state, final World world, final BlockPos pos, final boolean isPowered) {
+    if (Couplings.areFenceGatesEnabled() && ((!isPowered && state.get(FenceGateBlock.POWERED)) || isSufficientlyPowered(world, pos))) {
+      final Axis axis = state.get(HorizontalFacingBlock.FACING).getAxis();
+      final Block block = state.getBlock();
+      final int range = Couplings.getCouplingRange();
+      for (final BlockPos offset : BlockPos.iterate(pos.down(range), pos.up(range))) {
+        final BlockState other = world.getBlockState(offset);
+        if ((block == other.getBlock()) && equals(isPowered, axis, other)) {
+          world.setBlockState(offset, other.with(DoorBlock.OPEN, isPowered), 2);
+          world.syncWorldEvent(null, isPowered ? 1008 : 1014, pos, 0);
+        }
+      }
+    }
+  }
+
   private static boolean equals(final boolean open, final Axis axis, final BlockState state) {
     return (open != state.get(FenceGateBlock.OPEN)) && (axis == state.get(HorizontalFacingBlock.FACING).getAxis());
+  }
+
+  private static boolean isSufficientlyPowered(final World world, final BlockPos pos) {
+    final int range = Couplings.getCouplingRange();
+    int signal = world.getReceivedRedstonePower(pos);
+    for (final BlockPos offset : BlockPos.iterate(pos.down(range), pos.up(range))) {
+      signal |= world.getReceivedRedstonePower(offset);
+    }
+    return signal > 7;
   }
 }
