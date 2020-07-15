@@ -86,15 +86,17 @@ public final class FenceGates {
     if (world.getReceivedRedstonePower(pos) >= Couplings.MIN_SIGNAL) {
       return true;
     }
-    final int range = Couplings.getCouplingRange();
-    if (world.getEmittedRedstonePower(pos.up(range + 1), Direction.UP) >= Couplings.MIN_SIGNAL) {
-      return true;
-    }
-    if (world.getEmittedRedstonePower(pos.down(range + 1), Direction.DOWN) >= Couplings.MIN_SIGNAL) {
-      return true;
-    }
+    final int range = Couplings.getCouplingRange() + 1;
     for (int y = -range; y <= range; ++y) {
-      if (y != 0) {
+      if (y == 0) { // Origin already queried
+        continue;
+      }
+      if ((y == -range) || (y == range)) { // Above or below adjacent
+        final Direction dir = (y == -range) ? Direction.DOWN : Direction.UP;
+        if (world.getEmittedRedstonePower(pos.up(y), dir) >= Couplings.MIN_SIGNAL) {
+          return true;
+        }
+      } else {
         for (final Direction dir : HORIZONTALS) {
           if (world.getEmittedRedstonePower(pos.up(y).offset(dir), dir) >= Couplings.MIN_SIGNAL) {
             return true;
