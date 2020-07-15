@@ -67,12 +67,12 @@ public final class FenceGates {
           final BlockPos offset = pos.up(y);
           final BlockState other = world.getBlockState(offset);
           if ((state.getBlock() == other.getBlock()) && equals(isPowered, axis, other)) {
-            world.setBlockState(offset, other.with(DoorBlock.OPEN, isPowered), 2);
+            world.setBlockState(offset, other.with(FenceGateBlock.OPEN, isPowered), 2);
             world.syncWorldEvent(null, isPowered ? 1008 : 1014, pos, 0);
           }
         }
       } else if (!isPowered && isSufficientlyPowered(world, pos)) {
-        world.setBlockState(pos, state.with(DoorBlock.OPEN, true), 2);
+        world.setBlockState(pos, state.with(FenceGateBlock.OPEN, true), 2);
       }
     }
   }
