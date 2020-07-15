@@ -40,6 +40,8 @@ import java.nio.file.Path;
 
 public final class Couplings {
   public static final int DEFAULT_RANGE = 128;
+  public static final int MIN_SIGNAL = 8;
+
   public static final String JSON = "couplings.json";
 
   private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();

@@ -22,7 +22,6 @@ import net.minecraft.block.DoorBlock;
 import net.minecraft.block.FenceGateBlock;
 import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.state.State;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -42,13 +41,11 @@ public final class FenceGates {
       final Block block = state.getBlock();
       final boolean open = state.get(FenceGateBlock.OPEN);
       final Axis axis = state.get(HorizontalFacingBlock.FACING).getAxis();
-      for (final BlockPos offset : BlockPos.iterate(
-        pos.down(Couplings.getCouplingRange()),
-        pos.up(Couplings.getCouplingRange())
-      )) {
+      final int range = Couplings.getCouplingRange();
+      for (int y = -range; y <= range; y++) {
+        final BlockPos offset = pos.up(y);
         if (Couplings.isUsable(world, offset, player)) {
           final BlockState other = world.getBlockState(offset);
-
           if ((block == other.getBlock()) && equals(open, axis, other)) {
             if (Couplings.use(other, world, hand, player, hit, offset, usageResult)) {
               USE_NEIGHBORS.set(true);
@@ -64,11 +61,11 @@ public final class FenceGates {
   public static void neighborUpdated(final BlockState state, final World world, final BlockPos pos, final boolean isPowered) {
     if (Couplings.areFenceGatesEnabled() && ((!isPowered && state.get(FenceGateBlock.POWERED)) || isSufficientlyPowered(world, pos))) {
       final Axis axis = state.get(HorizontalFacingBlock.FACING).getAxis();
-      final Block block = state.getBlock();
       final int range = Couplings.getCouplingRange();
-      for (final BlockPos offset : BlockPos.iterate(pos.down(range), pos.up(range))) {
+      for (int y = -range; y <= range; y++) {
+        final BlockPos offset = pos.up(y);
         final BlockState other = world.getBlockState(offset);
-        if ((block == other.getBlock()) && equals(isPowered, axis, other)) {
+        if ((state.getBlock() == other.getBlock()) && equals(isPowered, axis, other)) {
           world.setBlockState(offset, other.with(DoorBlock.OPEN, isPowered), 2);
           world.syncWorldEvent(null, isPowered ? 1008 : 1014, pos, 0);
         }
@@ -81,16 +78,17 @@ public final class FenceGates {
   }
 
   private static boolean isSufficientlyPowered(final World world, final BlockPos pos) {
-    final int range = Couplings.getCouplingRange();
-    int signal = world.getReceivedRedstonePower(pos);
-    if (signal > 7) {
+    if (world.getReceivedRedstonePower(pos) >= Couplings.MIN_SIGNAL) {
       return true;
     }
-    for (final BlockPos offset : BlockPos.iterate(pos.down(range), pos.up(range))) {
-      signal |= world.getReceivedRedstonePower(offset);
-      if (signal > 7) {
+    final int range = Couplings.getCouplingRange();
+    for (int y = -range; y <= range; y += 2) {
+      if ((y != 0) && (world.getReceivedRedstonePower(pos.up(y)) >= Couplings.MIN_SIGNAL)) {
         return true;
       }
+    }
+    if ((range % 2) != 0) {
+      return world.getReceivedRedstonePower(pos.up(range)) >= Couplings.MIN_SIGNAL;
     }
     return false;
   }
