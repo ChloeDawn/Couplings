@@ -83,9 +83,15 @@ public final class FenceGates {
   private static boolean isSufficientlyPowered(final World world, final BlockPos pos) {
     final int range = Couplings.getCouplingRange();
     int signal = world.getReceivedRedstonePower(pos);
+    if (signal > 7) {
+      return true;
+    }
     for (final BlockPos offset : BlockPos.iterate(pos.down(range), pos.up(range))) {
       signal |= world.getReceivedRedstonePower(offset);
+      if (signal > 7) {
+        return true;
+      }
     }
-    return signal > 7;
+    return false;
   }
 }
