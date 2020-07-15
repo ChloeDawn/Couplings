@@ -102,7 +102,7 @@ public final class Couplings {
     } catch (final NoSuchFileException e) {
       writeOptions();
     } catch (final IOException e) {
-      throw new IllegalStateException("Reading options", e);
+      throw new IllegalStateException("Unable to read options file", e);
     }
   }
 
@@ -110,7 +110,7 @@ public final class Couplings {
     try (final Writer writer = Files.newBufferedWriter(getPathToJson())) {
       writer.write(GSON.toJson(options));
     } catch (final IOException e) {
-      throw new IllegalStateException("Writing options", e);
+      throw new IllegalStateException("Unable to write options file", e);
     }
   }
 
