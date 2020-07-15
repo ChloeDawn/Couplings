@@ -17,7 +17,6 @@
 package dev.sapphic.couplings;
 
 import dev.sapphic.couplings.mixin.DoorAccessor;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.DoorBlock;
 import net.minecraft.block.enums.DoorHinge;
@@ -40,11 +39,11 @@ public final class Doors {
   public static void used(final BlockState state, final World world, final BlockPos pos, final PlayerEntity player, final Hand hand, final BlockHitResult hit, final ActionResult usageResult) {
     if (usageResult.isAccepted() && Couplings.areDoorsEnabled() && USE_NEIGHBOR.get() && (!player.isSneaking() || Couplings.isSneakingIgnored())) {
       USE_NEIGHBOR.set(false);
-      final BlockPos offset = getOtherDoor(state, pos);
-      if (Couplings.isUsable(world, offset, player)) {
-        final BlockState other = world.getBlockState(offset);
-        if ((state.getBlock() == other.getBlock()) && areEquivalent(state, other)) {
-          if (Couplings.use(other, world, hand, player, hit, offset, usageResult)) {
+      final BlockPos adjacent = getAdjacent(state, pos);
+      if (Couplings.isUsable(world, adjacent, player)) {
+        final BlockState adjacentState = world.getBlockState(adjacent);
+        if ((state.getBlock() == adjacentState.getBlock()) && shouldUpdate(state, adjacentState)) {
+          if (Couplings.use(adjacentState, world, hand, player, hit, adjacent, usageResult)) {
             USE_NEIGHBOR.set(true);
             return;
           }
@@ -56,12 +55,13 @@ public final class Doors {
 
   public static void toggled(final BlockState state, final World world, final BlockPos pos, final boolean open) {
     if (Couplings.areDoorsEnabled()) {
-      final BlockPos offset = getOtherDoor(state, pos);
-      final BlockState other = world.getBlockState(offset);
-      if (state.getBlock() == other.getBlock()) {
-        if (areEquivalent(state, other.with(DoorBlock.OPEN, open))) {
-          world.setBlockState(offset, other.with(DoorBlock.OPEN, open), 10);
-          playSound(other, world, offset, open);
+      final BlockPos adjacent = getAdjacent(state, pos);
+      BlockState adjacentState = world.getBlockState(adjacent);
+      if (state.getBlock() == adjacentState.getBlock()) {
+        adjacentState = adjacentState.with(DoorBlock.OPEN, open);
+        if (shouldUpdate(state, adjacentState)) {
+          world.setBlockState(adjacent, adjacentState, 10);
+          playSound(adjacentState, world, adjacent, open);
         }
       }
     }
@@ -69,36 +69,38 @@ public final class Doors {
 
   public static void neighborUpdated(final BlockState state, final World world, final BlockPos pos, final boolean isPowered) {
     if (Couplings.areDoorsEnabled() && ((!isPowered && state.get(DoorBlock.POWERED)) || isSufficientlyPowered(state, world, pos))) {
-      final BlockPos offset = getOtherDoor(state, pos);
-      final BlockState other = world.getBlockState(offset);
-      if (state.getBlock() == other.getBlock()) {
-        if (areEquivalent(state, other.with(DoorBlock.OPEN, isPowered))) {
-          world.setBlockState(offset, other.with(DoorBlock.OPEN, isPowered), 2);
-          playSound(other, world, offset, isPowered);
+      final BlockPos adjacent = getAdjacent(state, pos);
+      BlockState adjacentState = world.getBlockState(adjacent);
+      if (state.getBlock() == adjacentState.getBlock()) {
+        adjacentState = adjacentState.with(DoorBlock.OPEN, isPowered);
+        if (shouldUpdate(state, adjacentState)) {
+          world.setBlockState(adjacent, adjacentState, 2);
+          playSound(adjacentState, world, adjacent, isPowered);
         }
       }
     }
   }
 
-  private static boolean areEquivalent(final State<?, ?> self, final State<?, ?> other) {
+  private static boolean shouldUpdate(final State<?, ?> self, final State<?, ?> other) {
     return (self.get(DoorBlock.FACING) == other.get(DoorBlock.FACING))
       && (self.get(DoorBlock.HALF) == other.get(DoorBlock.HALF))
       && (self.get(DoorBlock.OPEN) != other.get(DoorBlock.OPEN))
       && (self.get(DoorBlock.HINGE) != other.get(DoorBlock.HINGE));
   }
 
-  private static BlockPos getOtherHalf(final State<?, ?> state, final BlockPos pos) {
-    return pos.offset((state.get(DoorBlock.HALF) == DoubleBlockHalf.LOWER) ? Direction.UP : Direction.DOWN);
-  }
-
-  private static BlockPos getOtherDoor(final BlockState self, final BlockPos origin) {
+  private static BlockPos getAdjacent(final BlockState self, final BlockPos origin) {
     final Direction facing = self.get(DoorBlock.FACING);
     final boolean left = self.get(DoorBlock.HINGE) == DoorHinge.LEFT;
     return origin.offset(left ? facing.rotateYClockwise() : facing.rotateYCounterclockwise());
   }
 
   private static boolean isSufficientlyPowered(final State<?, ?> state, final World world, final BlockPos pos) {
-    return Math.max(world.getReceivedRedstonePower(pos), world.getReceivedRedstonePower(getOtherHalf(state, pos))) > 7;
+    if (world.getReceivedRedstonePower(pos) >= Couplings.MIN_SIGNAL) {
+      return true;
+    }
+    final boolean lower = state.get(DoorBlock.HALF) == DoubleBlockHalf.LOWER;
+    final BlockPos offset = pos.offset(lower ? Direction.UP : Direction.DOWN);
+    return world.getReceivedRedstonePower(offset) >= Couplings.MIN_SIGNAL;
   }
 
   private static void playSound(final BlockState state, final World world, final BlockPos pos, final boolean isPowered) {
