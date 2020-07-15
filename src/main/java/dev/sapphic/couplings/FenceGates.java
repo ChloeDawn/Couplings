@@ -59,16 +59,20 @@ public final class FenceGates {
   }
 
   public static void neighborUpdated(final BlockState state, final World world, final BlockPos pos, final boolean isPowered) {
-    if (Couplings.areFenceGatesEnabled() && ((!isPowered && state.get(FenceGateBlock.POWERED)) || isSufficientlyPowered(world, pos))) {
-      final Axis axis = state.get(HorizontalFacingBlock.FACING).getAxis();
-      final int range = Couplings.getCouplingRange();
-      for (int y = -range; y <= range; y++) {
-        final BlockPos offset = pos.up(y);
-        final BlockState other = world.getBlockState(offset);
-        if ((state.getBlock() == other.getBlock()) && equals(isPowered, axis, other)) {
-          world.setBlockState(offset, other.with(DoorBlock.OPEN, isPowered), 2);
-          world.syncWorldEvent(null, isPowered ? 1008 : 1014, pos, 0);
+    if (Couplings.areFenceGatesEnabled()) {
+      if (isPowered == isSufficientlyPowered(world, pos)) {
+        final Axis axis = state.get(HorizontalFacingBlock.FACING).getAxis();
+        final int range = Couplings.getCouplingRange();
+        for (int y = -range; y <= range; ++y) {
+          final BlockPos offset = pos.up(y);
+          final BlockState other = world.getBlockState(offset);
+          if ((state.getBlock() == other.getBlock()) && equals(isPowered, axis, other)) {
+            world.setBlockState(offset, other.with(DoorBlock.OPEN, isPowered), 2);
+            world.syncWorldEvent(null, isPowered ? 1008 : 1014, pos, 0);
+          }
         }
+      } else if (!isPowered && isSufficientlyPowered(world, pos)) {
+        world.setBlockState(pos, state.with(DoorBlock.OPEN, true), 2);
       }
     }
   }
@@ -82,13 +86,10 @@ public final class FenceGates {
       return true;
     }
     final int range = Couplings.getCouplingRange();
-    for (int y = -range; y <= range; y += 2) {
+    for (int y = -range; y <= range; ++y) {
       if ((y != 0) && (world.getReceivedRedstonePower(pos.up(y)) >= Couplings.MIN_SIGNAL)) {
         return true;
       }
-    }
-    if ((range % 2) != 0) {
-      return world.getReceivedRedstonePower(pos.up(range)) >= Couplings.MIN_SIGNAL;
     }
     return false;
   }
