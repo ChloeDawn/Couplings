@@ -18,7 +18,6 @@ package dev.sapphic.couplings;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.DoorBlock;
 import net.minecraft.block.FenceGateBlock;
 import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.entity.player.PlayerEntity;
@@ -26,11 +25,13 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Direction.Axis;
 import net.minecraft.world.World;
 
 public final class FenceGates {
   private static final ThreadLocal<Boolean> USE_NEIGHBORS = ThreadLocal.withInitial(() -> true);
+  private static final Direction[] HORIZONTALS = Direction.Type.HORIZONTAL.stream().toArray(Direction[]::new);
 
   private FenceGates() {
   }
@@ -72,7 +73,7 @@ public final class FenceGates {
           }
         }
       } else if (!isPowered && isSufficientlyPowered(world, pos)) {
-        world.setBlockState(pos, state.with(FenceGateBlock.OPEN, true), 2);
+        world.setBlockState(pos, state.with(FenceGateBlock.POWERED, false).with(FenceGateBlock.OPEN, true), 2);
       }
     }
   }
@@ -86,9 +87,19 @@ public final class FenceGates {
       return true;
     }
     final int range = Couplings.getCouplingRange();
+    if (world.getEmittedRedstonePower(pos.up(range + 1), Direction.UP) >= Couplings.MIN_SIGNAL) {
+      return true;
+    }
+    if (world.getEmittedRedstonePower(pos.down(range + 1), Direction.DOWN) >= Couplings.MIN_SIGNAL) {
+      return true;
+    }
     for (int y = -range; y <= range; ++y) {
-      if ((y != 0) && (world.getReceivedRedstonePower(pos.up(y)) >= Couplings.MIN_SIGNAL)) {
-        return true;
+      if (y != 0) {
+        for (final Direction dir : HORIZONTALS) {
+          if (world.getEmittedRedstonePower(pos.up(y).offset(dir), dir) >= Couplings.MIN_SIGNAL) {
+            return true;
+          }
+        }
       }
     }
     return false;
