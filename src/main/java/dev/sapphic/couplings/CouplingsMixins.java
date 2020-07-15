@@ -66,7 +66,7 @@ public final class CouplingsMixins implements IMixinConfigPlugin {
 
   @Override
   public List<String> getMixins() {
-    return ImmutableList.of();
+    return ImmutableList.of(DOOR_ACCESSOR, DOOR_MIXIN, FENCE_GATE_MIXIN, TRAPDOOR_MIXIN);
   }
 
   @Override
