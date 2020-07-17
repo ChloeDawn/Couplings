@@ -66,8 +66,8 @@ public final class FenceGates {
     if (Couplings.areFenceGatesEnabled()) {
       if (isPowered == isSufficientlyPowered(world, pos)) {
         final Axis axis = state.get(HorizontalFacingBlock.FACING).getAxis();
-        final int range = Couplings.getCouplingRange();
-        for (int y = -range; y <= range; ++y) {
+        final int max = Couplings.getCouplingRange() / 2;
+        for (int y = -max; y <= max; ++y) {
           final BlockPos offset = pos.up(y);
           final BlockState other = world.getBlockState(offset);
           if ((state.getBlock() == other.getBlock()) && equals(isPowered, axis, other)) {
@@ -89,14 +89,14 @@ public final class FenceGates {
     if (world.getReceivedRedstonePower(pos) >= Couplings.MIN_SIGNAL) {
       return true;
     }
-    final int range = Couplings.getCouplingRange() + 1;
-    for (int y = -range; y <= range; ++y) {
+    final int max = (Couplings.getCouplingRange() / 2) + 1;
+    for (int y = -max; y <= max; ++y) {
       if (y == 0) { // Origin already queried
         continue;
       }
       final BlockPos offset = pos.up(y);
-      if ((y == -range) || (y == range)) { // Above or below adjacent
-        final Direction dir = (y == -range) ? Direction.DOWN : Direction.UP;
+      if ((y == -max) || (y == max)) { // Above or below adjacent
+        final Direction dir = (y == -max) ? Direction.DOWN : Direction.UP;
         if (world.getEmittedRedstonePower(offset, dir) >= Couplings.MIN_SIGNAL) {
           return true;
         }
