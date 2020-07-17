@@ -45,7 +45,7 @@ public final class FenceGates {
       final Block block = state.getBlock();
       final boolean open = state.get(FenceGateBlock.OPEN);
       final Axis axis = state.get(HorizontalFacingBlock.FACING).getAxis();
-      final int range = Couplings.getCouplingRange();
+      final int range = Couplings.getCouplingRange() / 2;
       for (int y = -range; y <= range; y++) {
         final BlockPos offset = pos.up(y);
         if (Couplings.isUsable(world, offset, player)) {
