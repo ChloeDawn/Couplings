@@ -22,7 +22,6 @@ import net.minecraft.block.DoorBlock;
 import net.minecraft.block.enums.DoorHinge;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.state.State;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -81,7 +80,7 @@ public final class Doors {
     }
   }
 
-  private static boolean shouldUpdate(final State<?, ?> self, final State<?, ?> other) {
+  private static boolean shouldUpdate(final BlockState self, final BlockState other) {
     return (self.get(DoorBlock.FACING) == other.get(DoorBlock.FACING))
       && (self.get(DoorBlock.HALF) == other.get(DoorBlock.HALF))
       && (self.get(DoorBlock.OPEN) != other.get(DoorBlock.OPEN))
@@ -94,7 +93,7 @@ public final class Doors {
     return origin.offset(left ? facing.rotateYClockwise() : facing.rotateYCounterclockwise());
   }
 
-  private static boolean isSufficientlyPowered(final State<?, ?> state, final World world, final BlockPos pos) {
+  private static boolean isSufficientlyPowered(final BlockState state, final World world, final BlockPos pos) {
     if (world.getReceivedRedstonePower(pos) >= Couplings.MIN_SIGNAL) {
       return true;
     }
