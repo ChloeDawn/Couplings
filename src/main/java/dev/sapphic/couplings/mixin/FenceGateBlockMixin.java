@@ -16,7 +16,6 @@
 
 package dev.sapphic.couplings.mixin;
 
-import dev.sapphic.couplings.Couplings;
 import dev.sapphic.couplings.impl.FenceGateBlockCoupling;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
@@ -48,9 +47,7 @@ abstract class FenceGateBlockMixin extends HorizontalDirectionalBlock {
       target = "Lnet/minecraft/world/level/Level;setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z"),
     require = 2, allow = 2)
   private void used(final BlockState state, final Level level, final BlockPos pos, final Player player, final InteractionHand hand, final BlockHitResult hit, final CallbackInfoReturnable<InteractionResult> cir) {
-    if (!player.isCrouching() || Couplings.IGNORE_SNEAKING) {
-      FenceGateBlockCoupling.used(state, level, pos, player);
-    }
+    FenceGateBlockCoupling.used(state, level, pos, player);
   }
 
   @Inject(

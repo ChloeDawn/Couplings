@@ -16,7 +16,6 @@
 
 package dev.sapphic.couplings.mixin;
 
-import dev.sapphic.couplings.Couplings;
 import dev.sapphic.couplings.impl.TrapdoorBlockCoupling;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
@@ -48,10 +47,8 @@ abstract class TrapdoorBlockMixin extends HorizontalDirectionalBlock implements 
     at = @At(shift = At.Shift.AFTER, value = "INVOKE", opcode = Opcodes.INVOKEVIRTUAL,
       target = "Lnet/minecraft/world/level/Level;setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z"),
     require = 1, allow = 1)
-  private void used(final BlockState state, final Level level, final BlockPos pos, final Player player, final InteractionHand hand, final BlockHitResult hit, final CallbackInfoReturnable<InteractionResult> cir) {
-    if (!player.isCrouching() || Couplings.IGNORE_SNEAKING) {
-      TrapdoorBlockCoupling.used(state, level, pos, player);
-    }
+  private void used(final BlockState state, final Level level, final BlockPos pos, final Player player, final InteractionHand hand, final BlockHitResult hit, final CallbackInfoReturnable<InteractionResult> cir) { 
+    TrapdoorBlockCoupling.used(state, level, pos, player);
   }
 
   @Inject(

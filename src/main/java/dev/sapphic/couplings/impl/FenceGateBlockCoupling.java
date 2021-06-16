@@ -34,7 +34,9 @@ public final class FenceGateBlockCoupling {
   }
 
   public static void used(final BlockState state, final Level level, final BlockPos pos, final Player player) {
-    tryOpenCloseEach(state, level, pos, player, state.getValue(FenceGateBlock.OPEN));
+    if (!player.isCrouching() || Couplings.IGNORE_SNEAKING) {
+      tryOpenCloseEach(state, level, pos, player, state.getValue(FenceGateBlock.OPEN));
+    }
   }
 
   public static void neighborChanged(final BlockState state, final Level level, final BlockPos pos, final boolean powered) {

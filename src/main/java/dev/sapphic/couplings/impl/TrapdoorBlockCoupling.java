@@ -23,8 +23,6 @@ import net.minecraft.core.Direction.Axis;
 import net.minecraft.core.Direction.AxisDirection;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.ChainBlock;
-import net.minecraft.world.level.block.FenceGateBlock;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.TrapDoorBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -37,7 +35,9 @@ public final class TrapdoorBlockCoupling {
   }
 
   public static void used(final BlockState state, final Level level, final BlockPos pos, final Player player) {
-    tryOpenCloseEach(state, level, pos, player, state.getValue(TrapDoorBlock.OPEN));
+    if (!player.isCrouching() || Couplings.IGNORE_SNEAKING) {
+      tryOpenCloseEach(state, level, pos, player, state.getValue(TrapDoorBlock.OPEN));
+    }
   }
 
   public static void neighborChanged(final BlockState state, final Level level, final BlockPos pos, final boolean powered) {

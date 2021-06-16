@@ -16,6 +16,7 @@
 
 package dev.sapphic.couplings.impl;
 
+import dev.sapphic.couplings.Couplings;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Player;
@@ -30,16 +31,18 @@ public final class DoorBlockCoupling {
   }
 
   public static void used(final BlockState state, final Level level, final BlockPos pos, final Player player) {
-    final BlockPos offset = getCoupledDoorPos(state, pos);
+    if (!player.isCrouching() || Couplings.IGNORE_SNEAKING) {
+      final BlockPos offset = getCoupledDoorPos(state, pos);
 
-    if (level.mayInteract(player, offset)) {
-      final BlockState other = level.getBlockState(offset);
+      if (level.mayInteract(player, offset)) {
+        final BlockState other = level.getBlockState(offset);
 
-      if (state.getBlock() == other.getBlock()) {
-        final boolean open = state.getValue(DoorBlock.OPEN);
+        if (state.getBlock() == other.getBlock()) {
+          final boolean open = state.getValue(DoorBlock.OPEN);
 
-        if (areCoupled(state, other, open)) {
-          level.setBlock(offset, other.setValue(DoorBlock.OPEN, open), 2);
+          if (areCoupled(state, other, open)) {
+            level.setBlock(offset, other.setValue(DoorBlock.OPEN, open), 2);
+          }
         }
       }
     }
