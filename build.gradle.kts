@@ -3,7 +3,7 @@ import java.time.Instant
 
 plugins {
   id("fabric-loom") version "0.7.30"
-  id("net.nemerosa.versioning") version "2.14.0"
+  id("net.nemerosa.versioning") version "be24b23"
   id("signing")
 }
 
