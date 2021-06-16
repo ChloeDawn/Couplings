@@ -82,6 +82,7 @@ public final class DoorBlockCoupling {
   private static BlockPos getCoupledDoorPos(final BlockState state, final BlockPos pos) {
     final Direction facing = state.getValue(DoorBlock.FACING);
     final boolean leftHinge = state.getValue(DoorBlock.HINGE) == DoorHingeSide.LEFT;
+
     return pos.relative(leftHinge ? facing.getClockWise() : facing.getCounterClockWise());
   }
 

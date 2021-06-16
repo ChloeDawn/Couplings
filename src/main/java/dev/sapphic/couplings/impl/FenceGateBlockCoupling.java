@@ -133,6 +133,7 @@ public final class FenceGateBlockCoupling {
     if ((state.getBlock() == other.getBlock()) && (open != other.getValue(FenceGateBlock.OPEN))) {
       return axis == other.getValue(HorizontalDirectionalBlock.FACING).getAxis();
     }
+
     return false;
   }
 }
