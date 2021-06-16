@@ -16,64 +16,55 @@
 
 package dev.sapphic.couplings;
 
-import com.google.common.collect.ImmutableList;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
-
-import org.objectweb.asm.tree.ClassNode;
 
 import java.util.List;
 import java.util.Set;
 
 public final class CouplingsMixins implements IMixinConfigPlugin {
-  private static final String MIXIN_PACKAGE = "dev.sapphic.couplings.mixin";
-
-  private static final String DOOR_ACCESSOR = "DoorAccessor";
-  private static final String DOOR_MIXIN = "DoorMixin";
-  private static final String FENCE_GATE_MIXIN = "FenceGateMixin";
-  private static final String TRAPDOOR_MIXIN = "TrapdoorMixin";
-
   @Override
   public void onLoad(final String mixinPackage) {
-    if (!MIXIN_PACKAGE.equals(mixinPackage)) {
-      throw new IllegalArgumentException(mixinPackage);
-    }
   }
 
   @Override
-  public String getRefMapperConfig() {
-    throw new UnsupportedOperationException();
+  public @Nullable String getRefMapperConfig() {
+    return null;
   }
 
   @Override
   public boolean shouldApplyMixin(final String target, final String mixin) {
     switch (mixin) {
-      case MIXIN_PACKAGE + '.' + DOOR_ACCESSOR:
-      case MIXIN_PACKAGE + '.' + DOOR_MIXIN:
-        return Couplings.areDoorsEnabled();
-      case MIXIN_PACKAGE + '.' + FENCE_GATE_MIXIN:
-        return Couplings.areFenceGatesEnabled();
-      case MIXIN_PACKAGE + '.' + TRAPDOOR_MIXIN:
-        return Couplings.areTrapdoorsEnabled();
+      case "dev.sapphic.couplings.mixin.DoorBlockMixin":
+        return Couplings.COUPLE_DOORS;
+
+      case "dev.sapphic.couplings.mixin.FenceGateBlockMixin":
+        return Couplings.COUPLE_FENCE_GATES;
+
+      case "dev.sapphic.couplings.mixin.TrapdoorBlockMixin":
+        return Couplings.COUPLE_TRAPDOORS;
+
       default:
-        return false;
+        throw new IllegalArgumentException(mixin);
     }
   }
 
   @Override
-  public void acceptTargets(final Set<String> myTargets, final Set<String> otherTargets) {
+  public void acceptTargets(final Set<String> targets, final Set<String> otherTargets) {
   }
 
   @Override
-  public List<String> getMixins() {
-    return ImmutableList.of(DOOR_ACCESSOR, DOOR_MIXIN, FENCE_GATE_MIXIN, TRAPDOOR_MIXIN);
+  public @Nullable List<String> getMixins() {
+    return null;
   }
 
   @Override
-  public void preApply(final String targetClassName, final ClassNode targetClass, final String mixinClassName, final IMixinInfo mixinInfo) {
+  public void preApply(final String target, final ClassNode targetClass, final String mixin, final IMixinInfo info) {
   }
 
   @Override
-  public void postApply(final String targetClassName, final ClassNode targetClass, final String mixinClassName, final IMixinInfo mixinInfo) {
+  public void postApply(final String target, final ClassNode targetClass, final String mixin, final IMixinInfo info) {
   }
 }

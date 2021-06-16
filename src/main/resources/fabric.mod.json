@@ -7,24 +7,13 @@
   "license": "Apache-2.0",
   "icon": "pack.png",
   "depends": {
-    "fabricloader": ">=0.9.0"
-  },
-  "entrypoints": {
-    "main": [
-      "dev.sapphic.couplings.Couplings::load"
-    ]
+    "fabricloader": ">=0.11.6"
   },
   "mixins": [
     "mixins/couplings/mixins.json"
   ],
-  "authors": [
-    {
-      "name": "Chloe Dawn",
-      "contact": {
-        "email": "chloe@sapphic.dev",
-        "homepage": "https://sapphic.dev"
-      }
-    }
+  "authors": [ 
+    "Chloe Dawn"
   ],
   "contact": {
     "homepage": "https://git.io/JJsni",

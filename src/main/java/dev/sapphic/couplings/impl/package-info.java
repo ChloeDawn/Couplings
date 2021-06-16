@@ -14,16 +14,8 @@
  * limitations under the License.
  */
 
-package dev.sapphic.couplings.mixin;
+@DefaultQualifier(NonNull.class)
+package dev.sapphic.couplings.impl;
 
-import net.minecraft.block.DoorBlock;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Invoker;
-
-@Mixin(DoorBlock.class)
-public interface DoorAccessor {
-  @Invoker("playOpenCloseSound")
-  void invokePlaySound(final World world, final BlockPos pos, final boolean powered);
-}
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.framework.qual.DefaultQualifier;

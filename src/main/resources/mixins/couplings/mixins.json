@@ -3,6 +3,11 @@
   "compatibilityLevel": "JAVA_8",
   "required": true,
   "package": "dev.sapphic.couplings.mixin",
+  "mixins": [
+    "DoorBlockMixin",
+    "FenceGateBlockMixin",
+    "TrapdoorBlockMixin"
+  ],
   "refmap": "mixins/couplings/refmap.json",
   "plugin": "dev.sapphic.couplings.CouplingsMixins"
 }

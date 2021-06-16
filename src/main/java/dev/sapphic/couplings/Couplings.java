@@ -16,145 +16,53 @@
 
 package dev.sapphic.couplings;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonSyntaxException;
-import com.google.gson.annotations.SerializedName;
+import com.electronwill.nightconfig.core.ConfigSpec;
+import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.CollisionView;
-import net.minecraft.world.World;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.apache.logging.log4j.LogManager;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.Writer;
-import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 
 public final class Couplings {
-  public static final int DEFAULT_RANGE = 128;
-  public static final int MIN_SIGNAL = 8;
+  public static final int COUPLING_DISTANCE = 64;
 
-  public static final String JSON = "couplings.json";
+  public static final boolean IGNORE_SNEAKING;
+  public static final boolean COUPLE_DOORS;
+  public static final boolean COUPLE_FENCE_GATES;
+  public static final boolean COUPLE_TRAPDOORS;
 
-  private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+  static {
+    final Path configs = FabricLoader.getInstance().getConfigDir();
+    final CommentedFileConfig config = CommentedFileConfig.of(configs.resolve("couplings.toml"));
 
-  private static Options options = new Options();
-  private static boolean loaded;
+    config.load();
+
+    final ConfigSpec spec = new ConfigSpec();
+
+    spec.define("ignore_sneaking", true);
+    spec.define("couple_doors", true);
+    spec.define("couple_fence_gates", true);
+    spec.define("couple_trapdoors", true);
+
+    spec.correct(config);
+
+    config.setComment("ignore_sneaking", "Couple regardless of whether the player is sneaking when interacting");
+    config.setComment("couple_doors", "Couple neighboring doors with opposing hinges");
+    config.setComment("couple_fence_gates", "Couple neighboring fence gates above and below on the same axis");
+    config.setComment("couple_trapdoors", "Couple neighboring trapdoors along either sides and opposing");
+
+    config.save();
+
+    IGNORE_SNEAKING = config.getOrElse("ignore_sneaking", true);
+    COUPLE_DOORS = config.getOrElse("couple_doors", true);
+    COUPLE_FENCE_GATES = config.getOrElse("couple_fence_gates", true);
+    COUPLE_TRAPDOORS = config.getOrElse("couple_trapdoors", true);
+
+    if (!COUPLE_DOORS || !COUPLE_FENCE_GATES || !COUPLE_TRAPDOORS) {
+      LogManager.getLogger().warn("No features are enabled, this could be a bug!");
+    }
+  }
 
   private Couplings() {
-  }
-
-  public static void load() {
-    if (loaded) {
-      throw new IllegalStateException();
-    }
-    readOptions();
-    loaded = true;
-  }
-
-  public static boolean isSneakingIgnored() {
-    return options.ignoreSneaking;
-  }
-
-  public static int getCouplingRange() {
-    return options.couplingRange;
-  }
-
-  public static boolean areDoorsEnabled() {
-    return options.enabledFeatures.doors;
-  }
-
-  public static boolean areFenceGatesEnabled() {
-    return options.enabledFeatures.fenceGates;
-  }
-
-  public static boolean areTrapdoorsEnabled() {
-    return options.enabledFeatures.trapdoors;
-  }
-
-  public static boolean isUsable(final CollisionView world, final BlockPos pos, final PlayerEntity player) {
-    return player.canModifyBlocks() && world.getWorldBorder().contains(pos);
-  }
-
-  public static boolean use(final BlockState other, final World world, final Hand hand, final PlayerEntity player, final BlockHitResult origin, final BlockPos offset, final ActionResult originResult) {
-    return !other.onUse(world, player, hand, new BlockHitResult(origin.getPos(), origin.getSide(), offset.toImmutable(), false)).isAccepted();
-  }
-
-  private static void readOptions() {
-    try (final Reader reader = Files.newBufferedReader(getPathToJson())) {
-      final @Nullable Options o = GSON.fromJson(reader, Options.class);
-      if (o == null) {
-        writeOptions();
-      } else {
-        options = o;
-      }
-    } catch (final JsonSyntaxException e) {
-      if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
-        throw e;
-      }
-      writeOptions();
-    } catch (final NoSuchFileException e) {
-      writeOptions();
-    } catch (final IOException e) {
-      throw new IllegalStateException("Unable to read options file", e);
-    }
-  }
-
-  private static void writeOptions() {
-    try (final Writer writer = Files.newBufferedWriter(getPathToJson())) {
-      writer.write(GSON.toJson(options));
-    } catch (final IOException e) {
-      throw new IllegalStateException("Unable to write options file", e);
-    }
-  }
-
-  private static Path getPathToJson() {
-    return FabricLoader.getInstance().getConfigDir().resolve(JSON);
-  }
-
-  private static final class Options {
-    @SerializedName("ignore_sneaking")
-    private final boolean ignoreSneaking;
-
-    @SerializedName("coupling_range")
-    private final int couplingRange;
-
-    @SerializedName("enabled_features")
-    private final Features enabledFeatures;
-
-    private Options(final boolean ignoreSneaking, final int couplingRange, final Features enabledFeatures) {
-      this.ignoreSneaking = ignoreSneaking;
-      this.couplingRange = couplingRange;
-      this.enabledFeatures = enabledFeatures;
-    }
-
-    private Options() {
-      this(true, DEFAULT_RANGE, new Features(true, true, true));
-    }
-
-    private static final class Features {
-      @SerializedName("doors")
-      private final boolean doors;
-
-      @SerializedName("fence_gates")
-      private final boolean fenceGates;
-
-      @SerializedName("trapdoors")
-      private final boolean trapdoors;
-
-      private Features(final boolean doors, final boolean fenceGates, final boolean trapdoors) {
-        this.doors = doors;
-        this.fenceGates = fenceGates;
-        this.trapdoors = trapdoors;
-      }
-    }
   }
 }
