@@ -53,7 +53,7 @@ public final class DoorBlockCoupling {
     final BlockState other = level.getBlockState(offset);
 
     if ((state.getBlock() == other.getBlock()) && areCoupled(state, other, open)) {
-      level.setBlock(pos, other.setValue(DoorBlock.OPEN, open), 2);
+      level.setBlock(pos, other.setValue(DoorBlock.OPEN, open), 10);
     }
   }
 
