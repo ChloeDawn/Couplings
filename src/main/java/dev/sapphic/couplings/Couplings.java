@@ -21,8 +21,6 @@ import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import net.fabricmc.loader.api.FabricLoader;
 import org.apache.logging.log4j.LogManager;
 
-import java.nio.file.Path;
-
 public final class Couplings {
   public static final int COUPLING_DISTANCE = 64;
 
@@ -32,8 +30,8 @@ public final class Couplings {
   public static final boolean COUPLE_TRAPDOORS;
 
   static {
-    final Path configs = FabricLoader.getInstance().getConfigDir();
-    final CommentedFileConfig config = CommentedFileConfig.of(configs.resolve("couplings.toml"));
+    final CommentedFileConfig config = CommentedFileConfig.of(
+      FabricLoader.getInstance().getConfigDir().resolve("couplings.toml"));
 
     config.load();
 
