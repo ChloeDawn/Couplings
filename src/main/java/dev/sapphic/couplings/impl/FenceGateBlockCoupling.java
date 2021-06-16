@@ -40,7 +40,7 @@ public final class FenceGateBlockCoupling {
   }
 
   public static void neighborChanged(final BlockState state, final Level level, final BlockPos pos, final boolean powered) {
-    if (powered != isSufficientlyPowered(state, level, pos, powered)) {
+    if (powered != (powered || isSufficientlyPowered(state, level, pos))) {
       level.setBlock(pos, state.setValue(FenceGateBlock.POWERED, false).setValue(FenceGateBlock.OPEN, true), 2);
     } else {
       tryOpenCloseEach(state, level, pos, null, powered);
@@ -92,11 +92,7 @@ public final class FenceGateBlockCoupling {
     return false;
   }
 
-  private static boolean isSufficientlyPowered(final BlockState state, final Level level, final BlockPos pos, final boolean powered) {
-    if (powered) {
-      return true;
-    }
-
+  private static boolean isSufficientlyPowered(final BlockState state, final Level level, final BlockPos pos) {
     final Axis axis = state.getValue(HorizontalDirectionalBlock.FACING).getAxis();
     final int distance = Couplings.COUPLING_DISTANCE;
     boolean continueUp = true;

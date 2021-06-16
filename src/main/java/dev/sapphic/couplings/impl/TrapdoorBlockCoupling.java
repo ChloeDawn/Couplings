@@ -41,7 +41,7 @@ public final class TrapdoorBlockCoupling {
   }
 
   public static void neighborChanged(final BlockState state, final Level level, final BlockPos pos, final boolean powered) {
-    if (powered != isSufficientlyPowered(state, level, pos, powered)) {
+    if (powered != (powered || isSufficientlyPowered(state, level, pos))) {
       level.setBlock(pos, state.setValue(TrapDoorBlock.POWERED, false).setValue(TrapDoorBlock.OPEN, true), 2);
     } else {
       tryOpenCloseEach(state, level, pos, null, powered);
@@ -109,11 +109,7 @@ public final class TrapdoorBlockCoupling {
     return false;
   }
 
-  private static boolean isSufficientlyPowered(final BlockState state, final Level level, final BlockPos pos, final boolean powered) {
-    if (powered) {
-      return true;
-    }
-
+  private static boolean isSufficientlyPowered(final BlockState state, final Level level, final BlockPos pos) {
     final Direction facing = state.getValue(HorizontalDirectionalBlock.FACING);
     final boolean traverseZ = facing.getAxis() == Axis.X;
     final int offset = (facing.getAxisDirection() == AxisDirection.POSITIVE) ? 1 : -1;
