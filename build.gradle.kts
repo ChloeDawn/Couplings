@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "dev.sapphic"
-version = "2.0.0"
+version = "2.0.0+1.16"
 
 java {
   withSourcesJar()
@@ -18,7 +18,7 @@ loom {
   refmapName = "mixins/couplings/refmap.json"
   runs {
     configureEach {
-      vmArg("-Dmixin.debug=true")
+      vmArg("-Dmixin.debug.export=true")
       vmArg("-Dmixin.debug.export.decompile=false")
       vmArg("-Dmixin.debug.verbose=true")
       vmArg("-Dmixin.dumpTargetOnFailure=true")
