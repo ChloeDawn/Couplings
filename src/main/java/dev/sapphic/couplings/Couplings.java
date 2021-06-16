@@ -35,26 +35,31 @@ public final class Couplings {
 
     config.load();
 
+    final String ignoreSneaking = "ignore_sneaking";
+    final String coupleDoors = "couple_doors";
+    final String coupleFenceGates = "couple_fence_gates";
+    final String coupleTrapdoors = "couple_trapdoors";
+
     final ConfigSpec spec = new ConfigSpec();
 
-    spec.define("ignore_sneaking", true);
-    spec.define("couple_doors", true);
-    spec.define("couple_fence_gates", true);
-    spec.define("couple_trapdoors", true);
+    spec.define(ignoreSneaking, true);
+    spec.define(coupleDoors, true);
+    spec.define(coupleFenceGates, true);
+    spec.define(coupleTrapdoors, true);
 
     spec.correct(config);
 
-    config.setComment("ignore_sneaking", "Couple regardless of whether the player is sneaking when interacting");
-    config.setComment("couple_doors", "Couple neighboring doors with opposing hinges");
-    config.setComment("couple_fence_gates", "Couple neighboring fence gates above and below on the same axis");
-    config.setComment("couple_trapdoors", "Couple neighboring trapdoors along either sides and opposing");
+    config.setComment(ignoreSneaking, "Couple regardless of whether the player is sneaking when interacting");
+    config.setComment(coupleDoors, "Couple neighboring doors with opposing hinges");
+    config.setComment(coupleFenceGates, "Couple neighboring fence gates above and below on the same axis");
+    config.setComment(coupleTrapdoors, "Couple neighboring trapdoors along either sides and opposing");
 
     config.save();
 
-    IGNORE_SNEAKING = config.getOrElse("ignore_sneaking", true);
-    COUPLE_DOORS = config.getOrElse("couple_doors", true);
-    COUPLE_FENCE_GATES = config.getOrElse("couple_fence_gates", true);
-    COUPLE_TRAPDOORS = config.getOrElse("couple_trapdoors", true);
+    IGNORE_SNEAKING = config.getOrElse(ignoreSneaking, true);
+    COUPLE_DOORS = config.getOrElse(coupleDoors, true);
+    COUPLE_FENCE_GATES = config.getOrElse(coupleFenceGates, true);
+    COUPLE_TRAPDOORS = config.getOrElse(coupleTrapdoors, true);
 
     if (!COUPLE_DOORS || !COUPLE_FENCE_GATES || !COUPLE_TRAPDOORS) {
       LogManager.getLogger().warn("No features are enabled, this could be a bug!");
