@@ -42,7 +42,7 @@ public final class FenceGateBlockCoupling {
   public static void neighborChanged(final BlockState state, final Level level, final BlockPos pos, final boolean powered) {
     if (powered != (powered || isSufficientlyPowered(state, level, pos))) {
       level.setBlock(pos, state.setValue(FenceGateBlock.POWERED, false).setValue(FenceGateBlock.OPEN, true), 2);
-    } else {
+    } else if (!powered || (level.getBestNeighborSignal(pos) >= Couplings.COUPLING_SIGNAL)) {
       tryOpenCloseEach(state, level, pos, null, powered);
     }
   }
@@ -103,7 +103,10 @@ public final class FenceGateBlockCoupling {
         final BlockPos above = pos.above(offset);
         final BlockState other = level.getBlockState(above);
 
-        if ((state.getBlock() != other.getBlock()) || (axis != other.getValue(HorizontalDirectionalBlock.FACING).getAxis())) {
+        if ((state.getBlock() != other.getBlock()) || (
+          axis != other.getValue(HorizontalDirectionalBlock.FACING)
+            .getAxis()
+        )) {
           continueUp = false;
         } else if (level.getBestNeighborSignal(above) >= Couplings.COUPLING_SIGNAL) {
           return true;
@@ -114,7 +117,10 @@ public final class FenceGateBlockCoupling {
         final BlockPos below = pos.below(offset);
         final BlockState other = level.getBlockState(below);
 
-        if ((state.getBlock() != other.getBlock()) || (axis != other.getValue(HorizontalDirectionalBlock.FACING).getAxis())) {
+        if ((state.getBlock() != other.getBlock()) || (
+          axis != other.getValue(HorizontalDirectionalBlock.FACING)
+            .getAxis()
+        )) {
           continueDown = false;
         } else if (level.getBestNeighborSignal(below) >= Couplings.COUPLING_SIGNAL) {
           return true;

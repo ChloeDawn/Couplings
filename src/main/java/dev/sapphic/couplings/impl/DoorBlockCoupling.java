@@ -59,14 +59,16 @@ public final class DoorBlockCoupling {
 
   public static void neighborChanged(final BlockState state, final Level level, final BlockPos pos, final boolean powered) {
     if (powered != state.getValue(DoorBlock.POWERED)) {
-      final BlockPos offset = getCoupledDoorPos(state, pos);
-      final BlockState other = level.getBlockState(offset);
+      if (!powered || (level.getBestNeighborSignal(pos) >= Couplings.COUPLING_SIGNAL)) {
+        final BlockPos offset = getCoupledDoorPos(state, pos);
+        final BlockState other = level.getBlockState(offset);
 
-      if (state.getBlock() == other.getBlock()) {
-        if (isOtherHalfPowered(other, level, offset)) {
-          level.setBlock(pos, state.setValue(DoorBlock.POWERED, powered), 2);
-        } else if (areCoupled(state, other, powered)) {
-          level.setBlock(offset, other.setValue(DoorBlock.OPEN, powered), 2);
+        if (state.getBlock() == other.getBlock()) {
+          if (isOtherHalfPowered(other, level, offset)) {
+            level.setBlock(pos, state.setValue(DoorBlock.POWERED, powered), 2);
+          } else if (areCoupled(state, other, powered)) {
+            level.setBlock(offset, other.setValue(DoorBlock.OPEN, powered), 2);
+          }
         }
       }
     }

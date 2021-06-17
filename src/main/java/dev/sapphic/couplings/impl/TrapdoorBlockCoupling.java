@@ -43,7 +43,7 @@ public final class TrapdoorBlockCoupling {
   public static void neighborChanged(final BlockState state, final Level level, final BlockPos pos, final boolean powered) {
     if (powered != (powered || isSufficientlyPowered(state, level, pos))) {
       level.setBlock(pos, state.setValue(TrapDoorBlock.POWERED, false).setValue(TrapDoorBlock.OPEN, true), 2);
-    } else {
+    } else if (!powered || (level.getBestNeighborSignal(pos) >= Couplings.COUPLING_SIGNAL)) {
       tryOpenCloseEach(state, level, pos, null, powered);
     }
   }
