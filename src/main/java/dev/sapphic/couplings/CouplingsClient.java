@@ -34,18 +34,24 @@ public final class CouplingsClient implements ClientModInitializer {
   @Override
   public void onInitializeClient() {
     ClientPlayNetworking.registerGlobalReceiver(Couplings.SERVER_CONFIG, (minecraft, listener, buf, sender) -> {
-      Preconditions.checkArgument(buf.isReadable(Byte.BYTES * 3), buf);
-      serverCouplesDoors = buf.readBoolean();
-      serverCouplesFenceGates = buf.readBoolean();
-      serverCouplesTrapdoors = buf.readBoolean();
-      Preconditions.checkArgument(!buf.isReadable(), buf);
+      Preconditions.checkArgument(buf.readableBytes() == Byte.BYTES, buf);
+
+      final byte serverConfig = buf.readByte();
+
+      Preconditions.checkArgument(serverConfig <= ((1 << 2) | (1 << 1) | 1), buf);
+
+      minecraft.execute(() -> {
+        serverCouplesDoors = ((serverConfig >> 2) & 1) != 0;
+        serverCouplesFenceGates = ((serverConfig >> 1) & 1) != 0;
+        serverCouplesTrapdoors = (serverConfig & 1) != 0;
+      });
     });
 
     ClientPlayConnectionEvents.JOIN.register((listener, sender, minecraft) -> {
+      final int clientConfig = Couplings.IGNORE_SNEAKING ? 1 : 0;
+
       ClientPlayNetworking.send(Couplings.CLIENT_CONFIG, new FriendlyByteBuf(
-        Unpooled.buffer(Byte.BYTES, Byte.BYTES)
-          .writeBoolean(Couplings.IGNORE_SNEAKING)
-          .asReadOnly()));
+        Unpooled.buffer(Byte.BYTES, Byte.BYTES).writeByte(clientConfig).asReadOnly()));
     });
   }
 

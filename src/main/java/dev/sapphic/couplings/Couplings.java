@@ -102,18 +102,26 @@ public final class Couplings implements ModInitializer {
   @Override
   public void onInitialize() {
     ServerPlayNetworking.registerGlobalReceiver(CLIENT_CONFIG, (server, player, listener, buf, sender) -> {
-      Preconditions.checkArgument(buf.isReadable(Byte.BYTES), buf);
-      CouplingsPlayer.ignoresSneaking(player, buf.readBoolean());
-      Preconditions.checkArgument(!buf.isReadable(), buf);
+      Preconditions.checkArgument(buf.readableBytes() == Byte.BYTES, buf);
+
+      final byte clientConfig = buf.readByte();
+
+      Preconditions.checkArgument(clientConfig <= 1, buf);
+
+      server.execute(() -> {
+        CouplingsPlayer.ignoresSneaking(player, clientConfig != 0);
+      });
     });
 
     ServerPlayConnectionEvents.JOIN.register((listener, sender, server) -> {
+      int couplings = 0b000;
+
+      couplings |= (COUPLE_DOORS ? 1 : 0) << 2;
+      couplings |= (COUPLE_FENCE_GATES ? 1 : 0) << 1;
+      couplings |= COUPLE_TRAPDOORS ? 1 : 0;
+
       ServerPlayNetworking.send(listener.player, SERVER_CONFIG, new FriendlyByteBuf(
-        Unpooled.buffer(Byte.BYTES * 3, Byte.BYTES * 3)
-          .writeBoolean(COUPLE_DOORS)
-          .writeBoolean(COUPLE_FENCE_GATES)
-          .writeBoolean(COUPLE_TRAPDOORS)
-          .asReadOnly()));
+        Unpooled.buffer(Byte.BYTES, Byte.BYTES).writeByte(couplings).asReadOnly()));
     });
   }
 }
