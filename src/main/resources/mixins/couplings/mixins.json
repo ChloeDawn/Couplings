@@ -9,5 +9,5 @@
     "TrapdoorBlockMixin"
   ],
   "refmap": "mixins/couplings/refmap.json",
-  "plugin": "dev.sapphic.couplings.CouplingsMixins"
+  "plugin": "dev.sapphic.couplings.Couplings"
 }

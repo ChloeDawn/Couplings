@@ -20,8 +20,15 @@ import com.electronwill.nightconfig.core.ConfigSpec;
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import net.fabricmc.loader.api.FabricLoader;
 import org.apache.logging.log4j.LogManager;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.objectweb.asm.tree.ClassNode;
+import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
+import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
-public final class Couplings {
+import java.util.List;
+import java.util.Set;
+
+public final class Couplings implements IMixinConfigPlugin {
   public static final int COUPLING_DISTANCE = 64;
   public static final int COUPLING_SIGNAL = 8;
 
@@ -67,6 +74,46 @@ public final class Couplings {
     }
   }
 
-  private Couplings() {
+  @Override
+  public void onLoad(final String mixinPackage) {
+  }
+
+  @Override
+  public @Nullable String getRefMapperConfig() {
+    return null;
+  }
+
+  @Override
+  public boolean shouldApplyMixin(final String target, final String mixin) {
+    switch (mixin) {
+      case "dev.sapphic.couplings.mixin.DoorBlockMixin":
+        return COUPLE_DOORS;
+
+      case "dev.sapphic.couplings.mixin.FenceGateBlockMixin":
+        return COUPLE_FENCE_GATES;
+
+      case "dev.sapphic.couplings.mixin.TrapdoorBlockMixin":
+        return COUPLE_TRAPDOORS;
+
+      default:
+        throw new IllegalArgumentException(mixin);
+    }
+  }
+
+  @Override
+  public void acceptTargets(final Set<String> targets, final Set<String> otherTargets) {
+  }
+
+  @Override
+  public @Nullable List<String> getMixins() {
+    return null;
+  }
+
+  @Override
+  public void preApply(final String target, final ClassNode targetClass, final String mixin, final IMixinInfo info) {
+  }
+
+  @Override
+  public void postApply(final String target, final ClassNode targetClass, final String mixin, final IMixinInfo info) {
   }
 }
