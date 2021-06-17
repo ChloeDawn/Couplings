@@ -20,12 +20,7 @@ import com.electronwill.nightconfig.core.ConfigSpec;
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.google.common.base.Preconditions;
 import io.netty.buffer.Unpooled;
-import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
@@ -39,17 +34,17 @@ public final class Couplings implements ModInitializer {
   public static final int COUPLING_DISTANCE = 64;
   public static final int COUPLING_SIGNAL = 8;
 
-  private static final ResourceLocation CLIENT_CONFIG = new ResourceLocation("couplings", "client_config");
-  private static final ResourceLocation SERVER_CONFIG = new ResourceLocation("couplings", "server_config");
+  static final ResourceLocation CLIENT_CONFIG = new ResourceLocation("couplings", "client_config");
+  static final ResourceLocation SERVER_CONFIG = new ResourceLocation("couplings", "server_config");
 
-  private static final boolean IGNORE_SNEAKING;
-  private static final boolean COUPLE_DOORS;
-  private static final boolean COUPLE_FENCE_GATES;
-  private static final boolean COUPLE_TRAPDOORS;
+  static final boolean IGNORE_SNEAKING;
+  static final boolean COUPLE_DOORS;
+  static final boolean COUPLE_FENCE_GATES;
+  static final boolean COUPLE_TRAPDOORS;
 
-  private static boolean serverCouplesDoors;
-  private static boolean serverCouplesFenceGates;
-  private static boolean serverCouplesTrapdoors;
+  static boolean serverCouplesDoors;
+  static boolean serverCouplesFenceGates;
+  static boolean serverCouplesTrapdoors;
 
   static {
     final CommentedFileConfig config = CommentedFileConfig.of(
@@ -124,26 +119,5 @@ public final class Couplings implements ModInitializer {
           .writeBoolean(COUPLE_TRAPDOORS)
           .asReadOnly()));
     });
-  }
-
-  @Environment(EnvType.CLIENT)
-  public static final class Client implements ClientModInitializer {
-    @Override
-    public void onInitializeClient() {
-      ClientPlayNetworking.registerGlobalReceiver(SERVER_CONFIG, (minecraft, listener, buf, sender) -> {
-        Preconditions.checkArgument(buf.isReadable(Byte.BYTES * 3), buf);
-        serverCouplesDoors = buf.readBoolean();
-        serverCouplesFenceGates = buf.readBoolean();
-        serverCouplesTrapdoors = buf.readBoolean();
-        Preconditions.checkArgument(!buf.isReadable(), buf);
-      });
-
-      ClientPlayConnectionEvents.JOIN.register((listener, sender, minecraft) -> {
-        ClientPlayNetworking.send(CLIENT_CONFIG, new FriendlyByteBuf(
-          Unpooled.buffer(Byte.BYTES, Byte.BYTES)
-            .writeBoolean(IGNORE_SNEAKING)
-            .asReadOnly()));
-      });
-    }
   }
 }

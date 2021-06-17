@@ -12,7 +12,7 @@
   },
   "entrypoints": {
     "client": [
-      "dev.sapphic.couplings.Couplings$Client"
+      "dev.sapphic.couplings.CouplingsClient"
     ],
     "main": [
       "dev.sapphic.couplings.Couplings"
