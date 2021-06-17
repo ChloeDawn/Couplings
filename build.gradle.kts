@@ -44,6 +44,7 @@ dependencies {
   implementation("org.checkerframework:checker-qual:3.14.0")
   implementation(include("com.electronwill.night-config:core:3.6.3")!!)
   implementation(include("com.electronwill.night-config:toml:3.6.3")!!)
+  modImplementation(include(fabricApi.module("fabric-networking-api-v1", "0.35.1+1.16"))!!)
   modRuntime("com.terraformersmc:modmenu:1.16.5")
 }
 

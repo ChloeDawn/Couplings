@@ -6,8 +6,8 @@
   "mixins": [
     "DoorBlockMixin",
     "FenceGateBlockMixin",
+    "ServerPlayerMixin",
     "TrapdoorBlockMixin"
   ],
-  "refmap": "mixins/couplings/refmap.json",
-  "plugin": "dev.sapphic.couplings.Couplings"
+  "refmap": "mixins/couplings/refmap.json"
 }

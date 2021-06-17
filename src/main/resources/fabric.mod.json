@@ -10,6 +10,14 @@
     "fabricloader": ">=0.11.6",
     "minecraft": ">=1.16.5 <=1.17"
   },
+  "entrypoints": {
+    "client": [
+      "dev.sapphic.couplings.Couplings$Client"
+    ],
+    "main": [
+      "dev.sapphic.couplings.Couplings"
+    ]
+  },
   "mixins": [
     "mixins/couplings/mixins.json"
   ],

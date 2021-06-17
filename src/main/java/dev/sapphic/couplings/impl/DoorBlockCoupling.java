@@ -31,7 +31,7 @@ public final class DoorBlockCoupling {
   }
 
   public static void used(final BlockState state, final Level level, final BlockPos pos, final Player player) {
-    if (!player.isCrouching() || Couplings.IGNORE_SNEAKING) {
+    if (Couplings.couplesDoors(level) && (!player.isCrouching() || Couplings.ignoresSneaking(player))) {
       final BlockPos offset = getCoupledDoorPos(state, pos);
 
       if (level.mayInteract(player, offset)) {
@@ -49,16 +49,18 @@ public final class DoorBlockCoupling {
   }
 
   public static void openStateChanged(final BlockState state, final Level level, final BlockPos pos, final boolean open) {
-    final BlockPos offset = getCoupledDoorPos(state, pos);
-    final BlockState other = level.getBlockState(offset);
+    if (Couplings.couplesDoors(level)) {
+      final BlockPos offset = getCoupledDoorPos(state, pos);
+      final BlockState other = level.getBlockState(offset);
 
-    if ((state.getBlock() == other.getBlock()) && areCoupled(state, other, open)) {
-      level.setBlock(pos, other.setValue(DoorBlock.OPEN, open), 10);
+      if ((state.getBlock() == other.getBlock()) && areCoupled(state, other, open)) {
+        level.setBlock(pos, other.setValue(DoorBlock.OPEN, open), 10);
+      }
     }
   }
 
   public static void neighborChanged(final BlockState state, final Level level, final BlockPos pos, final boolean powered) {
-    if (powered != state.getValue(DoorBlock.POWERED)) {
+    if (Couplings.couplesDoors(level) && (powered != state.getValue(DoorBlock.POWERED))) {
       if (!powered || (level.getBestNeighborSignal(pos) >= Couplings.COUPLING_SIGNAL)) {
         final BlockPos offset = getCoupledDoorPos(state, pos);
         final BlockState other = level.getBlockState(offset);

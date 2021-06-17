@@ -18,24 +18,38 @@ package dev.sapphic.couplings;
 
 import com.electronwill.nightconfig.core.ConfigSpec;
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
+import com.google.common.base.Preconditions;
+import io.netty.buffer.Unpooled;
+import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import org.apache.logging.log4j.LogManager;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.objectweb.asm.tree.ClassNode;
-import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
-import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
-import java.util.List;
-import java.util.Set;
-
-public final class Couplings implements IMixinConfigPlugin {
+public final class Couplings implements ModInitializer {
   public static final int COUPLING_DISTANCE = 64;
   public static final int COUPLING_SIGNAL = 8;
 
-  public static final boolean IGNORE_SNEAKING;
-  public static final boolean COUPLE_DOORS;
-  public static final boolean COUPLE_FENCE_GATES;
-  public static final boolean COUPLE_TRAPDOORS;
+  private static final ResourceLocation CLIENT_CONFIG = new ResourceLocation("couplings", "client_config");
+  private static final ResourceLocation SERVER_CONFIG = new ResourceLocation("couplings", "server_config");
+
+  private static final boolean IGNORE_SNEAKING;
+  private static final boolean COUPLE_DOORS;
+  private static final boolean COUPLE_FENCE_GATES;
+  private static final boolean COUPLE_TRAPDOORS;
+
+  private static boolean serverCouplesDoors;
+  private static boolean serverCouplesFenceGates;
+  private static boolean serverCouplesTrapdoors;
 
   static {
     final CommentedFileConfig config = CommentedFileConfig.of(
@@ -64,56 +78,72 @@ public final class Couplings implements IMixinConfigPlugin {
 
     config.save();
 
-    IGNORE_SNEAKING = config.getOrElse(ignoreSneaking, true);
-    COUPLE_DOORS = config.getOrElse(coupleDoors, true);
-    COUPLE_FENCE_GATES = config.getOrElse(coupleFenceGates, true);
-    COUPLE_TRAPDOORS = config.getOrElse(coupleTrapdoors, true);
+    IGNORE_SNEAKING = config.get(ignoreSneaking);
+    COUPLE_DOORS = config.get(coupleDoors);
+    COUPLE_FENCE_GATES = config.get(coupleFenceGates);
+    COUPLE_TRAPDOORS = config.get(coupleTrapdoors);
 
     if (!COUPLE_DOORS || !COUPLE_FENCE_GATES || !COUPLE_TRAPDOORS) {
       LogManager.getLogger().warn("No features are enabled, this could be a bug!");
     }
   }
 
-  @Override
-  public void onLoad(final String mixinPackage) {
-  }
-
-  @Override
-  public @Nullable String getRefMapperConfig() {
-    return null;
-  }
-
-  @Override
-  public boolean shouldApplyMixin(final String target, final String mixin) {
-    switch (mixin) {
-      case "dev.sapphic.couplings.mixin.DoorBlockMixin":
-        return COUPLE_DOORS;
-
-      case "dev.sapphic.couplings.mixin.FenceGateBlockMixin":
-        return COUPLE_FENCE_GATES;
-
-      case "dev.sapphic.couplings.mixin.TrapdoorBlockMixin":
-        return COUPLE_TRAPDOORS;
-
-      default:
-        throw new IllegalArgumentException(mixin);
+  public static boolean ignoresSneaking(final Player player) {
+    if (player instanceof CouplingsPlayer) {
+      return CouplingsPlayer.ignoresSneaking(player);
     }
+
+    return IGNORE_SNEAKING;
+  }
+
+  public static boolean couplesDoors(final Level level) {
+    return level.isClientSide() ? serverCouplesDoors : COUPLE_DOORS;
+  }
+
+  public static boolean couplesFenceGates(final Level level) {
+    return level.isClientSide() ? serverCouplesFenceGates : COUPLE_FENCE_GATES;
+  }
+
+  public static boolean couplesTrapdoors(final Level level) {
+    return level.isClientSide() ? serverCouplesTrapdoors : COUPLE_TRAPDOORS;
   }
 
   @Override
-  public void acceptTargets(final Set<String> targets, final Set<String> otherTargets) {
+  public void onInitialize() {
+    ServerPlayNetworking.registerGlobalReceiver(CLIENT_CONFIG, (server, player, listener, buf, sender) -> {
+      Preconditions.checkArgument(buf.isReadable(Byte.BYTES), buf);
+      CouplingsPlayer.ignoresSneaking(player, buf.readBoolean());
+      Preconditions.checkArgument(!buf.isReadable(), buf);
+    });
+
+    ServerPlayConnectionEvents.JOIN.register((listener, sender, server) -> {
+      ServerPlayNetworking.send(listener.player, SERVER_CONFIG, new FriendlyByteBuf(
+        Unpooled.buffer(Byte.BYTES * 3, Byte.BYTES * 3)
+          .writeBoolean(COUPLE_DOORS)
+          .writeBoolean(COUPLE_FENCE_GATES)
+          .writeBoolean(COUPLE_TRAPDOORS)
+          .asReadOnly()));
+    });
   }
 
-  @Override
-  public @Nullable List<String> getMixins() {
-    return null;
-  }
+  @Environment(EnvType.CLIENT)
+  public static final class Client implements ClientModInitializer {
+    @Override
+    public void onInitializeClient() {
+      ClientPlayNetworking.registerGlobalReceiver(SERVER_CONFIG, (minecraft, listener, buf, sender) -> {
+        Preconditions.checkArgument(buf.isReadable(Byte.BYTES * 3), buf);
+        serverCouplesDoors = buf.readBoolean();
+        serverCouplesFenceGates = buf.readBoolean();
+        serverCouplesTrapdoors = buf.readBoolean();
+        Preconditions.checkArgument(!buf.isReadable(), buf);
+      });
 
-  @Override
-  public void preApply(final String target, final ClassNode targetClass, final String mixin, final IMixinInfo info) {
-  }
-
-  @Override
-  public void postApply(final String target, final ClassNode targetClass, final String mixin, final IMixinInfo info) {
+      ClientPlayConnectionEvents.JOIN.register((listener, sender, minecraft) -> {
+        ClientPlayNetworking.send(CLIENT_CONFIG, new FriendlyByteBuf(
+          Unpooled.buffer(Byte.BYTES, Byte.BYTES)
+            .writeBoolean(IGNORE_SNEAKING)
+            .asReadOnly()));
+      });
+    }
   }
 }

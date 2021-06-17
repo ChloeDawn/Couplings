@@ -35,16 +35,18 @@ public final class TrapdoorBlockCoupling {
   }
 
   public static void used(final BlockState state, final Level level, final BlockPos pos, final Player player) {
-    if (!player.isCrouching() || Couplings.IGNORE_SNEAKING) {
+    if (Couplings.couplesTrapdoors(level) && (!player.isCrouching() || Couplings.ignoresSneaking(player))) {
       tryOpenCloseEach(state, level, pos, player, state.getValue(TrapDoorBlock.OPEN));
     }
   }
 
   public static void neighborChanged(final BlockState state, final Level level, final BlockPos pos, final boolean powered) {
-    if (powered != (powered || isSufficientlyPowered(state, level, pos))) {
-      level.setBlock(pos, state.setValue(TrapDoorBlock.POWERED, false).setValue(TrapDoorBlock.OPEN, true), 2);
-    } else if (!powered || (level.getBestNeighborSignal(pos) >= Couplings.COUPLING_SIGNAL)) {
-      tryOpenCloseEach(state, level, pos, null, powered);
+    if (Couplings.couplesTrapdoors(level)) {
+      if (powered != (powered || isSufficientlyPowered(state, level, pos))) {
+        level.setBlock(pos, state.setValue(TrapDoorBlock.POWERED, false).setValue(TrapDoorBlock.OPEN, true), 2);
+      } else if (!powered || (level.getBestNeighborSignal(pos) >= Couplings.COUPLING_SIGNAL)) {
+        tryOpenCloseEach(state, level, pos, null, powered);
+      }
     }
   }
 

@@ -34,16 +34,18 @@ public final class FenceGateBlockCoupling {
   }
 
   public static void used(final BlockState state, final Level level, final BlockPos pos, final Player player) {
-    if (!player.isCrouching() || Couplings.IGNORE_SNEAKING) {
+    if (Couplings.couplesFenceGates(level) && (!player.isCrouching() || Couplings.ignoresSneaking(player))) {
       tryOpenCloseEach(state, level, pos, player, state.getValue(FenceGateBlock.OPEN));
     }
   }
 
   public static void neighborChanged(final BlockState state, final Level level, final BlockPos pos, final boolean powered) {
-    if (powered != (powered || isSufficientlyPowered(state, level, pos))) {
-      level.setBlock(pos, state.setValue(FenceGateBlock.POWERED, false).setValue(FenceGateBlock.OPEN, true), 2);
-    } else if (!powered || (level.getBestNeighborSignal(pos) >= Couplings.COUPLING_SIGNAL)) {
-      tryOpenCloseEach(state, level, pos, null, powered);
+    if (Couplings.couplesFenceGates(level)) {
+      if (powered != (powered || isSufficientlyPowered(state, level, pos))) {
+        level.setBlock(pos, state.setValue(FenceGateBlock.POWERED, false).setValue(FenceGateBlock.OPEN, true), 2);
+      } else if (!powered || (level.getBestNeighborSignal(pos) >= Couplings.COUPLING_SIGNAL)) {
+        tryOpenCloseEach(state, level, pos, null, powered);
+      }
     }
   }
 
