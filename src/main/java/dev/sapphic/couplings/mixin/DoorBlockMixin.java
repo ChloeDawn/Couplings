@@ -20,18 +20,15 @@ import dev.sapphic.couplings.impl.DoorBlockCoupling;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Group;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -52,22 +49,12 @@ abstract class DoorBlockMixin extends Block {
     DoorBlockCoupling.used(state, level, pos, player);
   }
 
-  @Group(name = "openStateChanged", min = 1, max = 1)
   @Inject(
     method = "setOpen(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/core/BlockPos;Z)V",
     at = @At(shift = At.Shift.AFTER, value = "INVOKE", opcode = Opcodes.INVOKEVIRTUAL,
-      target = "Lnet/minecraft/world/level/block/DoorBlock;playSound(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Z)V"))
-  private void openStateChanged116(final Level level, final BlockState state, final BlockPos pos, final boolean open, final CallbackInfo ci) {
-    DoorBlockCoupling.openStateChanged(state, level, pos, open);
-  }
-
-  @SuppressWarnings("UnresolvedMixinReference")
-  @Group(name = "openStateChanged", min = 1, max = 1)
-  @Inject(
-    method = "method_10033(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/level/Level;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/core/BlockPos;Z)V",
-    at = @At(shift = At.Shift.AFTER, value = "INVOKE", opcode = Opcodes.INVOKEVIRTUAL,
-      target = "Lnet/minecraft/world/level/block/DoorBlock;playSound(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Z)V"))
-  private void openStateChanged117(final @Nullable Entity entity, final Level level, final BlockState state, final BlockPos pos, final boolean open, final CallbackInfo ci) {
+      target = "Lnet/minecraft/world/level/block/DoorBlock;playSound(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Z)V"),
+    require = 1, allow = 1)
+  private void openStateChanged(final Level level, final BlockState state, final BlockPos pos, final boolean open, final CallbackInfo ci) {
     DoorBlockCoupling.openStateChanged(state, level, pos, open);
   }
 

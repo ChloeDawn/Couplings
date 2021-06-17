@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "dev.sapphic"
-version = "2.0.0"
+version = "1.4.0+1.16"
 
 java {
   withSourcesJar()
@@ -44,7 +44,7 @@ dependencies {
   implementation("org.checkerframework:checker-qual:3.14.0")
   implementation(include("com.electronwill.night-config:core:3.6.3")!!)
   implementation(include("com.electronwill.night-config:toml:3.6.3")!!)
-  modImplementation(fabricApi.module("fabric-networking-api-v1", "0.35.1+1.16"))
+  modImplementation(include(fabricApi.module("fabric-networking-api-v1", "0.35.1+1.16"))!!)
   modRuntime("com.terraformersmc:modmenu:1.16.5")
 }
 
