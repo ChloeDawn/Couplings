@@ -7,7 +7,8 @@
   "license": "Apache-2.0",
   "icon": "pack.png",
   "depends": {
-    "fabricloader": ">=0.11.6"
+    "fabricloader": ">=0.11.6",
+    "minecraft": ">=1.16.5 <=1.17"
   },
   "mixins": [
     "mixins/couplings/mixins.json"
