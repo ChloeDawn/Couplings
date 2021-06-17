@@ -27,13 +27,17 @@ import net.minecraft.network.FriendlyByteBuf;
 
 @Environment(EnvType.CLIENT)
 public final class CouplingsClient implements ClientModInitializer {
+  private static boolean serverCouplesDoors;
+  private static boolean serverCouplesFenceGates;
+  private static boolean serverCouplesTrapdoors;
+
   @Override
   public void onInitializeClient() {
     ClientPlayNetworking.registerGlobalReceiver(Couplings.SERVER_CONFIG, (minecraft, listener, buf, sender) -> {
       Preconditions.checkArgument(buf.isReadable(Byte.BYTES * 3), buf);
-      Couplings.serverCouplesDoors = buf.readBoolean();
-      Couplings.serverCouplesFenceGates = buf.readBoolean();
-      Couplings.serverCouplesTrapdoors = buf.readBoolean();
+      serverCouplesDoors = buf.readBoolean();
+      serverCouplesFenceGates = buf.readBoolean();
+      serverCouplesTrapdoors = buf.readBoolean();
       Preconditions.checkArgument(!buf.isReadable(), buf);
     });
 
@@ -43,5 +47,17 @@ public final class CouplingsClient implements ClientModInitializer {
           .writeBoolean(Couplings.IGNORE_SNEAKING)
           .asReadOnly()));
     });
+  }
+
+  static boolean serverCouplesDoors() {
+    return serverCouplesDoors;
+  }
+
+  static boolean serverCouplesFenceGates() {
+    return serverCouplesFenceGates;
+  }
+
+  static boolean serverCouplesTrapdoors() {
+    return serverCouplesTrapdoors;
   }
 }

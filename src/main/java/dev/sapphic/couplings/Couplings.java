@@ -42,10 +42,6 @@ public final class Couplings implements ModInitializer {
   static final boolean COUPLE_FENCE_GATES;
   static final boolean COUPLE_TRAPDOORS;
 
-  static boolean serverCouplesDoors;
-  static boolean serverCouplesFenceGates;
-  static boolean serverCouplesTrapdoors;
-
   static {
     final CommentedFileConfig config = CommentedFileConfig.of(
       FabricLoader.getInstance().getConfigDir().resolve("couplings.toml"));
@@ -92,15 +88,15 @@ public final class Couplings implements ModInitializer {
   }
 
   public static boolean couplesDoors(final Level level) {
-    return level.isClientSide() ? serverCouplesDoors : COUPLE_DOORS;
+    return level.isClientSide() ? CouplingsClient.serverCouplesDoors() : COUPLE_DOORS;
   }
 
   public static boolean couplesFenceGates(final Level level) {
-    return level.isClientSide() ? serverCouplesFenceGates : COUPLE_FENCE_GATES;
+    return level.isClientSide() ? CouplingsClient.serverCouplesFenceGates() : COUPLE_FENCE_GATES;
   }
 
   public static boolean couplesTrapdoors(final Level level) {
-    return level.isClientSide() ? serverCouplesTrapdoors : COUPLE_TRAPDOORS;
+    return level.isClientSide() ? CouplingsClient.serverCouplesTrapdoors() : COUPLE_TRAPDOORS;
   }
 
   @Override
