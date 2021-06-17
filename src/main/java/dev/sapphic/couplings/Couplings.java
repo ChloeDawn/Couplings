@@ -23,6 +23,7 @@ import org.apache.logging.log4j.LogManager;
 
 public final class Couplings {
   public static final int COUPLING_DISTANCE = 64;
+  public static final int COUPLING_SIGNAL = 8;
 
   public static final boolean IGNORE_SNEAKING;
   public static final boolean COUPLE_DOORS;

@@ -127,7 +127,7 @@ public final class TrapdoorBlockCoupling {
           final BlockState other = level.getBlockState(relative);
 
           if ((state.getBlock() == other.getBlock()) && (facing == other.getValue(HorizontalDirectionalBlock.FACING))) {
-            if (level.hasNeighborSignal(relative)) {
+            if (level.getBestNeighborSignal(relative) >= Couplings.COUPLING_SIGNAL) {
               return true;
             }
           } else {
@@ -142,7 +142,7 @@ public final class TrapdoorBlockCoupling {
 
           if (state.getBlock() == other.getBlock()) {
             if (facing == other.getValue(HorizontalDirectionalBlock.FACING)) {
-              if (level.hasNeighborSignal(relative)) {
+              if (level.getBestNeighborSignal(relative) >= Couplings.COUPLING_SIGNAL) {
                 return true;
               }
             }
@@ -156,7 +156,7 @@ public final class TrapdoorBlockCoupling {
         final BlockState other = level.getBlockState(relative);
 
         if ((state.getBlock() == other.getBlock()) && (facing == other.getValue(HorizontalDirectionalBlock.FACING))) {
-          if (level.hasNeighborSignal(relative)) {
+          if (level.getBestNeighborSignal(relative) >= Couplings.COUPLING_SIGNAL) {
             return true;
           }
         } else {
@@ -170,7 +170,7 @@ public final class TrapdoorBlockCoupling {
 
           if (state.getBlock() == oppositeOther.getBlock()) {
             if (facing.getOpposite() == oppositeOther.getValue(HorizontalDirectionalBlock.FACING)) {
-              if (level.hasNeighborSignal(relative)) {
+              if (level.getBestNeighborSignal(relative) >= Couplings.COUPLING_SIGNAL) {
                 return true;
               }
             }

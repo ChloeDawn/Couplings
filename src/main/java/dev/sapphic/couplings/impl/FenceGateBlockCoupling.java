@@ -105,7 +105,7 @@ public final class FenceGateBlockCoupling {
 
         if ((state.getBlock() != other.getBlock()) || (axis != other.getValue(HorizontalDirectionalBlock.FACING).getAxis())) {
           continueUp = false;
-        } else if (level.hasNeighborSignal(above)) {
+        } else if (level.getBestNeighborSignal(above) >= Couplings.COUPLING_SIGNAL) {
           return true;
         }
       }
@@ -116,7 +116,7 @@ public final class FenceGateBlockCoupling {
 
         if ((state.getBlock() != other.getBlock()) || (axis != other.getValue(HorizontalDirectionalBlock.FACING).getAxis())) {
           continueDown = false;
-        } else if (level.hasNeighborSignal(below)) {
+        } else if (level.getBestNeighborSignal(below) >= Couplings.COUPLING_SIGNAL) {
           return true;
         }
       }

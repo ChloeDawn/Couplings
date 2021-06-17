@@ -90,6 +90,6 @@ public final class DoorBlockCoupling {
     final boolean lower = state.getValue(DoorBlock.HALF) == DoubleBlockHalf.LOWER;
     final BlockPos offset = pos.relative(lower ? Direction.UP : Direction.DOWN);
 
-    return level.hasNeighborSignal(offset);
+    return level.getBestNeighborSignal(offset) >= Couplings.COUPLING_SIGNAL;
   }
 }
