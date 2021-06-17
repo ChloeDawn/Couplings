@@ -16,6 +16,7 @@
 
 package dev.sapphic.couplings;
 
+import com.google.common.reflect.Reflection;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
@@ -27,6 +28,7 @@ import java.util.Set;
 public final class CouplingsMixins implements IMixinConfigPlugin {
   @Override
   public void onLoad(final String mixinPackage) {
+    Reflection.initialize(Couplings.class);
   }
 
   @Override
