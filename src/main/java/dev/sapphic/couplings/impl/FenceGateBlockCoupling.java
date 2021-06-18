@@ -28,8 +28,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
 public final class FenceGateBlockCoupling {
-  private static final Direction[] HORIZONTALS = Direction.Plane.HORIZONTAL.stream().toArray(Direction[]::new);
-
   private FenceGateBlockCoupling() {
   }
 
