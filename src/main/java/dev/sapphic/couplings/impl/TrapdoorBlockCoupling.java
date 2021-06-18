@@ -146,7 +146,7 @@ public final class TrapdoorBlockCoupling {
           final BlockState other = level.getBlockState(relative);
 
           if (state.getBlock() == other.getBlock()) {
-            if (facing == other.getValue(HorizontalDirectionalBlock.FACING)) {
+            if (facing.getOpposite() == other.getValue(HorizontalDirectionalBlock.FACING)) {
               if (level.getBestNeighborSignal(relative) >= Couplings.COUPLING_SIGNAL) {
                 return true;
               }
