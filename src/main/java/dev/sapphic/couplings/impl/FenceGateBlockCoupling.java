@@ -105,10 +105,7 @@ public final class FenceGateBlockCoupling {
         final BlockPos above = pos.above(offset);
         final BlockState other = level.getBlockState(above);
 
-        if ((state.getBlock() != other.getBlock()) || (
-          axis != other.getValue(HorizontalDirectionalBlock.FACING)
-            .getAxis()
-        )) {
+        if ((state.getBlock() != other.getBlock()) || (axis != other.getValue(HorizontalDirectionalBlock.FACING).getAxis())) {
           continueUp = false;
         } else if (level.getBestNeighborSignal(above) >= Couplings.COUPLING_SIGNAL) {
           return true;
@@ -119,10 +116,7 @@ public final class FenceGateBlockCoupling {
         final BlockPos below = pos.below(offset);
         final BlockState other = level.getBlockState(below);
 
-        if ((state.getBlock() != other.getBlock()) || (
-          axis != other.getValue(HorizontalDirectionalBlock.FACING)
-            .getAxis()
-        )) {
+        if ((state.getBlock() != other.getBlock()) || (axis != other.getValue(HorizontalDirectionalBlock.FACING).getAxis())) {
           continueDown = false;
         } else if (level.getBestNeighborSignal(below) >= Couplings.COUPLING_SIGNAL) {
           return true;

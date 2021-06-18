@@ -87,6 +87,7 @@ public final class TrapdoorBlockCoupling {
 
         if (continueNeg) {
           relative = relative.offset(traverseZ ? offset : 0, 0, traverseZ ? 0 : offset);
+
           if ((player == null) || level.mayInteract(player, relative)) {
             tryOpenClose(state, relative, level, facing.getOpposite(), half, open);
           }
@@ -101,9 +102,11 @@ public final class TrapdoorBlockCoupling {
     if ((state.getBlock() == other.getBlock()) && (facing == other.getValue(HorizontalDirectionalBlock.FACING))) {
       if ((half == other.getValue(TrapDoorBlock.HALF)) && (open != other.getValue(TrapDoorBlock.OPEN))) {
         level.setBlock(pos, other.setValue(TrapDoorBlock.OPEN, open), 2);
+
         if (other.getValue(TrapDoorBlock.WATERLOGGED)) {
           level.getLiquidTicks().scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
         }
+
         return true;
       }
     }
