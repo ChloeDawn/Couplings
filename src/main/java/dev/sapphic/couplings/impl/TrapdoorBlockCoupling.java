@@ -41,16 +41,8 @@ public final class TrapdoorBlockCoupling {
   }
 
   public static void neighborChanged(final BlockState state, final Level level, final BlockPos pos, final boolean powered) {
-    if (Couplings.couplesTrapdoors(level)) {
-      if (powered != isSufficientlyPowered(state, level, pos)) {
-        if (!powered) {
-          level.setBlock(pos, state.setValue(TrapDoorBlock.OPEN, true).setValue(TrapDoorBlock.POWERED, false), 2);
-        } else if (level.getBestNeighborSignal(pos) >= Couplings.COUPLING_SIGNAL) {
-          tryOpenCloseEach(state, level, pos, null, true);
-        }
-      } else if (!powered) {
-        tryOpenCloseEach(state, level, pos, null, false);
-      }
+    if (Couplings.couplesTrapdoors(level) && (!powered || (level.getBestNeighborSignal(pos) >= Couplings.COUPLING_SIGNAL))) {
+      tryOpenCloseEach(state, level, pos, null, powered);
     }
   }
 
@@ -115,79 +107,6 @@ public final class TrapdoorBlockCoupling {
       }
     }
 
-    return false;
-  }
-
-  private static boolean isSufficientlyPowered(final BlockState state, final Level level, final BlockPos pos) {
-    final Direction facing = state.getValue(HorizontalDirectionalBlock.FACING);
-    final boolean traverseZ = facing.getAxis() == Axis.X;
-    final int offset = (facing.getAxisDirection() == AxisDirection.POSITIVE) ? 1 : -1;
-    final int distance = Couplings.COUPLING_DISTANCE;
-    boolean continuePos = true;
-    boolean continueNeg = true;
-
-    for (int step = 0; (step <= distance) && (continuePos || continueNeg); ++step) {
-      if (continuePos) {
-        BlockPos relative = pos;
-
-        if (step != 0) {
-          relative = pos.offset(traverseZ ? 0 : step, 0, traverseZ ? step : 0);
-          
-          final BlockState other = level.getBlockState(relative);
-
-          if ((state.getBlock() == other.getBlock()) && (facing == other.getValue(HorizontalDirectionalBlock.FACING))) {
-            if (level.getBestNeighborSignal(relative) >= Couplings.COUPLING_SIGNAL) {
-              return true;
-            }
-          } else {
-            continuePos = false;
-          }
-        }
-
-        if (continuePos) {
-          relative = relative.offset(traverseZ ? offset : 0, 0, traverseZ ? 0 : offset);
-
-          final BlockState other = level.getBlockState(relative);
-
-          if (state.getBlock() == other.getBlock()) {
-            if (facing.getOpposite() == other.getValue(HorizontalDirectionalBlock.FACING)) {
-              if (level.getBestNeighborSignal(relative) >= Couplings.COUPLING_SIGNAL) {
-                return true;
-              }
-            }
-          }
-        }
-      }
-
-      if (continueNeg && (step != 0)) {
-        BlockPos relative = pos.offset(traverseZ ? 0 : -step, 0, traverseZ ? -step : 0);
-
-        final BlockState other = level.getBlockState(relative);
-
-        if ((state.getBlock() == other.getBlock()) && (facing == other.getValue(HorizontalDirectionalBlock.FACING))) {
-          if (level.getBestNeighborSignal(relative) >= Couplings.COUPLING_SIGNAL) {
-            return true;
-          }
-        } else {
-          continueNeg = false;
-        }
-
-        if (continueNeg) {
-          relative = relative.offset(traverseZ ? offset : 0, 0, traverseZ ? 0 : offset);
-
-          final BlockState oppositeOther = level.getBlockState(relative);
-
-          if (state.getBlock() == oppositeOther.getBlock()) {
-            if (facing.getOpposite() == oppositeOther.getValue(HorizontalDirectionalBlock.FACING)) {
-              if (level.getBestNeighborSignal(relative) >= Couplings.COUPLING_SIGNAL) {
-                return true;
-              }
-            }
-          }
-        }
-      }
-    }
-    
     return false;
   }
 }

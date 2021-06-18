@@ -24,7 +24,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.DoorHingeSide;
-import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 
 public final class DoorBlockCoupling {
   private DoorBlockCoupling() {
@@ -60,18 +59,12 @@ public final class DoorBlockCoupling {
   }
 
   public static void neighborChanged(final BlockState state, final Level level, final BlockPos pos, final boolean powered) {
-    if (Couplings.couplesDoors(level) && (powered != state.getValue(DoorBlock.POWERED))) {
-      if (!powered || (level.getBestNeighborSignal(pos) >= Couplings.COUPLING_SIGNAL)) {
-        final BlockPos offset = getCoupledDoorPos(state, pos);
-        final BlockState other = level.getBlockState(offset);
+    if (Couplings.couplesDoors(level) && (!powered || (level.getBestNeighborSignal(pos) >= Couplings.COUPLING_SIGNAL))) {
+      final BlockPos offset = getCoupledDoorPos(state, pos);
+      final BlockState other = level.getBlockState(offset);
 
-        if (state.getBlock() == other.getBlock()) {
-          if (isOtherHalfPowered(other, level, offset)) {
-            level.setBlock(pos, state.setValue(DoorBlock.POWERED, powered), 2);
-          } else if (areCoupled(state, other, powered)) {
-            level.setBlock(offset, other.setValue(DoorBlock.OPEN, powered), 2);
-          }
-        }
+      if ((state.getBlock() == other.getBlock()) && areCoupled(state, other, powered)) {
+        level.setBlock(offset, other.setValue(DoorBlock.OPEN, powered), 2);
       }
     }
   }
@@ -88,12 +81,5 @@ public final class DoorBlockCoupling {
     final boolean leftHinge = state.getValue(DoorBlock.HINGE) == DoorHingeSide.LEFT;
 
     return pos.relative(leftHinge ? facing.getClockWise() : facing.getCounterClockWise());
-  }
-
-  private static boolean isOtherHalfPowered(final BlockState state, final Level level, final BlockPos pos) {
-    final boolean lower = state.getValue(DoorBlock.HALF) == DoubleBlockHalf.LOWER;
-    final BlockPos offset = pos.relative(lower ? Direction.UP : Direction.DOWN);
-
-    return level.getBestNeighborSignal(offset) >= Couplings.COUPLING_SIGNAL;
   }
 }

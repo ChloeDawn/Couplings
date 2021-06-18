@@ -40,12 +40,8 @@ public final class FenceGateBlockCoupling {
   }
 
   public static void neighborChanged(final BlockState state, final Level level, final BlockPos pos, final boolean powered) {
-    if (Couplings.couplesFenceGates(level)) {
-      if (powered != (powered || isSufficientlyPowered(state, level, pos))) {
-        level.setBlock(pos, state.setValue(FenceGateBlock.POWERED, false).setValue(FenceGateBlock.OPEN, true), 2);
-      } else if (!powered || (level.getBestNeighborSignal(pos) >= Couplings.COUPLING_SIGNAL)) {
-        tryOpenCloseEach(state, level, pos, null, powered);
-      }
+    if (Couplings.couplesFenceGates(level) && (!powered || (level.getBestNeighborSignal(pos) >= Couplings.COUPLING_SIGNAL))) {
+      tryOpenCloseEach(state, level, pos, null, powered);
     }
   }
 
@@ -58,16 +54,16 @@ public final class FenceGateBlockCoupling {
     for (int offset = 1; (offset <= distance) && (continueUp || continueDown); ++offset) {
       if (continueUp) {
         final BlockPos above = pos.above(offset);
-        final boolean modifiable = (player == null) || level.mayInteract(player, above);
 
-        continueUp = modifiable && tryOpenClose(state, level, above, player, axis, open);
+        continueUp = ((player == null) || level.mayInteract(player, above))
+          && tryOpenClose(state, level, above, player, axis, open);
       }
 
       if (continueDown) {
         final BlockPos below = pos.below(offset);
-        final boolean modifiable = (player == null) || level.mayInteract(player, below);
 
-        continueDown = modifiable && tryOpenClose(state, level, below, player, axis, open);
+        continueDown = ((player == null) || level.mayInteract(player, below))
+          && tryOpenClose(state, level, below, player, axis, open);
       }
     }
   }
@@ -89,47 +85,6 @@ public final class FenceGateBlockCoupling {
 
         return true;
       }
-    }
-
-    return false;
-  }
-
-  private static boolean isSufficientlyPowered(final BlockState state, final Level level, final BlockPos pos) {
-    final Axis axis = state.getValue(HorizontalDirectionalBlock.FACING).getAxis();
-    final int distance = Couplings.COUPLING_DISTANCE;
-    boolean continueUp = true;
-    boolean continueDown = true;
-
-    for (int offset = 1; (offset <= distance) && (continueUp || continueDown); ++offset) {
-      if (continueUp) {
-        final BlockPos above = pos.above(offset);
-        final BlockState other = level.getBlockState(above);
-
-        if ((state.getBlock() != other.getBlock()) || (axis != other.getValue(HorizontalDirectionalBlock.FACING).getAxis())) {
-          continueUp = false;
-        } else if (level.getBestNeighborSignal(above) >= Couplings.COUPLING_SIGNAL) {
-          return true;
-        }
-      }
-
-      if (continueDown) {
-        final BlockPos below = pos.below(offset);
-        final BlockState other = level.getBlockState(below);
-
-        if ((state.getBlock() != other.getBlock()) || (axis != other.getValue(HorizontalDirectionalBlock.FACING).getAxis())) {
-          continueDown = false;
-        } else if (level.getBestNeighborSignal(below) >= Couplings.COUPLING_SIGNAL) {
-          return true;
-        }
-      }
-    }
-
-    return false;
-  }
-
-  private static boolean matches(final BlockState state, final BlockState other, final Axis axis, final boolean open) {
-    if ((state.getBlock() == other.getBlock()) && (open != other.getValue(FenceGateBlock.OPEN))) {
-      return axis == other.getValue(HorizontalDirectionalBlock.FACING).getAxis();
     }
 
     return false;
