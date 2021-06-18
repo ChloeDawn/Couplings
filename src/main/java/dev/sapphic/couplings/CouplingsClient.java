@@ -31,6 +31,18 @@ public final class CouplingsClient implements ClientModInitializer {
   private static boolean serverCouplesFenceGates;
   private static boolean serverCouplesTrapdoors;
 
+  static boolean serverCouplesDoors() {
+    return serverCouplesDoors;
+  }
+
+  static boolean serverCouplesFenceGates() {
+    return serverCouplesFenceGates;
+  }
+
+  static boolean serverCouplesTrapdoors() {
+    return serverCouplesTrapdoors;
+  }
+
   @Override
   public void onInitializeClient() {
     ClientPlayNetworking.registerGlobalReceiver(Couplings.SERVER_CONFIG, (minecraft, listener, buf, sender) -> {
@@ -53,17 +65,5 @@ public final class CouplingsClient implements ClientModInitializer {
       ClientPlayNetworking.send(Couplings.CLIENT_CONFIG, new FriendlyByteBuf(
         Unpooled.buffer(Byte.BYTES, Byte.BYTES).writeByte(clientConfig).asReadOnly()));
     });
-  }
-
-  static boolean serverCouplesDoors() {
-    return serverCouplesDoors;
-  }
-
-  static boolean serverCouplesFenceGates() {
-    return serverCouplesFenceGates;
-  }
-
-  static boolean serverCouplesTrapdoors() {
-    return serverCouplesTrapdoors;
   }
 }
