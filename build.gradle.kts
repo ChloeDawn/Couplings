@@ -1,13 +1,13 @@
 import java.time.Instant
 
 plugins {
-  id("fabric-loom") version "0.7.30"
+  id("fabric-loom") version "0.9.10"
   id("net.nemerosa.versioning") version "be24b23"
   id("signing")
 }
 
 group = "dev.sapphic"
-version = "1.4.0+1.16"
+version = "1.4.1+1.17"
 
 java {
   withSourcesJar()
@@ -42,16 +42,16 @@ repositories {
 }
 
 dependencies {
-  minecraft("com.mojang:minecraft:1.16.5")
+  minecraft("com.mojang:minecraft:1.17")
   mappings(loom.officialMojangMappings())
   modImplementation("net.fabricmc:fabric-loader:0.11.6")
   implementation("org.jetbrains:annotations:21.0.1")
   implementation("org.checkerframework:checker-qual:3.14.0")
   implementation(include("com.electronwill.night-config:core:3.6.3")!!)
   implementation(include("com.electronwill.night-config:toml:3.6.3")!!)
-  modImplementation(include(fabricApi.module("fabric-networking-api-v1", "0.35.1+1.16"))!!)
+  modImplementation(include(fabricApi.module("fabric-networking-api-v1", "0.35.2+1.17"))!!)
   modRuntime("com.github.UltimateBoomer:mc-smoothboot:1.16.5-1.6.0") { isTransitive = false }
-  modRuntime("com.terraformersmc:modmenu:1.16.5")
+  modRuntime("com.terraformersmc:modmenu:2.0.2")
 }
 
 tasks {
