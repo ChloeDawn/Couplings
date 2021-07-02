@@ -27,6 +27,7 @@ import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.TrapDoorBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Half;
+import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.Fluids;
 import org.jetbrains.annotations.Nullable;
 
@@ -63,14 +64,14 @@ public final class TrapdoorBlockCoupling {
           relative = pos.offset(traverseZ ? 0 : step, 0, traverseZ ? step : 0);
 
           continuePos = ((player == null) || level.mayInteract(player, relative))
-            && tryOpenClose(state, relative, level, facing, half, open);
+            && tryOpenClose(state, relative, level, player, facing, half, open);
         }
 
         if (continuePos) {
           relative = relative.offset(traverseZ ? offset : 0, 0, traverseZ ? 0 : offset);
 
           if ((player == null) || level.mayInteract(player, relative)) {
-            tryOpenClose(state, relative, level, facing.getOpposite(), half, open);
+            tryOpenClose(state, relative, level, player, facing.getOpposite(), half, open);
           }
         }
       }
@@ -79,20 +80,20 @@ public final class TrapdoorBlockCoupling {
         BlockPos relative = pos.offset(traverseZ ? 0 : -step, 0, traverseZ ? -step : 0);
 
         continueNeg = ((player == null) || level.mayInteract(player, relative))
-          && tryOpenClose(state, relative, level, facing, half, open);
+          && tryOpenClose(state, relative, level, player, facing, half, open);
 
         if (continueNeg) {
           relative = relative.offset(traverseZ ? offset : 0, 0, traverseZ ? 0 : offset);
 
           if ((player == null) || level.mayInteract(player, relative)) {
-            tryOpenClose(state, relative, level, facing.getOpposite(), half, open);
+            tryOpenClose(state, relative, level, player, facing.getOpposite(), half, open);
           }
         }
       }
     }
   }
 
-  private static boolean tryOpenClose(final BlockState state, final BlockPos pos, final Level level, final Direction facing, final Half half, final boolean open) {
+  private static boolean tryOpenClose(final BlockState state, final BlockPos pos, final Level level, final @Nullable Player player, final Direction facing, final Half half, final boolean open) {
     final BlockState other = level.getBlockState(pos);
 
     if ((state.getBlock() == other.getBlock()) && (facing == other.getValue(HorizontalDirectionalBlock.FACING))) {
@@ -102,6 +103,8 @@ public final class TrapdoorBlockCoupling {
         if (other.getValue(TrapDoorBlock.WATERLOGGED)) {
           level.getLiquidTicks().scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
         }
+
+        level.gameEvent(player, open ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);
 
         return true;
       }

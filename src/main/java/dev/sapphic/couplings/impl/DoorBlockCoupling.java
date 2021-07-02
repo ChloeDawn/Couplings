@@ -19,11 +19,14 @@ package dev.sapphic.couplings.impl;
 import dev.sapphic.couplings.Couplings;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.DoorHingeSide;
+import net.minecraft.world.level.gameevent.GameEvent;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public final class DoorBlockCoupling {
   private DoorBlockCoupling() {
@@ -41,19 +44,21 @@ public final class DoorBlockCoupling {
 
           if (areCoupled(state, other, open)) {
             level.setBlock(offset, other.setValue(DoorBlock.OPEN, open), 2);
+            level.gameEvent(player, open ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, offset);
           }
         }
       }
     }
   }
 
-  public static void openStateChanged(final BlockState state, final Level level, final BlockPos pos, final boolean open) {
+  public static void openStateChanged(final @Nullable Entity entity, final BlockState state, final Level level, final BlockPos pos, final boolean open) {
     if (Couplings.couplesDoors(level)) {
       final BlockPos offset = getCoupledDoorPos(state, pos);
       final BlockState other = level.getBlockState(offset);
 
       if ((state.getBlock() == other.getBlock()) && areCoupled(state, other, open)) {
         level.setBlock(offset, other.setValue(DoorBlock.OPEN, open), 10);
+        level.gameEvent(entity, open ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, offset);
       }
     }
   }
@@ -65,6 +70,7 @@ public final class DoorBlockCoupling {
 
       if ((state.getBlock() == other.getBlock()) && areCoupled(state, other, powered)) {
         level.setBlock(offset, other.setValue(DoorBlock.OPEN, powered), 2);
+        level.gameEvent(powered ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, offset);
       }
     }
   }
