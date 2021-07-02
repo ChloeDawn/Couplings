@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "dev.sapphic"
-version = "1.4.0+1.16"
+version = "1.5.0+1.16"
 
 java {
   withSourcesJar()
@@ -49,6 +49,7 @@ dependencies {
   implementation("org.checkerframework:checker-qual:3.14.0")
   implementation(include("com.electronwill.night-config:core:3.6.3")!!)
   implementation(include("com.electronwill.night-config:toml:3.6.3")!!)
+  modImplementation(include(fabricApi.module("fabric-api-base", "0.35.1+1.16"))!!)
   modImplementation(include(fabricApi.module("fabric-networking-api-v1", "0.35.1+1.16"))!!)
   modRuntime("com.github.UltimateBoomer:mc-smoothboot:1.16.5-1.6.0") { isTransitive = false }
   modRuntime("com.terraformersmc:modmenu:1.16.5")
