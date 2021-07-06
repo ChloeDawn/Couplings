@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "dev.sapphic"
-version = "1.5.0+1.17"
+version = "1.5.1+1.17"
 
 java {
   withSourcesJar()
@@ -42,15 +42,15 @@ repositories {
 }
 
 dependencies {
-  minecraft("com.mojang:minecraft:1.17")
+  minecraft("com.mojang:minecraft:1.17.1")
   mappings(loom.officialMojangMappings())
   modImplementation("net.fabricmc:fabric-loader:0.11.6")
   implementation("org.jetbrains:annotations:21.0.1")
   implementation("org.checkerframework:checker-qual:3.14.0")
   implementation(include("com.electronwill.night-config:core:3.6.3")!!)
   implementation(include("com.electronwill.night-config:toml:3.6.3")!!)
-  modImplementation(include(fabricApi.module("fabric-api-base", "0.35.2+1.17"))!!)
-  modImplementation(include(fabricApi.module("fabric-networking-api-v1", "0.35.2+1.17"))!!)
+  modImplementation(include(fabricApi.module("fabric-api-base", "0.36.1+1.17"))!!)
+  modImplementation(include(fabricApi.module("fabric-networking-api-v1", "0.36.1+1.17"))!!)
   modRuntime("com.github.UltimateBoomer:mc-smoothboot:1.16.5-1.6.0") { isTransitive = false }
   modRuntime("com.terraformersmc:modmenu:2.0.2")
 }
