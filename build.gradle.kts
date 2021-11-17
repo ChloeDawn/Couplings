@@ -1,8 +1,8 @@
 import java.time.Instant
 
 plugins {
-  id("fabric-loom") version "0.8.18"
-  id("net.nemerosa.versioning") version "be24b23"
+  id("fabric-loom") version "0.10.57"
+  id("net.nemerosa.versioning") version "2.15.1"
   id("signing")
 }
 
@@ -14,7 +14,10 @@ java {
 }
 
 loom {
-  refmapName = "mixins/couplings/refmap.json"
+  mixin {
+    defaultRefmapName.set("mixins/couplings/refmap.json")
+  }
+
   runs {
     configureEach {
       vmArg("-Dmixin.debug.export=true")
@@ -28,12 +31,6 @@ loom {
 }
 
 repositories {
-  maven("https://jitpack.io") {
-    content {
-      includeGroup("com.github.UltimateBoomer")
-    }
-  }
-
   maven("https://maven.terraformersmc.com/releases") {
     content {
       includeGroup("com.terraformersmc")
@@ -44,15 +41,14 @@ repositories {
 dependencies {
   minecraft("com.mojang:minecraft:1.17.1")
   mappings(loom.officialMojangMappings())
-  modImplementation("net.fabricmc:fabric-loader:0.11.6")
-  implementation("org.jetbrains:annotations:21.0.1")
-  implementation("org.checkerframework:checker-qual:3.14.0")
-  implementation(include("com.electronwill.night-config:core:3.6.3")!!)
-  implementation(include("com.electronwill.night-config:toml:3.6.3")!!)
-  modImplementation(include(fabricApi.module("fabric-api-base", "0.36.1+1.17"))!!)
-  modImplementation(include(fabricApi.module("fabric-networking-api-v1", "0.36.1+1.17"))!!)
-  modRuntime("com.github.UltimateBoomer:mc-smoothboot:1.16.5-1.6.0") { isTransitive = false }
-  modRuntime("com.terraformersmc:modmenu:2.0.2")
+  modImplementation("net.fabricmc:fabric-loader:0.12.5")
+  implementation("org.jetbrains:annotations:22.0.0")
+  implementation("org.checkerframework:checker-qual:3.18.1")
+  implementation(include("com.electronwill.night-config:core:3.6.5")!!)
+  implementation(include("com.electronwill.night-config:toml:3.6.5")!!)
+  modImplementation(include(fabricApi.module("fabric-api-base", "0.42.1+1.17"))!!)
+  modImplementation(include(fabricApi.module("fabric-networking-api-v1", "0.42.1+1.17"))!!)
+  modRuntime("com.terraformersmc:modmenu:2.0.14")
 }
 
 tasks {
