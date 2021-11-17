@@ -20,12 +20,12 @@ loom {
 
   runs {
     configureEach {
-      vmArg("-Dmixin.debug.export=true")
-      vmArg("-Dmixin.debug.export.decompile=false")
-      vmArg("-Dmixin.debug.verbose=true")
-      vmArg("-Dmixin.dumpTargetOnFailure=true")
-      vmArg("-Dmixin.checks=true")
-      vmArg("-Dmixin.hotSwap=true")
+      property("mixin.debug.export", "true")
+      property("mixin.debug.export.decompile", "false")
+      property("mixin.debug.verbose", "true")
+      property("mixin.dumpTargetOnFailure", "true")
+      property("mixin.checks", "true")
+      property("mixin.hotSwap", "true")
     }
   }
 }
