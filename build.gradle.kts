@@ -48,7 +48,7 @@ dependencies {
   implementation(include("com.electronwill.night-config:toml:3.6.5")!!)
   modImplementation(include(fabricApi.module("fabric-api-base", "0.44.0+1.18"))!!)
   modImplementation(include(fabricApi.module("fabric-networking-api-v1", "0.44.0+1.18"))!!)
-  modRuntime("com.terraformersmc:modmenu:3.0.0")
+  modRuntimeOnly("com.terraformersmc:modmenu:3.0.0")
 }
 
 tasks {
