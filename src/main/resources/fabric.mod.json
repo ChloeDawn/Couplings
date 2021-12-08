@@ -7,10 +7,10 @@
   "license": "Apache-2.0",
   "icon": "pack.png",
   "depends": {
-    "fabricloader": ">=0.11.6",
-    "fabric-networking-api-v1": ">=1.0.11",
-    "minecraft": ">=1.17",
-    "java": ">=16"
+    "fabricloader": ">=0.12.8",
+    "fabric-networking-api-v1": ">=1.0.18",
+    "minecraft": ">=1.18",
+    "java": ">=17"
   },
   "entrypoints": {
     "client": [
@@ -30,7 +30,7 @@
     "Daniel Amberson"
   ],
   "contact": {
-    "homepage": "http://bit.ly/2YNlsfx",
+    "homepage": "https://bit.ly/2YNlsfx",
     "sources": "https://git.io/JJsni",
     "issues": "https://git.io/JJsnP"
   }

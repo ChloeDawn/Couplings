@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "dev.sapphic"
-version = "1.7.0+1.18"
+version = "1.7.1+1.18"
 
 java {
   withSourcesJar()
