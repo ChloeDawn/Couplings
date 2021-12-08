@@ -101,7 +101,7 @@ public final class TrapdoorBlockCoupling {
         level.setBlock(pos, other.setValue(TrapDoorBlock.OPEN, open), 2);
 
         if (other.getValue(TrapDoorBlock.WATERLOGGED)) {
-          level.getLiquidTicks().scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
+          level.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
         }
 
         level.gameEvent(player, open ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);
