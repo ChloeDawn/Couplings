@@ -68,28 +68,28 @@ public final class TrapdoorBlockCoupling {
         }
 
         if (continuePos) {
-          relative = relative.offset(traverseZ ? offset : 0, 0, traverseZ ? 0 : offset);
-
-          if ((player == null) || level.mayInteract(player, relative)) {
-            tryOpenClose(state, relative, level, player, facing.getOpposite(), half, open);
-          }
+          tryOpenCloseAt(state, level, player, open, half, facing, traverseZ, offset, relative);
         }
       }
 
       if (continueNeg && (step != 0)) {
-        BlockPos relative = pos.offset(traverseZ ? 0 : -step, 0, traverseZ ? -step : 0);
+        final BlockPos relative = pos.offset(traverseZ ? 0 : -step, 0, traverseZ ? -step : 0);
 
         continueNeg = ((player == null) || level.mayInteract(player, relative))
           && tryOpenClose(state, relative, level, player, facing, half, open);
 
         if (continueNeg) {
-          relative = relative.offset(traverseZ ? offset : 0, 0, traverseZ ? 0 : offset);
-
-          if ((player == null) || level.mayInteract(player, relative)) {
-            tryOpenClose(state, relative, level, player, facing.getOpposite(), half, open);
-          }
+          tryOpenCloseAt(state, level, player, open, half, facing, traverseZ, offset, relative);
         }
       }
+    }
+  }
+
+  private static void tryOpenCloseAt(final BlockState state, final Level level, final @Nullable Player player, final boolean open, final Half half, final Direction facing, final boolean traverseZ, final int offset, final BlockPos pos) {
+    final BlockPos relative = pos.offset(traverseZ ? offset : 0, 0, traverseZ ? 0 : offset);
+
+    if ((player == null) || level.mayInteract(player, relative)) {
+      tryOpenClose(state, relative, level, player, facing.getOpposite(), half, open);
     }
   }
 
