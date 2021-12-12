@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "dev.sapphic"
-version = "1.7.1+1.18"
+version = "1.7.1+1.18.1"
 
 java {
   withSourcesJar()
@@ -39,7 +39,7 @@ repositories {
 }
 
 dependencies {
-  minecraft("com.mojang:minecraft:1.18")
+  minecraft("com.mojang:minecraft:1.18.1")
   mappings(loom.officialMojangMappings())
   modImplementation("net.fabricmc:fabric-loader:0.12.8")
   implementation("org.jetbrains:annotations:23.0.0")
