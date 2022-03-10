@@ -8,8 +8,9 @@
   "icon": "pack.png",
   "depends": {
     "fabricloader": ">=0.12.8",
-    "fabric-networking-api-v1": ">=1.0.18",
-    "minecraft": ">=1.18",
+    "fabric-api-base": ">=0.4.3",
+    "fabric-networking-api-v1": ">=1.0.20",
+    "minecraft": "1.18.2",
     "java": ">=17"
   },
   "entrypoints": {
@@ -30,8 +31,8 @@
     "Daniel Amberson"
   ],
   "contact": {
-    "homepage": "https://bit.ly/2YNlsfx",
-    "sources": "https://git.io/JJsni",
-    "issues": "https://git.io/JJsnP"
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/couplings",
+    "sources": "https://github.com/ChloeDawn/Couplings/tree/$version",
+    "issues": "https://github.com/ChloeDawn/Couplings/issues"
   }
 }
