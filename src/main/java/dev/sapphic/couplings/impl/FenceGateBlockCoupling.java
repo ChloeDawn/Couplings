@@ -28,22 +28,30 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
 public final class FenceGateBlockCoupling {
-  private FenceGateBlockCoupling() {
-  }
+  private FenceGateBlockCoupling() {}
 
-  public static void used(final BlockState state, final Level level, final BlockPos pos, final Player player) {
-    if (Couplings.couplesFenceGates(level) && (!player.isCrouching() || Couplings.ignoresSneaking(player))) {
+  public static void used(
+      final BlockState state, final Level level, final BlockPos pos, final Player player) {
+    if (Couplings.couplesFenceGates(level)
+        && (!player.isCrouching() || Couplings.ignoresSneaking(player))) {
       tryOpenCloseEach(state, level, pos, player, state.getValue(FenceGateBlock.OPEN));
     }
   }
 
-  public static void neighborChanged(final BlockState state, final Level level, final BlockPos pos, final boolean powered) {
-    if (Couplings.couplesFenceGates(level) && (!powered || (level.getBestNeighborSignal(pos) >= Couplings.COUPLING_SIGNAL))) {
+  public static void neighborChanged(
+      final BlockState state, final Level level, final BlockPos pos, final boolean powered) {
+    if (Couplings.couplesFenceGates(level)
+        && (!powered || (level.getBestNeighborSignal(pos) >= Couplings.COUPLING_SIGNAL))) {
       tryOpenCloseEach(state, level, pos, null, powered);
     }
   }
 
-  public static void tryOpenCloseEach(final BlockState state, final Level level, final BlockPos pos, final @Nullable Player player, final boolean open) {
+  public static void tryOpenCloseEach(
+      final BlockState state,
+      final Level level,
+      final BlockPos pos,
+      final @Nullable Player player,
+      final boolean open) {
     final var axis = state.getValue(HorizontalDirectionalBlock.FACING).getAxis();
     final var distance = Couplings.COUPLING_DISTANCE;
     var continueUp = true;
@@ -53,20 +61,28 @@ public final class FenceGateBlockCoupling {
       if (continueUp) {
         final var above = pos.above(offset);
 
-        continueUp = ((player == null) || level.mayInteract(player, above))
-          && tryOpenClose(state, level, above, player, axis, open);
+        continueUp =
+            ((player == null) || level.mayInteract(player, above))
+                && tryOpenClose(state, level, above, player, axis, open);
       }
 
       if (continueDown) {
         final var below = pos.below(offset);
 
-        continueDown = ((player == null) || level.mayInteract(player, below))
-          && tryOpenClose(state, level, below, player, axis, open);
+        continueDown =
+            ((player == null) || level.mayInteract(player, below))
+                && tryOpenClose(state, level, below, player, axis, open);
       }
     }
   }
 
-  private static boolean tryOpenClose(final BlockState state, final Level level, final BlockPos offset, final @Nullable Player player, final Axis axis, final boolean open) {
+  private static boolean tryOpenClose(
+      final BlockState state,
+      final Level level,
+      final BlockPos offset,
+      final @Nullable Player player,
+      final Axis axis,
+      final boolean open) {
     final var other = level.getBlockState(offset);
 
     if ((state.getBlock() == other.getBlock()) && (open != other.getValue(FenceGateBlock.OPEN))) {

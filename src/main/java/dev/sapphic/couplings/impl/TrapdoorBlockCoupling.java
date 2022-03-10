@@ -32,22 +32,30 @@ import net.minecraft.world.level.material.Fluids;
 import org.jetbrains.annotations.Nullable;
 
 public final class TrapdoorBlockCoupling {
-  private TrapdoorBlockCoupling() {
-  }
+  private TrapdoorBlockCoupling() {}
 
-  public static void used(final BlockState state, final Level level, final BlockPos pos, final Player player) {
-    if (Couplings.couplesTrapdoors(level) && (!player.isCrouching() || Couplings.ignoresSneaking(player))) {
+  public static void used(
+      final BlockState state, final Level level, final BlockPos pos, final Player player) {
+    if (Couplings.couplesTrapdoors(level)
+        && (!player.isCrouching() || Couplings.ignoresSneaking(player))) {
       tryOpenCloseEach(state, level, pos, player, state.getValue(TrapDoorBlock.OPEN));
     }
   }
 
-  public static void neighborChanged(final BlockState state, final Level level, final BlockPos pos, final boolean powered) {
-    if (Couplings.couplesTrapdoors(level) && (!powered || (level.getBestNeighborSignal(pos) >= Couplings.COUPLING_SIGNAL))) {
+  public static void neighborChanged(
+      final BlockState state, final Level level, final BlockPos pos, final boolean powered) {
+    if (Couplings.couplesTrapdoors(level)
+        && (!powered || (level.getBestNeighborSignal(pos) >= Couplings.COUPLING_SIGNAL))) {
       tryOpenCloseEach(state, level, pos, null, powered);
     }
   }
 
-  private static void tryOpenCloseEach(final BlockState state, final Level level, final BlockPos pos, final @Nullable Player player, final boolean open) {
+  private static void tryOpenCloseEach(
+      final BlockState state,
+      final Level level,
+      final BlockPos pos,
+      final @Nullable Player player,
+      final boolean open) {
     final var half = state.getValue(TrapDoorBlock.HALF);
     final var facing = state.getValue(HorizontalDirectionalBlock.FACING);
     final var traverseZ = facing.getAxis() == Axis.X;
@@ -63,8 +71,9 @@ public final class TrapdoorBlockCoupling {
         if (step != 0) {
           relative = pos.offset(traverseZ ? 0 : step, 0, traverseZ ? step : 0);
 
-          continuePos = ((player == null) || level.mayInteract(player, relative))
-            && tryOpenClose(state, relative, level, player, facing, half, open);
+          continuePos =
+              ((player == null) || level.mayInteract(player, relative))
+                  && tryOpenClose(state, relative, level, player, facing, half, open);
         }
 
         if (continuePos) {
@@ -75,8 +84,9 @@ public final class TrapdoorBlockCoupling {
       if (continueNeg && (step != 0)) {
         final var relative = pos.offset(traverseZ ? 0 : -step, 0, traverseZ ? -step : 0);
 
-        continueNeg = ((player == null) || level.mayInteract(player, relative))
-          && tryOpenClose(state, relative, level, player, facing, half, open);
+        continueNeg =
+            ((player == null) || level.mayInteract(player, relative))
+                && tryOpenClose(state, relative, level, player, facing, half, open);
 
         if (continueNeg) {
           tryOpenCloseAt(state, level, player, open, half, facing, traverseZ, offset, relative);
@@ -85,7 +95,16 @@ public final class TrapdoorBlockCoupling {
     }
   }
 
-  private static void tryOpenCloseAt(final BlockState state, final Level level, final @Nullable Player player, final boolean open, final Half half, final Direction facing, final boolean traverseZ, final int offset, final BlockPos pos) {
+  private static void tryOpenCloseAt(
+      final BlockState state,
+      final Level level,
+      final @Nullable Player player,
+      final boolean open,
+      final Half half,
+      final Direction facing,
+      final boolean traverseZ,
+      final int offset,
+      final BlockPos pos) {
     final var relative = pos.offset(traverseZ ? offset : 0, 0, traverseZ ? 0 : offset);
 
     if ((player == null) || level.mayInteract(player, relative)) {
@@ -93,11 +112,20 @@ public final class TrapdoorBlockCoupling {
     }
   }
 
-  private static boolean tryOpenClose(final BlockState state, final BlockPos pos, final Level level, final @Nullable Player player, final Direction facing, final Half half, final boolean open) {
+  private static boolean tryOpenClose(
+      final BlockState state,
+      final BlockPos pos,
+      final Level level,
+      final @Nullable Player player,
+      final Direction facing,
+      final Half half,
+      final boolean open) {
     final var other = level.getBlockState(pos);
 
-    if ((state.getBlock() == other.getBlock()) && (facing == other.getValue(HorizontalDirectionalBlock.FACING))) {
-      if ((half == other.getValue(TrapDoorBlock.HALF)) && (open != other.getValue(TrapDoorBlock.OPEN))) {
+    if ((state.getBlock() == other.getBlock())
+        && (facing == other.getValue(HorizontalDirectionalBlock.FACING))) {
+      if ((half == other.getValue(TrapDoorBlock.HALF))
+          && (open != other.getValue(TrapDoorBlock.OPEN))) {
         level.setBlock(pos, other.setValue(TrapDoorBlock.OPEN, open), 2);
 
         if (other.getValue(TrapDoorBlock.WATERLOGGED)) {

@@ -43,8 +43,8 @@ public final class Couplings implements ModInitializer {
   static final boolean COUPLE_TRAPDOORS;
 
   static {
-    final var config = CommentedFileConfig.of(
-      FabricLoader.getInstance().getConfigDir().resolve("couplings.toml"));
+    final var configs = FabricLoader.getInstance().getConfigDir();
+    final var config = CommentedFileConfig.of(configs.resolve("couplings.toml"));
 
     config.load();
 
@@ -62,10 +62,10 @@ public final class Couplings implements ModInitializer {
 
     spec.correct(config);
 
-    config.setComment(ignoreSneaking, "Couple regardless of whether the player is sneaking when interacting");
-    config.setComment(coupleDoors, "Couple neighboring doors with opposing hinges");
-    config.setComment(coupleFenceGates, "Couple neighboring fence gates above and below on the same axis");
-    config.setComment(coupleTrapdoors, "Couple neighboring trapdoors along either sides and opposing");
+    config.setComment(ignoreSneaking, "Couple regardless of whether the player is sneaking");
+    config.setComment(coupleDoors, "Couple doors with opposing hinges");
+    config.setComment(coupleFenceGates, "Couple fence gates above and below on the same axis");
+    config.setComment(coupleTrapdoors, "Couple trapdoors along either sides and opposing");
 
     config.save();
 
@@ -101,27 +101,30 @@ public final class Couplings implements ModInitializer {
 
   @Override
   public void onInitialize() {
-    ServerPlayNetworking.registerGlobalReceiver(CLIENT_CONFIG, (server, player, listener, buf, sender) -> {
-      Preconditions.checkArgument(buf.readableBytes() == Byte.BYTES, buf);
+    ServerPlayNetworking.registerGlobalReceiver(
+        CLIENT_CONFIG,
+        (server, player, listener, buf, sender) -> {
+          Preconditions.checkArgument(buf.readableBytes() == Byte.BYTES, buf);
 
-      final var clientConfig = buf.readByte();
+          final var clientConfig = buf.readByte();
 
-      Preconditions.checkArgument(clientConfig <= 1, buf);
+          Preconditions.checkArgument(clientConfig <= 1, buf);
 
-      server.execute(() -> {
-        CouplingsPlayer.ignoresSneaking(player, clientConfig != 0);
-      });
-    });
+          server.execute(() -> CouplingsPlayer.ignoresSneaking(player, clientConfig != 0));
+        });
 
-    ServerPlayConnectionEvents.JOIN.register((listener, sender, server) -> {
-      var couplings = 0b000;
+    ServerPlayConnectionEvents.JOIN.register(
+        (listener, sender, server) -> {
+          var couplings = 0b000;
 
-      couplings |= (COUPLE_DOORS ? 1 : 0) << 2;
-      couplings |= (COUPLE_FENCE_GATES ? 1 : 0) << 1;
-      couplings |= COUPLE_TRAPDOORS ? 1 : 0;
+          couplings |= (COUPLE_DOORS ? 1 : 0) << 2;
+          couplings |= (COUPLE_FENCE_GATES ? 1 : 0) << 1;
+          couplings |= COUPLE_TRAPDOORS ? 1 : 0;
 
-      ServerPlayNetworking.send(listener.player, SERVER_CONFIG, new FriendlyByteBuf(
-        Unpooled.buffer(Byte.BYTES, Byte.BYTES).writeByte(couplings).asReadOnly()));
-    });
+          final var buffer =
+              Unpooled.buffer(Byte.BYTES, Byte.BYTES).writeByte(couplings).asReadOnly();
+
+          ServerPlayNetworking.send(listener.player, SERVER_CONFIG, new FriendlyByteBuf(buffer));
+        });
   }
 }

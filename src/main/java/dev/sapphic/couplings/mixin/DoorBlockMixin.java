@@ -43,29 +43,107 @@ abstract class DoorBlockMixin extends Block {
   }
 
   @Inject(
-    method = "use(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/InteractionHand;Lnet/minecraft/world/phys/BlockHitResult;)Lnet/minecraft/world/InteractionResult;",
-    at = @At(shift = At.Shift.AFTER, value = "INVOKE", opcode = Opcodes.INVOKEVIRTUAL,
-      target = "Lnet/minecraft/world/level/Level;setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z"),
-    require = 1, allow = 1)
-  private void used(final BlockState state, final Level level, final BlockPos pos, final Player player, final InteractionHand hand, final BlockHitResult hit, final CallbackInfoReturnable<InteractionResult> cir) {
+      method =
+          "use("
+              + "Lnet/minecraft/world/level/block/state/BlockState;"
+              + "Lnet/minecraft/world/level/Level;"
+              + "Lnet/minecraft/core/BlockPos;"
+              + "Lnet/minecraft/world/entity/player/Player;"
+              + "Lnet/minecraft/world/InteractionHand;"
+              + "Lnet/minecraft/world/phys/BlockHitResult;"
+              + ")Lnet/minecraft/world/InteractionResult;",
+      at =
+          @At(
+              shift = At.Shift.AFTER,
+              value = "INVOKE",
+              opcode = Opcodes.INVOKEVIRTUAL,
+              target =
+                  "Lnet/minecraft/world/level/Level;"
+                      + "setBlock("
+                      + "Lnet/minecraft/core/BlockPos;"
+                      + "Lnet/minecraft/world/level/block/state/BlockState;"
+                      + "I"
+                      + ")Z"),
+      require = 1,
+      allow = 1)
+  private void used(
+      final BlockState state,
+      final Level level,
+      final BlockPos pos,
+      final Player player,
+      final InteractionHand hand,
+      final BlockHitResult hit,
+      final CallbackInfoReturnable<InteractionResult> cir) {
     DoorBlockCoupling.used(state, level, pos, player);
   }
 
   @Inject(
-    method = "setOpen(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/level/Level;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/core/BlockPos;Z)V",
-    at = @At(shift = At.Shift.AFTER, value = "INVOKE", opcode = Opcodes.INVOKEVIRTUAL,
-      target = "Lnet/minecraft/world/level/block/DoorBlock;playSound(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Z)V"),
-    require = 1, allow = 1)
-  private void openStateChanged(final @Nullable Entity entity, final Level level, final BlockState state, final BlockPos pos, final boolean open, final CallbackInfo ci) {
+      method =
+          "setOpen("
+              + "Lnet/minecraft/world/entity/Entity;"
+              + "Lnet/minecraft/world/level/Level;"
+              + "Lnet/minecraft/world/level/block/state/BlockState;"
+              + "Lnet/minecraft/core/BlockPos;"
+              + "Z"
+              + ")V",
+      at =
+          @At(
+              shift = At.Shift.AFTER,
+              value = "INVOKE",
+              opcode = Opcodes.INVOKEVIRTUAL,
+              target =
+                  "Lnet/minecraft/world/level/block/DoorBlock;"
+                      + "playSound("
+                      + "Lnet/minecraft/world/level/Level;"
+                      + "Lnet/minecraft/core/BlockPos;"
+                      + "Z"
+                      + ")V"),
+      require = 1,
+      allow = 1)
+  private void openStateChanged(
+      final @Nullable Entity entity,
+      final Level level,
+      final BlockState state,
+      final BlockPos pos,
+      final boolean open,
+      final CallbackInfo ci) {
     DoorBlockCoupling.openStateChanged(entity, state, level, pos, open);
   }
 
   @Inject(
-    method = "neighborChanged(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/Block;Lnet/minecraft/core/BlockPos;Z)V",
-    at = @At(shift = At.Shift.AFTER, value = "INVOKE", opcode = Opcodes.INVOKEVIRTUAL,
-      target = "Lnet/minecraft/world/level/Level;setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z"),
-    require = 1, allow = 1, locals = LocalCapture.CAPTURE_FAILHARD)
-  private void neighborChanged(final BlockState state, final Level level, final BlockPos pos, final Block block, final BlockPos offset, final boolean moved, final CallbackInfo ci, final boolean powered) {
+      method =
+          "neighborChanged("
+              + "Lnet/minecraft/world/level/block/state/BlockState;"
+              + "Lnet/minecraft/world/level/Level;"
+              + "Lnet/minecraft/core/BlockPos;"
+              + "Lnet/minecraft/world/level/block/Block;"
+              + "Lnet/minecraft/core/BlockPos;"
+              + "Z"
+              + ")V",
+      at =
+          @At(
+              shift = At.Shift.AFTER,
+              value = "INVOKE",
+              opcode = Opcodes.INVOKEVIRTUAL,
+              target =
+                  "Lnet/minecraft/world/level/Level;"
+                      + "setBlock("
+                      + "Lnet/minecraft/core/BlockPos;"
+                      + "Lnet/minecraft/world/level/block/state/BlockState;"
+                      + "I"
+                      + ")Z"),
+      require = 1,
+      allow = 1,
+      locals = LocalCapture.CAPTURE_FAILHARD)
+  private void neighborChanged(
+      final BlockState state,
+      final Level level,
+      final BlockPos pos,
+      final Block block,
+      final BlockPos offset,
+      final boolean moved,
+      final CallbackInfo ci,
+      final boolean powered) {
     DoorBlockCoupling.neighborChanged(state, level, pos, powered);
   }
 }

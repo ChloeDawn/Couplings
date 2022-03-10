@@ -29,7 +29,8 @@ import org.spongepowered.asm.mixin.Unique;
 abstract class ServerPlayerMixin extends Player implements CouplingsPlayer {
   @Unique private boolean couplingIgnoresSneaking = true;
 
-  ServerPlayerMixin(final Level level, final BlockPos pos, final float spawnAngle, final GameProfile profile) {
+  ServerPlayerMixin(
+      final Level level, final BlockPos pos, final float spawnAngle, final GameProfile profile) {
     super(level, pos, spawnAngle, profile);
   }
 

@@ -28,11 +28,12 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 public final class DoorBlockCoupling {
-  private DoorBlockCoupling() {
-  }
+  private DoorBlockCoupling() {}
 
-  public static void used(final BlockState state, final Level level, final BlockPos pos, final Player player) {
-    if (Couplings.couplesDoors(level) && (!player.isCrouching() || Couplings.ignoresSneaking(player))) {
+  public static void used(
+      final BlockState state, final Level level, final BlockPos pos, final Player player) {
+    if (Couplings.couplesDoors(level)
+        && (!player.isCrouching() || Couplings.ignoresSneaking(player))) {
       final var offset = getCoupledDoorPos(state, pos);
 
       if (level.mayInteract(player, offset)) {
@@ -50,7 +51,12 @@ public final class DoorBlockCoupling {
     }
   }
 
-  public static void openStateChanged(final @Nullable Entity entity, final BlockState state, final Level level, final BlockPos pos, final boolean open) {
+  public static void openStateChanged(
+      final @Nullable Entity entity,
+      final BlockState state,
+      final Level level,
+      final BlockPos pos,
+      final boolean open) {
     if (Couplings.couplesDoors(level)) {
       final var offset = getCoupledDoorPos(state, pos);
       final var other = level.getBlockState(offset);
@@ -62,8 +68,10 @@ public final class DoorBlockCoupling {
     }
   }
 
-  public static void neighborChanged(final BlockState state, final Level level, final BlockPos pos, final boolean powered) {
-    if (Couplings.couplesDoors(level) && (!powered || (level.getBestNeighborSignal(pos) >= Couplings.COUPLING_SIGNAL))) {
+  public static void neighborChanged(
+      final BlockState state, final Level level, final BlockPos pos, final boolean powered) {
+    if (Couplings.couplesDoors(level)
+        && (!powered || (level.getBestNeighborSignal(pos) >= Couplings.COUPLING_SIGNAL))) {
       final var offset = getCoupledDoorPos(state, pos);
       final var other = level.getBlockState(offset);
 
@@ -74,11 +82,12 @@ public final class DoorBlockCoupling {
     }
   }
 
-  private static boolean areCoupled(final BlockState self, final BlockState other, final boolean open) {
+  private static boolean areCoupled(
+      final BlockState self, final BlockState other, final boolean open) {
     return (open != other.getValue(DoorBlock.OPEN))
-      && (self.getValue(DoorBlock.FACING) == other.getValue(DoorBlock.FACING))
-      && (self.getValue(DoorBlock.HALF) == other.getValue(DoorBlock.HALF))
-      && (self.getValue(DoorBlock.HINGE) != other.getValue(DoorBlock.HINGE));
+        && (self.getValue(DoorBlock.FACING) == other.getValue(DoorBlock.FACING))
+        && (self.getValue(DoorBlock.HALF) == other.getValue(DoorBlock.HALF))
+        && (self.getValue(DoorBlock.HINGE) != other.getValue(DoorBlock.HINGE));
   }
 
   private static BlockPos getCoupledDoorPos(final BlockState state, final BlockPos pos) {
