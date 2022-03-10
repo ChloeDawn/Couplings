@@ -48,7 +48,7 @@ public final class CouplingsClient implements ClientModInitializer {
     ClientPlayNetworking.registerGlobalReceiver(Couplings.SERVER_CONFIG, (minecraft, listener, buf, sender) -> {
       Preconditions.checkArgument(buf.readableBytes() == Byte.BYTES, buf);
 
-      final byte serverConfig = buf.readByte();
+      final var serverConfig = buf.readByte();
 
       Preconditions.checkArgument(serverConfig <= ((1 << 2) | (1 << 1) | 1), buf);
 
@@ -60,7 +60,7 @@ public final class CouplingsClient implements ClientModInitializer {
     });
 
     ClientPlayConnectionEvents.JOIN.register((listener, sender, minecraft) -> {
-      final int clientConfig = Couplings.IGNORE_SNEAKING ? 1 : 0;
+      final var clientConfig = Couplings.IGNORE_SNEAKING ? 1 : 0;
 
       ClientPlayNetworking.send(Couplings.CLIENT_CONFIG, new FriendlyByteBuf(
         Unpooled.buffer(Byte.BYTES, Byte.BYTES).writeByte(clientConfig).asReadOnly()));

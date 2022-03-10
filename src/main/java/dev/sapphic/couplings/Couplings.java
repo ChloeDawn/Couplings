@@ -43,17 +43,17 @@ public final class Couplings implements ModInitializer {
   static final boolean COUPLE_TRAPDOORS;
 
   static {
-    final CommentedFileConfig config = CommentedFileConfig.of(
+    final var config = CommentedFileConfig.of(
       FabricLoader.getInstance().getConfigDir().resolve("couplings.toml"));
 
     config.load();
 
-    final String ignoreSneaking = "ignore_sneaking";
-    final String coupleDoors = "couple_doors";
-    final String coupleFenceGates = "couple_fence_gates";
-    final String coupleTrapdoors = "couple_trapdoors";
+    final var ignoreSneaking = "ignore_sneaking";
+    final var coupleDoors = "couple_doors";
+    final var coupleFenceGates = "couple_fence_gates";
+    final var coupleTrapdoors = "couple_trapdoors";
 
-    final ConfigSpec spec = new ConfigSpec();
+    final var spec = new ConfigSpec();
 
     spec.define(ignoreSneaking, true);
     spec.define(coupleDoors, true);
@@ -104,7 +104,7 @@ public final class Couplings implements ModInitializer {
     ServerPlayNetworking.registerGlobalReceiver(CLIENT_CONFIG, (server, player, listener, buf, sender) -> {
       Preconditions.checkArgument(buf.readableBytes() == Byte.BYTES, buf);
 
-      final byte clientConfig = buf.readByte();
+      final var clientConfig = buf.readByte();
 
       Preconditions.checkArgument(clientConfig <= 1, buf);
 
@@ -114,7 +114,7 @@ public final class Couplings implements ModInitializer {
     });
 
     ServerPlayConnectionEvents.JOIN.register((listener, sender, server) -> {
-      int couplings = 0b000;
+      var couplings = 0b000;
 
       couplings |= (COUPLE_DOORS ? 1 : 0) << 2;
       couplings |= (COUPLE_FENCE_GATES ? 1 : 0) << 1;

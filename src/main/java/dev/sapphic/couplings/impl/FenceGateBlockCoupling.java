@@ -18,7 +18,6 @@ package dev.sapphic.couplings.impl;
 
 import dev.sapphic.couplings.Couplings;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -45,21 +44,21 @@ public final class FenceGateBlockCoupling {
   }
 
   public static void tryOpenCloseEach(final BlockState state, final Level level, final BlockPos pos, final @Nullable Player player, final boolean open) {
-    final Axis axis = state.getValue(HorizontalDirectionalBlock.FACING).getAxis();
-    final int distance = Couplings.COUPLING_DISTANCE;
-    boolean continueUp = true;
-    boolean continueDown = true;
+    final var axis = state.getValue(HorizontalDirectionalBlock.FACING).getAxis();
+    final var distance = Couplings.COUPLING_DISTANCE;
+    var continueUp = true;
+    var continueDown = true;
 
-    for (int offset = 1; (offset <= distance) && (continueUp || continueDown); ++offset) {
+    for (var offset = 1; (offset <= distance) && (continueUp || continueDown); ++offset) {
       if (continueUp) {
-        final BlockPos above = pos.above(offset);
+        final var above = pos.above(offset);
 
         continueUp = ((player == null) || level.mayInteract(player, above))
           && tryOpenClose(state, level, above, player, axis, open);
       }
 
       if (continueDown) {
-        final BlockPos below = pos.below(offset);
+        final var below = pos.below(offset);
 
         continueDown = ((player == null) || level.mayInteract(player, below))
           && tryOpenClose(state, level, below, player, axis, open);
@@ -68,14 +67,14 @@ public final class FenceGateBlockCoupling {
   }
 
   private static boolean tryOpenClose(final BlockState state, final Level level, final BlockPos offset, final @Nullable Player player, final Axis axis, final boolean open) {
-    final BlockState other = level.getBlockState(offset);
+    final var other = level.getBlockState(offset);
 
     if ((state.getBlock() == other.getBlock()) && (open != other.getValue(FenceGateBlock.OPEN))) {
       if (axis == other.getValue(HorizontalDirectionalBlock.FACING).getAxis()) {
-        final BlockState newOther = other.setValue(FenceGateBlock.OPEN, open);
+        final var newOther = other.setValue(FenceGateBlock.OPEN, open);
 
         if (player != null) {
-          final Direction facing = state.getValue(HorizontalDirectionalBlock.FACING);
+          final var facing = state.getValue(HorizontalDirectionalBlock.FACING);
 
           level.setBlock(offset, newOther.setValue(HorizontalDirectionalBlock.FACING, facing), 2);
         } else {
