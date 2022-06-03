@@ -18,6 +18,7 @@ package dev.sapphic.couplings;
 
 import com.electronwill.nightconfig.core.ConfigSpec;
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
+import com.electronwill.nightconfig.core.io.ParsingException;
 import com.google.common.base.Preconditions;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.api.ModInitializer;
@@ -46,7 +47,11 @@ public final class Couplings implements ModInitializer {
     final var configs = FabricLoader.getInstance().getConfigDir();
     final var config = CommentedFileConfig.of(configs.resolve("couplings.toml"));
 
-    config.load();
+    try { 
+      config.load();
+    } catch (final ParsingException e) {
+      LogManager.getLogger().warn(e.getMessage());
+    }
 
     final var ignoreSneaking = "ignore_sneaking";
     final var coupleDoors = "couple_doors";

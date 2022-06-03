@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "dev.sapphic"
-version = "1.8.0+1.18.2"
+version = "1.8.1+1.18.2"
 
 if ("CI" in System.getenv()) {
   version = "$version-${versioning.info.build}"
