@@ -31,7 +31,7 @@ abstract class ServerPlayerMixin extends Player implements CouplingsPlayer {
 
   ServerPlayerMixin(
       final Level level, final BlockPos pos, final float spawnAngle, final GameProfile profile) {
-    super(level, pos, spawnAngle, profile);
+    super(level, pos, spawnAngle, profile, null);
   }
 
   @Unique

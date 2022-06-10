@@ -10,7 +10,7 @@
     "fabricloader": ">=0.12.8",
     "fabric-api-base": ">=0.4.3",
     "fabric-networking-api-v1": ">=1.0.20",
-    "minecraft": "1.18.2",
+    "minecraft": "1.19",
     "java": ">=17"
   },
   "entrypoints": {
@@ -28,7 +28,8 @@
     "Chloe Dawn"
   ],
   "contributors": [
-    "Daniel Amberson"
+    "Daniel Amberson",
+    "David Haßhoff"
   ],
   "contact": {
     "homepage": "https://www.curseforge.com/minecraft/mc-mods/couplings",

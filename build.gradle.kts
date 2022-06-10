@@ -1,13 +1,18 @@
 import java.time.Instant
 
 plugins {
-  id(/*net.fabricmc.*/ "fabric-loom") version "0.11.32"
+  id(/*net.fabricmc.*/ "fabric-loom") version "0.12-SNAPSHOT"
   id("net.nemerosa.versioning") version "2.15.1"
   id("org.gradle.signing")
 }
 
 group = "dev.sapphic"
-version = "1.8.1+1.18.2"
+version = "1.8.1+1.19"
+
+val minecraftVersion = "1.19"
+var fabricLoaderVersion = "0.14.7"
+var fabricApiVersion = "0.55.3+1.19"
+var modMenuVersion = "4.0.0"
 
 if ("CI" in System.getenv()) {
   version = "$version-${versioning.info.build}"
@@ -45,25 +50,25 @@ repositories {
 }
 
 dependencies {
-  minecraft("com.mojang:minecraft:1.18.2")
+    minecraft("com.mojang:minecraft:$minecraftVersion")
   mappings(loom.layered {
     officialMojangMappings {
       nameSyntheticMembers = true
     }
   })
 
-  modImplementation("net.fabricmc:fabric-loader:0.13.3")
+  modImplementation("net.fabricmc:fabric-loader:$fabricLoaderVersion")
 
   implementation("org.jetbrains:annotations:23.0.0")
-  implementation("org.checkerframework:checker-qual:3.21.2")
+  implementation("org.checkerframework:checker-qual:3.21.4")
 
-  modImplementation(include(fabricApi.module("fabric-api-base", "0.47.10+1.18.2"))!!)
-  modImplementation(include(fabricApi.module("fabric-networking-api-v1", "0.47.10+1.18.2"))!!)
+  modImplementation(include(fabricApi.module("fabric-api-base", fabricApiVersion))!!)
+  modImplementation(include(fabricApi.module("fabric-networking-api-v1", fabricApiVersion))!!)
 
   implementation(include("com.electronwill.night-config:core:3.6.5")!!)
   implementation(include("com.electronwill.night-config:toml:3.6.5")!!)
 
-  modRuntimeOnly("com.terraformersmc:modmenu:3.1.0")
+  modRuntimeOnly("com.terraformersmc:modmenu:$modMenuVersion")
 }
 
 tasks {
