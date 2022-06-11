@@ -77,7 +77,7 @@ public final class DoorBlockCoupling {
 
       if ((state.getBlock() == other.getBlock()) && areCoupled(state, other, powered)) {
         level.setBlock(offset, other.setValue(DoorBlock.OPEN, powered), 2);
-        level.gameEvent(powered ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, offset);
+        level.gameEvent(null, powered ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, offset);
       }
     }
   }
