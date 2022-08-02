@@ -1,13 +1,14 @@
 import java.time.Instant
 
 plugins {
-  id(/*net.fabricmc.*/ "fabric-loom") version "0.12.48"
+  id(/*net.fabricmc.*/ "fabric-loom") version "0.12.55"
+  id("io.github.juuxel.loom-quiltflower") version "1.7.3"
   id("net.nemerosa.versioning") version "3.0.0"
   id("org.gradle.signing")
 }
 
 group = "dev.sapphic"
-version = "1.9.0+1.19"
+version = "1.9.1+1.19"
 
 if ("CI" in System.getenv()) {
   version = "$version-${versioning.info.build}"
@@ -37,33 +38,38 @@ loom {
 }
 
 repositories {
-  maven("https://maven.terraformersmc.com/releases") {
-    content {
-      includeGroup("com.terraformersmc")
+  exclusiveContent {
+    forRepository {
+      maven("https://maven.terraformersmc.com/releases")
+    }
+
+    filter {
+      includeModule("com.terraformersmc", "modmenu")
     }
   }
 }
 
 dependencies {
   minecraft("com.mojang:minecraft:1.19")
+
   mappings(loom.layered {
     officialMojangMappings {
       nameSyntheticMembers = true
     }
   })
 
-  modImplementation("net.fabricmc:fabric-loader:0.14.7")
+  modImplementation("net.fabricmc:fabric-loader:0.14.8")
 
-  implementation("org.jetbrains:annotations:23.0.0")
-  implementation("org.checkerframework:checker-qual:3.22.1")
-
-  modImplementation(include(fabricApi.module("fabric-api-base", "0.55.3+1.19"))!!)
-  modImplementation(include(fabricApi.module("fabric-networking-api-v1", "0.55.3+1.19"))!!)
+  modImplementation(include(fabricApi.module("fabric-api-base", "0.58.0+1.19"))!!)
+  modImplementation(include(fabricApi.module("fabric-networking-api-v1", "0.58.0+1.19"))!!)
 
   implementation(include("com.electronwill.night-config:core:3.6.5")!!)
   implementation(include("com.electronwill.night-config:toml:3.6.5")!!)
 
-  modRuntimeOnly("com.terraformersmc:modmenu:4.0.0")
+  implementation("org.jetbrains:annotations:23.0.0")
+  implementation("org.checkerframework:checker-qual:3.23.0")
+
+  modRuntimeOnly("com.terraformersmc:modmenu:4.0.5")
 }
 
 tasks {
@@ -73,12 +79,12 @@ tasks {
       encoding = "UTF-8"
       isFork = true
       compilerArgs.addAll(
-          listOf(
-              "-Xlint:all", "-Xlint:-processing",
-              // Enable parameter name class metadata 
-              // https://openjdk.java.net/jeps/118
-              "-parameters"
-          )
+        listOf(
+          "-Xlint:all", "-Xlint:-processing",
+          // Enable parameter name class metadata 
+          // https://openjdk.java.net/jeps/118
+          "-parameters"
+        )
       )
       release.set(17)
     }
@@ -94,26 +100,23 @@ tasks {
     from("/LICENSE")
 
     manifest.attributes(
-        "Build-Timestamp" to Instant.now(),
-        "Build-Revision" to versioning.info.commit,
-        "Build-Jvm" to "${
-          System.getProperty("java.version")
-        } (${
-          System.getProperty("java.vendor")
-        } ${
-          System.getProperty("java.vm.version")
-        })",
-        "Built-By" to GradleVersion.current(),
-
-        "Implementation-Title" to project.name,
-        "Implementation-Version" to project.version,
-        "Implementation-Vendor" to project.group,
-
-        "Specification-Title" to "FabricMod",
-        "Specification-Version" to "1.0.0",
-        "Specification-Vendor" to project.group,
-
-        "Sealed" to "true"
+      "Build-Timestamp" to Instant.now(),
+      "Build-Revision" to versioning.info.commit,
+      "Build-Jvm" to "${
+        System.getProperty("java.version")
+      } (${
+        System.getProperty("java.vendor")
+      } ${
+        System.getProperty("java.vm.version")
+      })",
+      "Built-By" to GradleVersion.current(),
+      "Implementation-Title" to project.name,
+      "Implementation-Version" to project.version,
+      "Implementation-Vendor" to project.group,
+      "Specification-Title" to "FabricMod",
+      "Specification-Version" to "1.0.0",
+      "Specification-Vendor" to project.group,
+      "Sealed" to "true"
     )
   }
 
@@ -122,17 +125,19 @@ tasks {
     val keystore = property("signing.mods.keystore")
     val password = property("signing.mods.password")
 
-    fun Sign.antSignJar(task: Task) = task.outputs.files.forEach { file ->
-      ant.invokeMethod(
+    fun Sign.antSignJar(task: Task) =
+      task.outputs.files.forEach { file ->
+        ant.invokeMethod(
           "signjar", mapOf(
-          "jar" to file,
-          "alias" to alias,
-          "storepass" to password,
-          "keystore" to keystore,
-          "verbose" to true,
-          "preservelastmodified" to true
-      ))
-    }
+            "jar" to file,
+            "alias" to alias,
+            "storepass" to password,
+            "keystore" to keystore,
+            "verbose" to true,
+            "preservelastmodified" to true
+          )
+        )
+      }
 
     val signJar by creating(Sign::class) {
       dependsOn(remapJar)
