@@ -94,6 +94,7 @@ abstract class DoorBlockMixin extends Block {
               target =
                   "Lnet/minecraft/world/level/block/DoorBlock;"
                       + "playSound("
+                      + "Lnet/minecraft/world/entity/Entity;"
                       + "Lnet/minecraft/world/level/Level;"
                       + "Lnet/minecraft/core/BlockPos;"
                       + "Z"
