@@ -1,14 +1,14 @@
 import java.time.Instant
 
 plugins {
-  id(/*net.fabricmc.*/ "fabric-loom") version "0.12.55"
-  id("io.github.juuxel.loom-quiltflower") version "1.7.3"
+  id(/*net.fabricmc.*/ "fabric-loom") version "1.2.7"
+  id("io.github.juuxel.loom-quiltflower") version "1.8.0"
   id("net.nemerosa.versioning") version "3.0.0"
   id("org.gradle.signing")
 }
 
 group = "dev.sapphic"
-version = "1.9.2+1.19.3"
+version = "1.9.3+1.19.4"
 
 if ("CI" in System.getenv()) {
   version = "$version-${versioning.info.build}"
@@ -50,7 +50,7 @@ repositories {
 }
 
 dependencies {
-  minecraft("com.mojang:minecraft:1.19.3")
+  minecraft("com.mojang:minecraft:1.19.4")
 
   mappings(loom.layered {
     officialMojangMappings {
@@ -58,10 +58,10 @@ dependencies {
     }
   })
 
-  modImplementation("net.fabricmc:fabric-loader:0.14.12")
+  modImplementation("net.fabricmc:fabric-loader:0.14.19")
 
-  modImplementation(include(fabricApi.module("fabric-api-base", "0.72.0+1.19.3"))!!)
-  modImplementation(include(fabricApi.module("fabric-networking-api-v1", "0.72.0+1.19.3"))!!)
+  modImplementation(include(fabricApi.module("fabric-api-base", "0.80.0+1.19.4"))!!)
+  modImplementation(include(fabricApi.module("fabric-networking-api-v1", "0.80.0+1.19.4"))!!)
 
   implementation(include("com.electronwill.night-config:core:3.6.6")!!)
   implementation(include("com.electronwill.night-config:toml:3.6.6")!!)
@@ -69,7 +69,7 @@ dependencies {
   implementation("org.jetbrains:annotations:23.1.0")
   implementation("org.checkerframework:checker-qual:3.29.0")
 
-  modRuntimeOnly("com.terraformersmc:modmenu:5.0.2")
+  modRuntimeOnly("com.terraformersmc:modmenu:6.2.2")
 }
 
 tasks {
