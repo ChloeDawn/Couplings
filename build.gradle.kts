@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "dev.sapphic"
-version = "1.9.3+1.19.4"
+version = "1.9.4+1.20"
 
 if ("CI" in System.getenv()) {
   version = "$version-${versioning.info.build}"
@@ -50,7 +50,7 @@ repositories {
 }
 
 dependencies {
-  minecraft("com.mojang:minecraft:1.19.4")
+  minecraft("com.mojang:minecraft:1.20")
 
   mappings(loom.layered {
     officialMojangMappings {
@@ -60,8 +60,8 @@ dependencies {
 
   modImplementation("net.fabricmc:fabric-loader:0.14.21")
 
-  modImplementation(include(fabricApi.module("fabric-api-base", "0.85.0+1.19.4"))!!)
-  modImplementation(include(fabricApi.module("fabric-networking-api-v1", "0.85.0+1.19.4"))!!)
+  modImplementation(include(fabricApi.module("fabric-api-base", "0.83.0+1.20"))!!)
+  modImplementation(include(fabricApi.module("fabric-networking-api-v1", "0.83.0+1.20"))!!)
 
   implementation(include("com.electronwill.night-config:core:3.6.6")!!)
   implementation(include("com.electronwill.night-config:toml:3.6.6")!!)
@@ -69,7 +69,7 @@ dependencies {
   implementation("org.jetbrains:annotations:24.0.1")
   implementation("org.checkerframework:checker-qual:3.36.0")
 
-  modRuntimeOnly("com.terraformersmc:modmenu:6.2.3")
+  modRuntimeOnly("com.terraformersmc:modmenu:7.0.1")
 }
 
 tasks {
