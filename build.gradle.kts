@@ -47,6 +47,14 @@ repositories {
       includeModule("com.terraformersmc", "modmenu")
     }
   }
+  exclusiveContent {
+    forRepository {
+      maven("https://api.modrinth.com/maven")
+    }
+    filter {
+      includeGroup("maven.modrinth")
+    }
+  }
 }
 
 dependencies {
@@ -70,6 +78,9 @@ dependencies {
   implementation("org.checkerframework:checker-qual:3.36.0")
 
   modRuntimeOnly("com.terraformersmc:modmenu:7.0.1")
+
+  // Compat
+  modCompileOnly("maven.modrinth:dramatic-doors:1.20.1-3.1.3_3")
 }
 
 tasks {
