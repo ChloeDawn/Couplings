@@ -60,13 +60,14 @@ abstract class TrapdoorBlockMixin extends HorizontalDirectionalBlock
               shift = At.Shift.AFTER,
               value = "INVOKE",
               opcode = Opcodes.INVOKEVIRTUAL,
-              target =
-                  "Lnet/minecraft/world/level/Level;"
-                      + "setBlock("
-                      + "Lnet/minecraft/core/BlockPos;"
-                      + "Lnet/minecraft/world/level/block/state/BlockState;"
-                      + "I"
-                      + ")Z"))
+              target = "Lnet/minecraft/world/level/block/TrapDoorBlock;toggle(" +
+                  "Lnet/minecraft/world/level/block/state/BlockState;" +
+                  "Lnet/minecraft/world/level/Level;" +
+                  "Lnet/minecraft/core/BlockPos;" +
+                  "Lnet/minecraft/world/entity/player/Player;" +
+                  ")V"
+          )
+  )
   private void used(
       final BlockState state,
       final Level level,

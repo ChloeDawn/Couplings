@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "dev.sapphic"
-version = "1.9.4+1.20"
+version = "1.9.4+1.20.3"
 
 if ("CI" in System.getenv()) {
   version = "$version-${versioning.info.build}"
@@ -50,7 +50,7 @@ repositories {
 }
 
 dependencies {
-  minecraft("com.mojang:minecraft:1.20")
+  minecraft("com.mojang:minecraft:23w45a")
 
   mappings(loom.layered {
     officialMojangMappings {
@@ -58,10 +58,10 @@ dependencies {
     }
   })
 
-  modImplementation("net.fabricmc:fabric-loader:0.14.21")
+  modImplementation("net.fabricmc:fabric-loader:0.14.24")
 
-  modImplementation(include(fabricApi.module("fabric-api-base", "0.83.0+1.20"))!!)
-  modImplementation(include(fabricApi.module("fabric-networking-api-v1", "0.83.0+1.20"))!!)
+  modImplementation(include(fabricApi.module("fabric-api-base", "0.90.8+1.20.3"))!!)
+  modImplementation(include(fabricApi.module("fabric-networking-api-v1", "0.90.8+1.20.3"))!!)
 
   implementation(include("com.electronwill.night-config:core:3.6.6")!!)
   implementation(include("com.electronwill.night-config:toml:3.6.6")!!)
