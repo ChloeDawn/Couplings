@@ -91,6 +91,7 @@ public class TallDoorBlockMixin {
                     target =
                             "Lcom/fizzware/dramaticdoors/fabric/blocks/TallDoorBlock;"
                                     + "playSound("
+                                    + "Lnet/minecraft/world/entity/Entity;"
                                     + "Lnet/minecraft/world/level/Level;"
                                     + "Lnet/minecraft/core/BlockPos;"
                                     + "Z"

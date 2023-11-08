@@ -90,6 +90,7 @@ public class ShortDoorBlockMixin {
                     target =
                             "Lcom/fizzware/dramaticdoors/fabric/blocks/ShortDoorBlock;"
                                     + "playSound("
+                                    + "Lnet/minecraft/world/entity/Entity;"
                                     + "Lnet/minecraft/world/level/Level;"
                                     + "Lnet/minecraft/core/BlockPos;"
                                     + "Z"
