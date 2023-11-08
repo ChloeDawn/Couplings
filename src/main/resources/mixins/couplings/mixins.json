@@ -3,11 +3,14 @@
   "compatibilityLevel": "JAVA_17",
   "required": true,
   "package": "dev.sapphic.couplings.mixin",
+  "plugin": "dev.sapphic.couplings.mixin.compat.MixinCompatPlugin",
   "mixins": [
     "DoorBlockMixin",
     "FenceGateBlockMixin",
     "ServerPlayerMixin",
-    "TrapdoorBlockMixin"
+    "TrapdoorBlockMixin",
+    "compat.dramaticdoors.ShortDoorBlockMixin",
+    "compat.dramaticdoors.TallDoorBlockMixin"
   ],
   "refmap": "mixins/couplings/refmap.json"
 }
